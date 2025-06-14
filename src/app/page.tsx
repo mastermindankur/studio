@@ -5,6 +5,7 @@ import { HeroSection } from "@/components/sections/hero";
 import { HowItWorks } from "@/components/sections/how-it-works";
 import { ServiceShowcase } from "@/components/sections/service-showcase";
 import { Testimonials } from "@/components/sections/testimonials";
+import { Pricing } from "@/components/sections/pricing";
 import { AIAssistant } from "@/components/sections/ai-assistant";
 import { ContactForm } from "@/components/sections/contact-form";
 
@@ -17,6 +18,7 @@ export default function Home() {
         <HowItWorks />
         <ServiceShowcase />
         <Testimonials />
+        <Pricing />
         <AIAssistant />
         <ContactForm />
       </main>

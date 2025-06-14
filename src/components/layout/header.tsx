@@ -11,6 +11,7 @@ const navItems = [
   { href: "#how-it-works", label: "How It Works" },
   { href: "#services", label: "Our Services" },
   { href: "#testimonials", label: "Testimonials" },
+  { href: "#pricing", label: "Pricing" },
   { href: "#ai-assistant", label: "AI Assistant" },
   { href: "#contact", label: "Contact Us" },
 ];
