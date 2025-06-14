@@ -1,4 +1,4 @@
 import { config } from 'dotenv';
 config();
 
-import '@/ai/flows/legal-chatbot.ts';
+import '@/ai/flows/will-assistant-flow.ts';

@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Scale, Users, Briefcase, FileText, ShieldCheck, Landmark } from "lucide-react";
+import { FileText, Laptop, ShieldCheck, Bot, IndianRupee, Clock } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 interface Service {
@@ -13,39 +13,39 @@ interface Service {
 const services: Service[] = [
   {
     icon: FileText,
-    title: "Wills & Estates",
-    description: "Comprehensive planning for your future, ensuring your assets are protected and your wishes are honored.",
-    imageHint: "document signature",
+    title: "Legally Sound Wills",
+    description: "Create legally binding Wills fully compliant with Indian succession laws and regulations.",
+    imageHint: "legal document india",
   },
   {
-    icon: Users,
-    title: "Family Law",
-    description: "Sensitive and expert guidance through divorce, custody, and other family-related legal matters.",
-    imageHint: "family silhouette",
-  },
-  {
-    icon: Briefcase,
-    title: "Business Law",
-    description: "Strategic legal support for startups and established businesses, from formation to contracts.",
-    imageHint: "business meeting",
-  },
-  {
-    icon: Landmark,
-    title: "Real Estate Law",
-    description: "Navigate property transactions, disputes, and zoning with our experienced legal team.",
-    imageHint: "house keys",
+    icon: Laptop,
+    title: "Easy Online Process",
+    description: "Our user-friendly platform guides you step-by-step to create your Will online, anytime, anywhere in India.",
+    imageHint: "laptop computer",
   },
   {
     icon: ShieldCheck,
-    title: "Litigation & Dispute Resolution",
-    description: "Assertive representation in court and effective strategies for resolving conflicts.",
-    imageHint: "courtroom gavel",
+    title: "Secure & Confidential",
+    description: "Your personal information and Will details are kept secure and confidential with robust security measures.",
+    imageHint: "digital security lock",
   },
   {
-    icon: Scale,
-    title: "Legal Consultation",
-    description: "Personalized advice and strategic planning for your specific legal concerns.",
-    imageHint: "person thinking",
+    icon: Bot,
+    title: "AI-Powered Guidance",
+    description: "Get instant answers to your Will-related questions from our intelligent AI assistant, trained on Indian law.",
+    imageHint: "robot chat bubble",
+  },
+  {
+    icon: IndianRupee,
+    title: "Affordable & Transparent",
+    description: "Clear, upfront pricing for creating your Will in India, with no hidden fees or surprises.",
+    imageHint: "money savings rupee",
+  },
+  {
+    icon: Clock,
+    title: "Quick & Convenient",
+    description: "Generate your comprehensive Will in minutes, saving you valuable time and effort.",
+    imageHint: "time saving clock",
   },
 ];
 
@@ -54,9 +54,9 @@ export function ServiceShowcase() {
     <section id="services" className="py-16 md:py-24 bg-background">
       <div className="container max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 md:mb-16">
-          <h2 className="font-headline text-3xl sm:text-4xl font-bold text-primary mb-4">Our Legal Expertise</h2>
+          <h2 className="font-headline text-3xl sm:text-4xl font-bold text-primary mb-4">Online Will Creation in India: Simple & Secure</h2>
           <p className="text-lg text-foreground/80 max-w-2xl mx-auto">
-            We offer a wide range of legal services designed to meet the diverse needs of our clients with professionalism and care.
+            IndiaWill offers a streamlined and reliable way to create your Will, ensuring your assets are distributed as per your wishes under Indian law.
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">

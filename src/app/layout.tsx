@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'iWills LegalEase',
-  description: 'Your trusted partner in legal services.',
+  title: 'IndiaWill - Online Will Creation for India',
+  description: 'Easily create legally sound Wills online, compliant with Indian law. Secure your legacy with IndiaWill.',
 };
 
 export default function RootLayout({

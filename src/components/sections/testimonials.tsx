@@ -15,27 +15,27 @@ interface Testimonial {
 
 const testimonials: Testimonial[] = [
   {
-    quote: "iWills LegalEase provided exceptional service and guidance during a complex legal matter. Their professionalism and expertise were invaluable.",
-    author: "Sarah L.",
-    role: "Business Owner",
+    quote: "IndiaWill made creating my Will so straightforward. The platform is easy to use, and I feel secure knowing my wishes for my property in India are clearly documented.",
+    author: "Priya S.",
+    role: "IT Professional, Bangalore",
     avatarSrc: "https://placehold.co/100x100.png",
-    avatarFallback: "SL",
+    avatarFallback: "PS",
     imageHint: "woman portrait",
   },
   {
-    quote: "The team at iWills LegalEase is not only knowledgeable but also incredibly supportive. They made a difficult process much more manageable.",
-    author: "John B.",
-    role: "Private Client",
+    quote: "The team at IndiaWill is not only knowledgeable about Indian succession laws but also incredibly supportive. They made a difficult process much more manageable.",
+    author: "Rohan M.",
+    role: "Retired Teacher, Delhi",
     avatarSrc: "https://placehold.co/100x100.png",
-    avatarFallback: "JB",
+    avatarFallback: "RM",
     imageHint: "man portrait",
   },
   {
-    quote: "I highly recommend iWills LegalEase for their meticulous attention to detail and client-focused approach. Truly a five-star experience.",
-    author: "Emily K.",
-    role: "Startup Founder",
+    quote: "I highly recommend IndiaWill for their meticulous attention to detail and client-focused approach for Will creation in India. Truly a five-star experience.",
+    author: "Ananya K.",
+    role: "Homemaker, Mumbai",
     avatarSrc: "https://placehold.co/100x100.png",
-    avatarFallback: "EK",
+    avatarFallback: "AK",
     imageHint: "person smiling",
   },
 ];
@@ -45,9 +45,9 @@ export function Testimonials() {
     <section id="testimonials" className="py-16 md:py-24 bg-primary/5">
       <div className="container max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 md:mb-16">
-          <h2 className="font-headline text-3xl sm:text-4xl font-bold text-primary mb-4">What Our Clients Say</h2>
+          <h2 className="font-headline text-3xl sm:text-4xl font-bold text-primary mb-4">Peace of Mind for Families Across India</h2>
           <p className="text-lg text-foreground/80 max-w-2xl mx-auto">
-            Building trust through dedicated service and successful outcomes.
+            Hear from Indians who've secured their family's future with IndiaWill.
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

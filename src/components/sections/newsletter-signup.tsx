@@ -60,9 +60,9 @@ export function NewsletterSignup() {
 
   return (
     <div className="w-full max-w-md">
-      <h3 className="font-headline text-xl font-semibold text-primary-foreground mb-4">Stay Updated</h3>
-      <p className="text-muted-foreground mb-6">
-        Sign up for our newsletter to receive the latest legal news, insights, and service updates directly to your inbox.
+      <h3 className="font-headline text-xl font-semibold text-primary-foreground mb-4">Stay Informed on Indian Will & Succession Laws</h3>
+      <p className="text-primary-foreground/80 mb-6">
+        Sign up for our newsletter for updates on Indian succession laws, Will creation tips, and news from IndiaWill.
       </p>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col sm:flex-row gap-4 items-start">
@@ -86,7 +86,7 @@ export function NewsletterSignup() {
           />
           <Button 
             type="submit" 
-            className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 w-full sm:w-auto"
+            className="bg-primary-foreground text-accent hover:bg-primary-foreground/90 w-full sm:w-auto"
             disabled={form.formState.isSubmitting}
             aria-label="Subscribe to newsletter"
           >

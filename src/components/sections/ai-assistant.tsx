@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Bot, User, SendHorizontal, Loader2 } from "lucide-react";
-import { कानूनीChatbotAction } from "@/app/actions/chat"; // Renamed to avoid conflict with existing type/function
+import { willAssistantAction } from "@/app/actions/chat"; 
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 
@@ -46,7 +46,7 @@ export function AIAssistant() {
     setIsLoading(true);
 
     try {
-      const aiResponse = await कानूनीChatbotAction({ query: input }); // Use renamed action
+      const aiResponse = await willAssistantAction({ query: input }); 
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: aiResponse.response,
@@ -54,7 +54,7 @@ export function AIAssistant() {
       };
       setMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
-      console.error("AI Assistant Error:", error);
+      console.error("AI Will Assistant Error:", error);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: "Sorry, I encountered an error. Please try again later.",
@@ -70,9 +70,9 @@ export function AIAssistant() {
     <section id="ai-assistant" className="py-16 md:py-24 bg-background">
       <div className="container max-w-screen-lg mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 md:mb-16">
-          <h2 className="font-headline text-3xl sm:text-4xl font-bold text-primary mb-4">AI Legal Assistant</h2>
+          <h2 className="font-headline text-3xl sm:text-4xl font-bold text-primary mb-4">AI Will Assistant for India</h2>
           <p className="text-lg text-foreground/80 max-w-2xl mx-auto">
-            Get initial legal information and guidance from our AI-powered assistant. For specific advice, please contact us directly.
+            Our AI assistant can answer your questions about Will creation in India and guide you through the process. For complex legal advice, please consult a professional.
           </p>
         </div>
         <div className="bg-card shadow-2xl rounded-lg overflow-hidden">
@@ -89,7 +89,7 @@ export function AIAssistant() {
                   {message.sender === "ai" && (
                     <Avatar className="h-8 w-8 border border-primary/50">
                       <AvatarImage asChild src="https://placehold.co/40x40.png" alt="AI Assistant Avatar">
-                        <Image src="https://placehold.co/40x40.png" alt="AI Assistant Avatar" width={40} height={40} data-ai-hint="robot face" />
+                        <Image src="https://placehold.co/40x40.png" alt="AI Assistant Avatar" width={40} height={40} data-ai-hint="robot chat" />
                       </AvatarImage>
                       <AvatarFallback><Bot className="h-4 w-4 text-primary" /></AvatarFallback>
                     </Avatar>
@@ -118,7 +118,7 @@ export function AIAssistant() {
                 <div className="flex items-start gap-3 justify-start">
                    <Avatar className="h-8 w-8 border border-primary/50">
                       <AvatarImage asChild src="https://placehold.co/40x40.png" alt="AI Assistant Avatar">
-                        <Image src="https://placehold.co/40x40.png" alt="AI Assistant Avatar" width={40} height={40} data-ai-hint="robot face" />
+                        <Image src="https://placehold.co/40x40.png" alt="AI Assistant Avatar" width={40} height={40} data-ai-hint="robot chat" />
                       </AvatarImage>
                      <AvatarFallback><Bot className="h-4 w-4 text-primary" /></AvatarFallback>
                    </Avatar>
@@ -137,9 +137,9 @@ export function AIAssistant() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask a legal question..."
+              placeholder="Ask about Will creation in India..."
               className="flex-grow bg-background focus:ring-primary text-base"
-              aria-label="Type your legal question"
+              aria-label="Type your question about Will creation"
               disabled={isLoading}
             />
             <Button type="submit" size="icon" disabled={isLoading || !input.trim()} aria-label="Send message">

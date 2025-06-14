@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { submitContactForm } from "@/app/actions/contact";
-import { Mail, User, MessageSquare, Phone, Loader2, SendHorizontal } from "lucide-react";
+import { Mail, User, MessageSquare, Phone, Loader2, SendHorizontal, Building } from "lucide-react";
 import Image from "next/image";
 
 const contactFormSchema = z.object({
@@ -72,9 +72,9 @@ export function ContactForm() {
     <section id="contact" className="py-16 md:py-24 bg-primary/5">
       <div className="container max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 md:mb-16">
-          <h2 className="font-headline text-3xl sm:text-4xl font-bold text-primary mb-4">Get in Touch</h2>
+          <h2 className="font-headline text-3xl sm:text-4xl font-bold text-primary mb-4">Questions About Your Will?</h2>
           <p className="text-lg text-foreground/80 max-w-2xl mx-auto">
-            Have a question or need legal assistance? Fill out the form below, and we'll get back to you promptly.
+            If you have questions about creating your Will in India or need support with our platform, please use the form below.
           </p>
         </div>
         
@@ -93,7 +93,7 @@ export function ContactForm() {
                         <FormControl>
                           <div className="relative">
                             <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                            <Input placeholder="John Doe" {...field} className="pl-10" />
+                            <Input placeholder="Your Name" {...field} className="pl-10" />
                           </div>
                         </FormControl>
                         <FormMessage />
@@ -126,7 +126,7 @@ export function ContactForm() {
                       <FormControl>
                          <div className="relative">
                           <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                          <Input type="tel" placeholder="(123) 456-7890" {...field} className="pl-10" />
+                          <Input type="tel" placeholder="+91 XXXXX XXXXX" {...field} className="pl-10" />
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -142,7 +142,7 @@ export function ContactForm() {
                       <FormControl>
                          <div className="relative">
                           <MessageSquare className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                          <Input placeholder="Inquiry about Wills & Estates" {...field} className="pl-10" />
+                          <Input placeholder="Question about Will creation" {...field} className="pl-10" />
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -157,7 +157,7 @@ export function ContactForm() {
                       <FormLabel className="text-foreground/80">Message</FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder="Please describe your legal needs or questions..."
+                          placeholder="Please describe your questions or support needs..."
                           className="min-h-[120px] resize-none"
                           {...field}
                         />
@@ -177,20 +177,20 @@ export function ContactForm() {
              <div className="rounded-lg overflow-hidden shadow-xl aspect-square max-w-md mx-auto md:max-w-full">
                 <Image
                     src="https://placehold.co/600x600.png"
-                    alt="Contact iWills LegalEase"
+                    alt="IndiaWill Support"
                     width={600}
                     height={600}
                     className="object-cover w-full h-full"
-                    data-ai-hint="law office reception"
+                    data-ai-hint="customer service india"
                 />
              </div>
              <div className="mt-8 text-center md:text-left">
-                <h3 className="font-headline text-2xl font-semibold text-primary mb-3">Our Office</h3>
-                <p className="text-foreground/80 mb-1">123 Legal Avenue, Suite 400</p>
-                <p className="text-foreground/80 mb-1">Lawsville, LS 54321</p>
-                <p className="text-foreground/80 mb-3">United States</p>
-                <p className="text-foreground/80 mb-1"><strong>Phone:</strong> (123) 555-0101</p>
-                <p className="text-foreground/80"><strong>Email:</strong> contact@iwillsegalease.com</p>
+                <h3 className="font-headline text-2xl font-semibold text-primary mb-3 flex items-center justify-center md:justify-start"><Building className="mr-2 h-6 w-6"/>Our Office (India)</h3>
+                <p className="text-foreground/80 mb-1">Plot No. 42, Tech Park</p>
+                <p className="text-foreground/80 mb-1">Cyberabad, Hyderabad, Telangana 500081</p>
+                <p className="text-foreground/80 mb-3">India</p>
+                <p className="text-foreground/80 mb-1"><strong>Phone:</strong> +91 40 1234 5678</p>
+                <p className="text-foreground/80"><strong>Email:</strong> contact@indiawill.com</p>
              </div>
           </div>
         </div>

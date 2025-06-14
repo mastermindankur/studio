@@ -9,17 +9,17 @@ export function HeroSection() {
       <div className="container max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center">
         <div className="animate-slide-in-left">
           <h1 className="font-headline text-4xl sm:text-5xl lg:text-6xl font-bold text-primary mb-6 leading-tight">
-            Expert Legal Guidance, <br /> Simplified for You.
+            Secure Your Legacy: <br /> Online Will Creation for India.
           </h1>
           <p className="text-lg sm:text-xl text-foreground/80 mb-8 max-w-xl">
-            At iWills LegalEase, we provide clear, trustworthy, and sophisticated legal solutions tailored to your unique needs. Navigate your legal journey with confidence.
+            Easily create legally sound Wills online, specifically designed for Indian laws and regulations. Protect your loved ones and ensure your wishes are followed with IndiaWill.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <Button asChild size="lg" className="font-headline text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <Link href="#services">Explore Our Services</Link>
+              <Link href="#services">Create Your Will Now</Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="font-headline text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border-primary text-primary hover:bg-primary/10">
-              <Link href="#contact">Request a Consultation</Link>
+              <Link href="#ai-assistant">Ask Our AI Assistant</Link>
             </Button>
           </div>
         </div>
@@ -27,11 +27,11 @@ export function HeroSection() {
           <div className="rounded-lg overflow-hidden shadow-2xl w-full max-w-md lg:max-w-lg aspect-[4/3]">
             <Image
               src="https://placehold.co/600x450.png"
-              alt="Professional legal setting"
+              alt="Family discussing future planning in India"
               width={600}
               height={450}
               className="object-cover w-full h-full"
-              data-ai-hint="modern office legal"
+              data-ai-hint="indian family planning"
               priority
             />
           </div>
