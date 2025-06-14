@@ -15,9 +15,9 @@ export default function PrivacyPolicyPage() {
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-grow container max-w-screen-lg mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-        <h1 className="font-headline text-3xl sm:text-4xl font-bold text-primary mb-8 text-center">Privacy Policy for IndiaWill</h1>
+        <h1 className="font-headline text-3xl sm:text-4xl font-bold text-primary mb-8 text-center">Privacy Policy for iWills.in</h1>
         <div className="prose prose-lg max-w-none text-foreground/80 space-y-6">
-          <p>Welcome to IndiaWill&apos;s Privacy Policy. Your privacy is critically important to us as you use our online Will creation services for India.</p>
+          <p>Welcome to iWills.in&apos;s Privacy Policy. Your privacy is critically important to us as you use our online Will creation services for India.</p>
           
           <h2 className="font-headline text-2xl font-semibold text-primary mt-8">1. Information We Collect</h2>
           <p>We collect information that you provide directly to us when you use our services, such as when you register an account, create a Will, fill out a contact form, or interact with our AI Will Assistant. This may include:</p>
@@ -51,9 +51,9 @@ export default function PrivacyPolicyPage() {
           <p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page. You are advised to review this Privacy Policy periodically for any changes.</p>
 
           <h2 className="font-headline text-2xl font-semibold text-primary mt-6">7. Contact Us</h2>
-          <p>If you have any questions about this Privacy Policy, please contact us at contact@indiawill.com.</p>
+          <p>If you have any questions about this Privacy Policy, please contact us at contact@iwills.in.</p>
 
-          <p className="mt-8"><em>This is a placeholder privacy policy. IndiaWill strongly advises consulting with a legal professional to create a policy appropriate for your specific services and jurisdiction within India.</em></p>
+          <p className="mt-8"><em>This is a placeholder privacy policy. iWills.in strongly advises consulting with a legal professional to create a policy appropriate for your specific services and jurisdiction within India.</em></p>
           <p>Last updated: {lastUpdated || new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
         </div>
       </main>

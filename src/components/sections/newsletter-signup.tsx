@@ -62,7 +62,7 @@ export function NewsletterSignup() {
     <div className="w-full max-w-md">
       <h3 className="font-headline text-xl font-semibold text-primary-foreground mb-4">Stay Informed on Indian Will & Succession Laws</h3>
       <p className="text-primary-foreground/80 mb-6">
-        Sign up for our newsletter for updates on Indian succession laws, Will creation tips, and news from IndiaWill.
+        Sign up for our newsletter for updates on Indian succession laws, Will creation tips, and news from iWills.in.
       </p>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col sm:flex-row gap-4 items-start">

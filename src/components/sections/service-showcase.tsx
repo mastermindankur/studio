@@ -56,7 +56,7 @@ export function ServiceShowcase() {
         <div className="text-center mb-12 md:mb-16">
           <h2 className="font-headline text-3xl sm:text-4xl font-bold text-primary mb-4">Online Will Creation in India: Simple & Secure</h2>
           <p className="text-lg text-foreground/80 max-w-2xl mx-auto">
-            IndiaWill offers a streamlined and reliable way to create your Will, ensuring your assets are distributed as per your wishes under Indian law.
+            iWills.in offers a streamlined and reliable way to create your Will, ensuring your assets are distributed as per your wishes under Indian law.
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">

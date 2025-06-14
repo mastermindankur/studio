@@ -12,7 +12,7 @@ export function HeroSection() {
             Secure Your Legacy: <br /> Online Will Creation for India.
           </h1>
           <p className="text-lg sm:text-xl text-foreground/80 mb-8 max-w-xl">
-            Easily create legally sound Wills online, specifically designed for Indian laws and regulations. Protect your loved ones and ensure your wishes are followed with IndiaWill.
+            Easily create legally sound Wills online, specifically designed for Indian laws and regulations. Protect your loved ones and ensure your wishes are followed with iWills.in.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <Button asChild size="lg" className="font-headline text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-shadow duration-300">

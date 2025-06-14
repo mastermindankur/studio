@@ -15,7 +15,7 @@ interface Testimonial {
 
 const testimonials: Testimonial[] = [
   {
-    quote: "IndiaWill made creating my Will so straightforward. The platform is easy to use, and I feel secure knowing my wishes for my property in India are clearly documented.",
+    quote: "iWills.in made creating my Will so straightforward. The platform is easy to use, and I feel secure knowing my wishes for my property in India are clearly documented.",
     author: "Priya S.",
     role: "IT Professional, Bangalore",
     avatarSrc: "https://placehold.co/100x100.png",
@@ -23,7 +23,7 @@ const testimonials: Testimonial[] = [
     imageHint: "woman portrait",
   },
   {
-    quote: "The team at IndiaWill is not only knowledgeable about Indian succession laws but also incredibly supportive. They made a difficult process much more manageable.",
+    quote: "The team at iWills.in is not only knowledgeable about Indian succession laws but also incredibly supportive. They made a difficult process much more manageable.",
     author: "Rohan M.",
     role: "Retired Teacher, Delhi",
     avatarSrc: "https://placehold.co/100x100.png",
@@ -31,7 +31,7 @@ const testimonials: Testimonial[] = [
     imageHint: "man portrait",
   },
   {
-    quote: "I highly recommend IndiaWill for their meticulous attention to detail and client-focused approach for Will creation in India. Truly a five-star experience.",
+    quote: "I highly recommend iWills.in for their meticulous attention to detail and client-focused approach for Will creation in India. Truly a five-star experience.",
     author: "Ananya K.",
     role: "Homemaker, Mumbai",
     avatarSrc: "https://placehold.co/100x100.png",
@@ -47,7 +47,7 @@ export function Testimonials() {
         <div className="text-center mb-12 md:mb-16">
           <h2 className="font-headline text-3xl sm:text-4xl font-bold text-primary mb-4">Peace of Mind for Families Across India</h2>
           <p className="text-lg text-foreground/80 max-w-2xl mx-auto">
-            Hear from Indians who've secured their family's future with IndiaWill.
+            Hear from Indians who've secured their family's future with iWills.in.
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

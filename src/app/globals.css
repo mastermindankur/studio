@@ -21,8 +21,8 @@ body {
     --popover: 0 0% 10%; /* Darker Popover, slightly off black */
     --popover-foreground: 0 0% 98%; /* White */
 
-    --primary: 0 0% 98%; /* White/Light for primary elements */
-    --primary-foreground: 0 0% 3.9%; /* Near Black text on primary */
+    --primary: 0 0% 98%; /* White/Light for primary elements (effectively white text) */
+    --primary-foreground: 0 0% 3.9%; /* Near Black text on primary (effectively black bg for buttons etc) */
 
     --secondary: 0 0% 14.9%; /* Default dark gray */
     --secondary-foreground: 0 0% 98%; /* Light text for dark secondary */
@@ -47,7 +47,7 @@ body {
     --chart-5: 340 75% 55%;
     --radius: 0.5rem;
 
-    /* Sidebar variables */
+    /* Sidebar variables - aligned with dark theme */
     --sidebar-background: 0 0% 10%; /* Dark gray, slightly lighter than main bg */
     --sidebar-foreground: 0 0% 98%; /* Light text */
     --sidebar-primary: 0 0% 98%; /* White/Light for sidebar primary elements */
@@ -68,8 +68,8 @@ body {
     --popover: 0 0% 10%; /* Darker Popover, slightly off black */
     --popover-foreground: 0 0% 98%; /* White */
 
-    --primary: 0 0% 98%; /* White/Light for primary elements */
-    --primary-foreground: 0 0% 3.9%; /* Near Black text on primary */
+    --primary: 0 0% 98%; /* White/Light for primary elements (effectively white text) */
+    --primary-foreground: 0 0% 3.9%; /* Near Black text on primary (effectively black bg for buttons etc) */
 
     --secondary: 0 0% 14.9%; /* Default dark gray */
     --secondary-foreground: 0 0% 98%; /* Light text for dark secondary */
@@ -93,15 +93,15 @@ body {
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
 
-    /* Sidebar variables for dark mode */
-    --sidebar-background: 0 0% 10%; /* Dark gray, slightly lighter than main bg */
-    --sidebar-foreground: 0 0% 98%; /* Light text */
-    --sidebar-primary: 0 0% 98%; /* White/Light for sidebar primary elements */
-    --sidebar-primary-foreground: 0 0% 3.9%; /* Near Black text on sidebar primary */
-    --sidebar-accent: 146 50% 45%; /* Lighter Sea Green for dark sidebar accent */
-    --sidebar-accent-foreground: 0 0% 9%; /* Dark text on dark sidebar accent */
-    --sidebar-border: 0 0% 14.9%; /* Dark gray border for sidebar */
-    --sidebar-ring: 146 50% 45%; /* Lighter Sea Green for sidebar ring */
+    /* Sidebar variables for dark mode - should be same as :root as dark is default */
+    --sidebar-background: 0 0% 10%; 
+    --sidebar-foreground: 0 0% 98%; 
+    --sidebar-primary: 0 0% 98%; 
+    --sidebar-primary-foreground: 0 0% 3.9%; 
+    --sidebar-accent: 146 50% 45%; 
+    --sidebar-accent-foreground: 0 0% 9%; 
+    --sidebar-border: 0 0% 14.9%; 
+    --sidebar-ring: 146 50% 45%; 
   }
 }
 

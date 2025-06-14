@@ -177,7 +177,7 @@ export function ContactForm() {
              <div className="rounded-lg overflow-hidden shadow-xl aspect-square max-w-md mx-auto md:max-w-full">
                 <Image
                     src="https://placehold.co/600x600.png"
-                    alt="IndiaWill Support"
+                    alt="iWills.in Support"
                     width={600}
                     height={600}
                     className="object-cover w-full h-full"
@@ -190,7 +190,7 @@ export function ContactForm() {
                 <p className="text-foreground/80 mb-1">Cyberabad, Hyderabad, Telangana 500081</p>
                 <p className="text-foreground/80 mb-3">India</p>
                 <p className="text-foreground/80 mb-1"><strong>Phone:</strong> +91 40 1234 5678</p>
-                <p className="text-foreground/80"><strong>Email:</strong> contact@indiawill.com</p>
+                <p className="text-foreground/80"><strong>Email:</strong> contact@iwills.in</p>
              </div>
           </div>
         </div>
