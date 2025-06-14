@@ -12,32 +12,32 @@ body {
 
 @layer base {
   :root {
-    --background: 150 11% 95%; /* Soft off-white #F2F4F3 */
-    --foreground: 0 0% 3.9%; /* Near black for text */
+    --background: 0 0% 100%; /* White */
+    --foreground: 0 0% 3.9%; /* Near Black */
 
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card: 0 0% 100%; /* White */
+    --card-foreground: 0 0% 3.9%; /* Near Black */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%; /* White */
+    --popover-foreground: 0 0% 3.9%; /* Near Black */
 
-    --primary: 146 50% 36%; /* Sea Green #2E8B57 */
-    --primary-foreground: 0 0% 98%; /* Light color for text on primary */
+    --primary: 0 0% 3.9%; /* Near Black */
+    --primary-foreground: 0 0% 98%; /* Light color for text on primary (black) */
 
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
+    --secondary: 0 0% 96.1%; /* Default light gray - kept for subtle secondary backgrounds */
+    --secondary-foreground: 0 0% 9%; /* Dark text for secondary */
 
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
+    --muted: 0 0% 96.1%; /* Default light gray - kept for muted elements */
+    --muted-foreground: 0 0% 45.1%; /* Mid-gray text for muted */
 
-    --accent: 0 0% 3.9%; /* Black #000000 (represented as near black for HSL) */
-    --accent-foreground: 0 0% 98%; /* Light color for text on accent */
+    --accent: 146 50% 36%; /* Sea Green */
+    --accent-foreground: 0 0% 98%; /* Light color for text on accent (sea green) */
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 84.2% 60.2%; /* Default red */
+    --destructive-foreground: 0 0% 98%; /* Light color for text on destructive */
 
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
+    --border: 0 0% 89.8%; /* Light gray border */
+    --input: 0 0% 89.8%; /* Light gray input background */
     --ring: 146 50% 36%; /* Sea Green for ring */
 
     --chart-1: 12 76% 61%;
@@ -47,45 +47,45 @@ body {
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
 
-    /* Sidebar variables, can be adjusted if sidebar is used extensively or keep defaults */
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 146 50% 36%; /* Sea Green for sidebar primary */
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
+    /* Sidebar variables */
+    --sidebar-background: 0 0% 98%; /* Slightly off-white for sidebar */
+    --sidebar-foreground: 0 0% 3.9%; /* Near black text for sidebar */
+    --sidebar-primary: 0 0% 3.9%; /* Near black for sidebar primary elements */
+    --sidebar-primary-foreground: 0 0% 98%; /* Light text on sidebar primary */
+    --sidebar-accent: 146 50% 36%; /* Sea Green for sidebar accent */
+    --sidebar-accent-foreground: 0 0% 98%; /* Light text on sidebar accent */
+    --sidebar-border: 0 0% 89.8%; /* Light gray border for sidebar */
     --sidebar-ring: 146 50% 36%; /* Sea Green for sidebar ring */
   }
 
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 150 11% 95%; /* Soft off-white for dark mode text */
+    --background: 0 0% 3.9%; /* Near Black */
+    --foreground: 0 0% 98%; /* Light/White text */
 
-    --card: 0 0% 3.9%;
-    --card-foreground: 150 11% 95%;
+    --card: 0 0% 3.9%; /* Near Black */
+    --card-foreground: 0 0% 98%; /* Light/White text */
 
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 150 11% 95%;
+    --popover: 0 0% 3.9%; /* Near Black */
+    --popover-foreground: 0 0% 98%; /* Light/White text */
 
-    --primary: 146 50% 45%; /* Lighter Sea Green for dark mode */
-    --primary-foreground: 0 0% 9%; 
+    --primary: 0 0% 98%; /* White/Light for primary elements in dark mode */
+    --primary-foreground: 0 0% 3.9%; /* Near Black text on primary (white) */
 
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 150 11% 95%;
+    --secondary: 0 0% 14.9%; /* Default dark gray */
+    --secondary-foreground: 0 0% 98%; /* Light text for dark secondary */
 
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
+    --muted: 0 0% 14.9%; /* Default dark gray */
+    --muted-foreground: 0 0% 63.9%; /* Mid-light gray text for dark muted */
 
-    --accent: 0 0% 80%; /* Lighter Gray for dark mode accent */
-    --accent-foreground: 0 0% 9%;
+    --accent: 146 50% 45%; /* Lighter Sea Green for dark mode accent */
+    --accent-foreground: 0 0% 9%; /* Dark text for lighter Sea Green accent */
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%; /* Default dark red */
+    --destructive-foreground: 0 0% 98%; /* Light text on dark destructive */
 
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 146 50% 45%; /* Lighter Sea Green for dark mode ring */
+    --border: 0 0% 14.9%; /* Dark gray border */
+    --input: 0 0% 14.9%; /* Dark gray input background */
+    --ring: 146 50% 45%; /* Lighter Sea Green for ring in dark mode */
     
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
@@ -94,14 +94,14 @@ body {
     --chart-5: 340 75% 55%;
 
     /* Sidebar variables for dark mode */
-    --sidebar-background: 0 0% 10%;
-    --sidebar-foreground: 150 11% 95%;
-    --sidebar-primary: 146 50% 45%; 
-    --sidebar-primary-foreground: 0 0% 9%;
-    --sidebar-accent: 0 0% 15.9%;
-    --sidebar-accent-foreground: 150 11% 95%;
-    --sidebar-border: 0 0% 15.9%;
-    --sidebar-ring: 146 50% 45%;
+    --sidebar-background: 0 0% 10%; /* Dark gray, slightly lighter than main bg */
+    --sidebar-foreground: 0 0% 98%; /* Light text */
+    --sidebar-primary: 0 0% 98%; /* White/Light for sidebar primary elements */
+    --sidebar-primary-foreground: 0 0% 3.9%; /* Near Black text on sidebar primary */
+    --sidebar-accent: 146 50% 45%; /* Lighter Sea Green for dark sidebar accent */
+    --sidebar-accent-foreground: 0 0% 9%; /* Dark text on dark sidebar accent */
+    --sidebar-border: 0 0% 14.9%; /* Dark gray border for sidebar */
+    --sidebar-ring: 146 50% 45%; /* Lighter Sea Green for sidebar ring */
   }
 }
 
