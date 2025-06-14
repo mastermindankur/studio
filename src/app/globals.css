@@ -12,64 +12,64 @@ body {
 
 @layer base {
   :root {
-    --background: 0 0% 100%; /* White */
-    --foreground: 0 0% 3.9%; /* Near Black */
+    --background: 0 0% 3.9%; /* Near Black */
+    --foreground: 0 0% 98%; /* White */
 
-    --card: 0 0% 100%; /* White */
-    --card-foreground: 0 0% 3.9%; /* Near Black */
+    --card: 0 0% 10%; /* Darker Card, slightly off black */
+    --card-foreground: 0 0% 98%; /* White */
 
-    --popover: 0 0% 100%; /* White */
-    --popover-foreground: 0 0% 3.9%; /* Near Black */
+    --popover: 0 0% 10%; /* Darker Popover, slightly off black */
+    --popover-foreground: 0 0% 98%; /* White */
 
-    --primary: 0 0% 3.9%; /* Near Black */
-    --primary-foreground: 0 0% 98%; /* Light color for text on primary (black) */
+    --primary: 0 0% 98%; /* White/Light for primary elements */
+    --primary-foreground: 0 0% 3.9%; /* Near Black text on primary */
 
-    --secondary: 0 0% 96.1%; /* Default light gray - kept for subtle secondary backgrounds */
-    --secondary-foreground: 0 0% 9%; /* Dark text for secondary */
+    --secondary: 0 0% 14.9%; /* Default dark gray */
+    --secondary-foreground: 0 0% 98%; /* Light text for dark secondary */
 
-    --muted: 0 0% 96.1%; /* Default light gray - kept for muted elements */
-    --muted-foreground: 0 0% 45.1%; /* Mid-gray text for muted */
+    --muted: 0 0% 14.9%; /* Default dark gray */
+    --muted-foreground: 0 0% 63.9%; /* Mid-light gray text for dark muted */
 
-    --accent: 146 50% 36%; /* Sea Green */
-    --accent-foreground: 0 0% 98%; /* Light color for text on accent (sea green) */
+    --accent: 146 50% 45%; /* Lighter Sea Green for dark mode accent */
+    --accent-foreground: 0 0% 9%; /* Dark text for lighter Sea Green accent */
 
-    --destructive: 0 84.2% 60.2%; /* Default red */
-    --destructive-foreground: 0 0% 98%; /* Light color for text on destructive */
+    --destructive: 0 62.8% 30.6%; /* Default dark red */
+    --destructive-foreground: 0 0% 98%; /* Light text on dark destructive */
 
-    --border: 0 0% 89.8%; /* Light gray border */
-    --input: 0 0% 89.8%; /* Light gray input background */
-    --ring: 146 50% 36%; /* Sea Green for ring */
+    --border: 0 0% 14.9%; /* Dark gray border */
+    --input: 0 0% 14.9%; /* Dark gray input background */
+    --ring: 146 50% 45%; /* Lighter Sea Green for ring in dark mode */
 
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
     --radius: 0.5rem;
 
     /* Sidebar variables */
-    --sidebar-background: 0 0% 98%; /* Slightly off-white for sidebar */
-    --sidebar-foreground: 0 0% 3.9%; /* Near black text for sidebar */
-    --sidebar-primary: 0 0% 3.9%; /* Near black for sidebar primary elements */
-    --sidebar-primary-foreground: 0 0% 98%; /* Light text on sidebar primary */
-    --sidebar-accent: 146 50% 36%; /* Sea Green for sidebar accent */
-    --sidebar-accent-foreground: 0 0% 98%; /* Light text on sidebar accent */
-    --sidebar-border: 0 0% 89.8%; /* Light gray border for sidebar */
-    --sidebar-ring: 146 50% 36%; /* Sea Green for sidebar ring */
+    --sidebar-background: 0 0% 10%; /* Dark gray, slightly lighter than main bg */
+    --sidebar-foreground: 0 0% 98%; /* Light text */
+    --sidebar-primary: 0 0% 98%; /* White/Light for sidebar primary elements */
+    --sidebar-primary-foreground: 0 0% 3.9%; /* Near Black text on sidebar primary */
+    --sidebar-accent: 146 50% 45%; /* Lighter Sea Green for dark sidebar accent */
+    --sidebar-accent-foreground: 0 0% 9%; /* Dark text on dark sidebar accent */
+    --sidebar-border: 0 0% 14.9%; /* Dark gray border for sidebar */
+    --sidebar-ring: 146 50% 45%; /* Lighter Sea Green for sidebar ring */
   }
 
   .dark {
     --background: 0 0% 3.9%; /* Near Black */
-    --foreground: 0 0% 98%; /* Light/White text */
+    --foreground: 0 0% 98%; /* White */
 
-    --card: 0 0% 3.9%; /* Near Black */
-    --card-foreground: 0 0% 98%; /* Light/White text */
+    --card: 0 0% 10%; /* Darker Card, slightly off black */
+    --card-foreground: 0 0% 98%; /* White */
 
-    --popover: 0 0% 3.9%; /* Near Black */
-    --popover-foreground: 0 0% 98%; /* Light/White text */
+    --popover: 0 0% 10%; /* Darker Popover, slightly off black */
+    --popover-foreground: 0 0% 98%; /* White */
 
-    --primary: 0 0% 98%; /* White/Light for primary elements in dark mode */
-    --primary-foreground: 0 0% 3.9%; /* Near Black text on primary (white) */
+    --primary: 0 0% 98%; /* White/Light for primary elements */
+    --primary-foreground: 0 0% 3.9%; /* Near Black text on primary */
 
     --secondary: 0 0% 14.9%; /* Default dark gray */
     --secondary-foreground: 0 0% 98%; /* Light text for dark secondary */
