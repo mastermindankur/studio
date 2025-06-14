@@ -8,7 +8,8 @@ import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/s
 import { useState } from "react";
 
 const navItems = [
-  { href: "#services", label: "Our Process" },
+  { href: "#how-it-works", label: "How It Works" },
+  { href: "#services", label: "Our Services" },
   { href: "#testimonials", label: "Testimonials" },
   { href: "#ai-assistant", label: "AI Assistant" },
   { href: "#contact", label: "Contact Us" },
