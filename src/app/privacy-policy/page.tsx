@@ -55,7 +55,7 @@ export default function PrivacyPolicyPage() {
           <p>We encourage you to review this Privacy Policy periodically for any changes. Your continued use of our website after the posting of changes constitutes your acceptance of such changes.</p>
 
           <h2 className="font-headline text-2xl font-semibold text-primary mt-6">Contact Us</h2>
-          <p>If you have any questions about this Privacy Policy, please contact us at contact@iwills.in.</p>
+          <p>If you have any questions about this Privacy Policy, please contact us at hello@iwills.in.</p>
 
           <p className="mt-8">Last updated: {lastUpdated || new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
         </div>

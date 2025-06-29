@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -189,8 +188,8 @@ export function ContactForm() {
                 <p className="text-foreground/80 mb-1">Plot No. 42, Tech Park</p>
                 <p className="text-foreground/80 mb-1">Cyberabad, Hyderabad, Telangana 500081</p>
                 <p className="text-foreground/80 mb-3">India</p>
-                <p className="text-foreground/80 mb-1"><strong>Phone:</strong> +91 40 1234 5678</p>
-                <p className="text-foreground/80"><strong>Email:</strong> contact@iwills.in</p>
+                <p className="text-foreground/80 mb-1"><strong>Phone:</strong> +91-8919321064</p>
+                <p className="text-foreground/80"><strong>Email:</strong> hello@iwills.in</p>
              </div>
           </div>
         </div>
