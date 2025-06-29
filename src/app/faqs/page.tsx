@@ -323,7 +323,7 @@ export default function FAQsPage() {
           {faqs.map((faq, index) => (
             <AccordionItem key={index} value={`item-${index}`}>
               <AccordionTrigger className="text-left font-headline text-lg hover:no-underline">
-                {faq.question}
+                {`${index + 1}. ${faq.question}`}
               </AccordionTrigger>
               <AccordionContent className="prose prose-lg max-w-none text-foreground/80">
                 <div dangerouslySetInnerHTML={{ __html: faq.answer }} />
