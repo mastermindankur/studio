@@ -60,8 +60,8 @@ export function NewsletterSignup() {
 
   return (
     <div className="w-full max-w-md">
-      <h3 className="font-headline text-xl font-semibold text-primary-foreground mb-4">Stay Informed on Indian Will & Succession Laws</h3>
-      <p className="text-primary-foreground/80 mb-6">
+      <h3 className="font-headline text-xl font-semibold text-foreground mb-4">Stay Informed on Indian Will & Succession Laws</h3>
+      <p className="text-foreground/80 mb-6">
         Sign up for our newsletter for updates on Indian succession laws, Will creation tips, and news from iWills.in.
       </p>
       <Form {...form}>
@@ -77,16 +77,17 @@ export function NewsletterSignup() {
                     type="email" 
                     placeholder="Enter your email address" 
                     {...field} 
-                    className="bg-background/80 text-foreground placeholder:text-muted-foreground border-primary-foreground/30 focus:border-primary-foreground"
+                    className="bg-background/80 text-foreground placeholder:text-muted-foreground border-border"
                   />
                 </FormControl>
-                <FormMessage className="text-primary-foreground/80" />
+                <FormMessage />
               </FormItem>
             )}
           />
           <Button 
             type="submit" 
-            className="bg-primary-foreground text-accent hover:bg-primary-foreground/90 w-full sm:w-auto"
+            variant="default"
+            className="w-full sm:w-auto"
             disabled={form.formState.isSubmitting}
             aria-label="Subscribe to newsletter"
           >
