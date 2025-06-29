@@ -25,8 +25,11 @@ export async function willAssistant(input: WillAssistantInput): Promise<WillAssi
   return willAssistantFlow(input);
 }
 
-// Extracted and formatted FAQ content from the website to be used as a knowledge base for the AI.
-const faqKnowledgeBase = `
+// Extracted and formatted content from the website to be used as a knowledge base for the AI.
+const iWillsKnowledgeBase = `
+---
+**FAQs**
+
 Q: What is WILL?
 A: A WILL is a document whereby a Testator expresses his/her desire as to the disposal of his / her properties after his/her death. It is the declaration of the intention of the person making the WILL with respect to his/her properties, which he/she desires to carried into effect after his/ her death.
 
@@ -210,6 +213,50 @@ A: No, if a will specifies different beneficiaries, the will's terms take preced
 
 Q: Does the law support nominees as rightful owners?
 A: No, nominees are not the final owners but assist in the transfer process.
+
+---
+**Pricing**
+
+- Basic Will Creation: ₹999. Includes Standard Will Creation, Do It Yourself, Print and Sign.
+- Standard Will with Notarization: ₹2499 (Popular). Includes Standard Will Creation, Notarization, Consultation with Legal Experts.
+- Comprehensive Will with Registration: ₹4999. Includes Standard Will Creation, Registration of Will, Consultation with Legal Experts.
+
+---
+**Cancellation and Refund Policy**
+
+- Cancellations: If you cancel within 24 hours of placing the order and the draft has not been delivered, you may be eligible for a refund, minus a Rs. 200 cancellation charge. No cancellations are allowed after the draft is delivered or the process has started.
+- Refunds: Offered for technical issues or duplicate charges. Contact hello@iWills.in within 24 hours.
+- Contact: hello@iwills.in or +91-8919321064.
+
+---
+**Terms and Conditions Summary**
+
+- Acceptance: You must be 18+ to use the service.
+- Services: We provide an online platform for creating wills, including an interactive questionnaire and will generation.
+- Disclaimer: iWills.in is not a substitute for professional legal advice. Consult a qualified legal professional.
+- Account: You are responsible for your account security and providing accurate information.
+- Fees: Fees for services will be clearly displayed.
+- Intellectual Property: All content on iwills.in is our property.
+- Liability: Our liability is limited to the maximum extent permitted by law.
+- Governing Law: The laws of Telangana, India govern these terms.
+- Contact: hello@iwills.in or +91-8919321064.
+
+---
+**Privacy Policy Summary**
+
+- Information Collection: We collect personal information (name, email), usage data, and use cookies.
+- Use of Information: To personalize your experience, improve our website, process transactions, and communicate with you.
+- Data Protection: We use security measures to protect your data, but no method is 100% secure.
+- Third-Party Services: We may use third-party services like analytics tools.
+- Contact: hello@iwills.in
+
+---
+**Disclaimer Summary**
+
+- No Professional Advice: Information on the site is for general purposes only and not professional advice.
+- No Liability: We are not liable for any loss or damage from using the website.
+- Consultation: We strongly advise consulting with professionals before taking action based on website content.
+
 `;
 
 const prompt = ai.definePrompt({
@@ -218,11 +265,11 @@ const prompt = ai.definePrompt({
   output: {schema: WillAssistantOutputSchema},
   prompt: `You are an AI assistant for iWills.in, specializing in Indian Will creation.
 Your goal is to answer user queries about creating a Will in India.
-Use the following Frequently Asked Questions as your primary knowledge base to answer the user's query. Base your answers on this content. If the user asks about something not covered in the FAQs, state that you do not have information on that topic but can answer questions from the FAQ.
+Use the following knowledge base, which contains information from the entire iWills.in website, to answer the user's query. Base your answers strictly on this content. If the user asks about something not covered, state that you do not have information on that topic but can answer questions from the provided knowledge base.
 
 ---
-**Knowledge Base (FAQs):**
-${faqKnowledgeBase}
+**Knowledge Base (iwills.in Website Content):**
+${iWillsKnowledgeBase}
 ---
 
 Respond to the following user query:
