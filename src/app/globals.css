@@ -13,95 +13,95 @@ body {
 @layer base {
   :root {
     --background: 0 0% 3.9%; /* Near Black */
-    --foreground: 0 0% 98%; /* White */
+    --foreground: 210 15% 95%; /* Light Cool Grey (almost white) */
 
     --card: 0 0% 10%; /* Darker Card, slightly off black */
-    --card-foreground: 0 0% 98%; /* White */
+    --card-foreground: 210 15% 95%; /* Light Cool Grey (almost white) */
 
     --popover: 0 0% 10%; /* Darker Popover, slightly off black */
-    --popover-foreground: 0 0% 98%; /* White */
+    --popover-foreground: 210 15% 95%; /* Light Cool Grey (almost white) */
 
-    --primary: 0 0% 98%; /* White/Light for primary elements (effectively white text) */
-    --primary-foreground: 0 0% 3.9%; /* Near Black text on primary (effectively black bg for buttons etc) */
+    --primary: 210 20% 85%; /* Platinum/Light Silver */
+    --primary-foreground: 210 20% 10%; /* Dark Blue */
 
     --secondary: 0 0% 14.9%; /* Default dark gray */
-    --secondary-foreground: 0 0% 98%; /* Light text for dark secondary */
+    --secondary-foreground: 210 15% 95%; /* Light Cool Grey (almost white) */
 
     --muted: 0 0% 14.9%; /* Default dark gray */
     --muted-foreground: 0 0% 63.9%; /* Mid-light gray text for dark muted */
 
-    --accent: 146 50% 45%; /* Lighter Sea Green for dark mode accent */
-    --accent-foreground: 0 0% 9%; /* Dark text for lighter Sea Green accent */
+    --accent: 210 50% 60%; /* Cool Blue */
+    --accent-foreground: 0 0% 98%; /* White text on accent */
 
     --destructive: 0 62.8% 30.6%; /* Default dark red */
     --destructive-foreground: 0 0% 98%; /* Light text on dark destructive */
 
-    --border: 0 0% 14.9%; /* Dark gray border */
-    --input: 0 0% 14.9%; /* Dark gray input background */
-    --ring: 146 50% 45%; /* Lighter Sea Green for ring in dark mode */
+    --border: 210 10% 25%; /* Dark Blue-Grey Border */
+    --input: 210 10% 25%; /* Dark Blue-Grey Input */
+    --ring: 210 50% 60%; /* Cool Blue Ring */
 
     --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
+    --chart-2: 210 60% 45%;
+    --chart-3: 190 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
     --radius: 0.5rem;
 
     /* Sidebar variables - aligned with dark theme */
     --sidebar-background: 0 0% 10%; /* Dark gray, slightly lighter than main bg */
-    --sidebar-foreground: 0 0% 98%; /* Light text */
-    --sidebar-primary: 0 0% 98%; /* White/Light for sidebar primary elements */
-    --sidebar-primary-foreground: 0 0% 3.9%; /* Near Black text on sidebar primary */
-    --sidebar-accent: 146 50% 45%; /* Lighter Sea Green for dark sidebar accent */
-    --sidebar-accent-foreground: 0 0% 9%; /* Dark text on dark sidebar accent */
-    --sidebar-border: 0 0% 14.9%; /* Dark gray border for sidebar */
-    --sidebar-ring: 146 50% 45%; /* Lighter Sea Green for sidebar ring */
+    --sidebar-foreground: 210 15% 95%; /* Light Cool Grey (almost white) */
+    --sidebar-primary: 210 20% 85%; /* Platinum/Light Silver */
+    --sidebar-primary-foreground: 210 20% 10%; /* Dark Blue */
+    --sidebar-accent: 210 50% 60%; /* Cool Blue */
+    --sidebar-accent-foreground: 0 0% 98%; /* White text on accent */
+    --sidebar-border: 210 10% 25%; /* Dark Blue-Grey Border */
+    --sidebar-ring: 210 50% 60%; /* Cool Blue Ring */
   }
 
   .dark {
     --background: 0 0% 3.9%; /* Near Black */
-    --foreground: 0 0% 98%; /* White */
+    --foreground: 210 15% 95%; /* Light Cool Grey (almost white) */
 
     --card: 0 0% 10%; /* Darker Card, slightly off black */
-    --card-foreground: 0 0% 98%; /* White */
+    --card-foreground: 210 15% 95%; /* Light Cool Grey (almost white) */
 
     --popover: 0 0% 10%; /* Darker Popover, slightly off black */
-    --popover-foreground: 0 0% 98%; /* White */
+    --popover-foreground: 210 15% 95%; /* Light Cool Grey (almost white) */
 
-    --primary: 0 0% 98%; /* White/Light for primary elements (effectively white text) */
-    --primary-foreground: 0 0% 3.9%; /* Near Black text on primary (effectively black bg for buttons etc) */
+    --primary: 210 20% 85%; /* Platinum/Light Silver */
+    --primary-foreground: 210 20% 10%; /* Dark Blue */
 
     --secondary: 0 0% 14.9%; /* Default dark gray */
-    --secondary-foreground: 0 0% 98%; /* Light text for dark secondary */
+    --secondary-foreground: 210 15% 95%; /* Light Cool Grey (almost white) */
 
     --muted: 0 0% 14.9%; /* Default dark gray */
     --muted-foreground: 0 0% 63.9%; /* Mid-light gray text for dark muted */
 
-    --accent: 146 50% 45%; /* Lighter Sea Green for dark mode accent */
-    --accent-foreground: 0 0% 9%; /* Dark text for lighter Sea Green accent */
+    --accent: 210 50% 60%; /* Cool Blue */
+    --accent-foreground: 0 0% 98%; /* White text on accent */
 
     --destructive: 0 62.8% 30.6%; /* Default dark red */
     --destructive-foreground: 0 0% 98%; /* Light text on dark destructive */
 
-    --border: 0 0% 14.9%; /* Dark gray border */
-    --input: 0 0% 14.9%; /* Dark gray input background */
-    --ring: 146 50% 45%; /* Lighter Sea Green for ring in dark mode */
+    --border: 210 10% 25%; /* Dark Blue-Grey Border */
+    --input: 210 10% 25%; /* Dark Blue-Grey Input */
+    --ring: 210 50% 60%; /* Cool Blue Ring */
     
     --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
+    --chart-2: 210 60% 45%;
+    --chart-3: 190 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
 
     /* Sidebar variables for dark mode - should be same as :root as dark is default */
     --sidebar-background: 0 0% 10%; 
-    --sidebar-foreground: 0 0% 98%; 
-    --sidebar-primary: 0 0% 98%; 
-    --sidebar-primary-foreground: 0 0% 3.9%; 
-    --sidebar-accent: 146 50% 45%; 
-    --sidebar-accent-foreground: 0 0% 9%; 
-    --sidebar-border: 0 0% 14.9%; 
-    --sidebar-ring: 146 50% 45%; 
+    --sidebar-foreground: 210 15% 95%; 
+    --sidebar-primary: 210 20% 85%; 
+    --sidebar-primary-foreground: 210 20% 10%; 
+    --sidebar-accent: 210 50% 60%; 
+    --sidebar-accent-foreground: 0 0% 98%; 
+    --sidebar-border: 210 10% 25%; 
+    --sidebar-ring: 210 50% 60%; 
   }
 }
 
