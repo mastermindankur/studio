@@ -1,4 +1,3 @@
-
 import { NewsletterSignup } from "@/components/sections/newsletter-signup";
 import { Gavel } from "lucide-react";
 import Link from "next/link";
@@ -29,7 +28,8 @@ export function Footer() {
           <p>&copy; {currentYear} iWills.in. All rights reserved.</p>
           <p className="mt-1">
             <Link href="/privacy-policy" className="hover:text-primary-foreground hover:underline transition-colors">Privacy Policy</Link> | 
-            <Link href="/terms-of-service" className="hover:text-primary-foreground hover:underline transition-colors ml-1"> Terms of Service</Link>
+            <Link href="/terms-of-service" className="hover:text-primary-foreground hover:underline transition-colors ml-1"> Terms of Service</Link> |
+            <Link href="/faqs" className="hover:text-primary-foreground hover:underline transition-colors ml-1"> FAQs</Link>
           </p>
         </div>
       </div>
