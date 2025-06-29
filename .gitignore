@@ -25,10 +25,8 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env*
-!/.env.example
-!/.env.ci
-!.env.sample
+.env*.local
+.env
 
 # vercel
 .vercel
@@ -36,6 +34,3 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-# genkit
-.genkit/
