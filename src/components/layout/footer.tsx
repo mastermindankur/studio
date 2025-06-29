@@ -31,7 +31,8 @@ export function Footer() {
             <Link href="/privacy-policy" className="hover:text-primary-foreground hover:underline transition-colors">Privacy Policy</Link> | 
             <Link href="/terms-of-service" className="hover:text-primary-foreground hover:underline transition-colors ml-1"> Terms of Service</Link> |
             <Link href="/faqs" className="hover:text-primary-foreground hover:underline transition-colors ml-1"> FAQs</Link> |
-            <Link href="/disclaimer" className="hover:text-primary-foreground hover:underline transition-colors ml-1"> Disclaimer</Link>
+            <Link href="/disclaimer" className="hover:text-primary-foreground hover:underline transition-colors ml-1"> Disclaimer</Link> |
+            <Link href="/cancellation-and-refunds" className="hover:text-primary-foreground hover:underline transition-colors ml-1"> Cancellation & Refund Policy</Link>
           </p>
         </div>
       </div>
