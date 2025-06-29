@@ -2,6 +2,8 @@
 "use server";
 
 import { z } from "zod";
+import { db } from "@/lib/firebase/config";
+import { collection, addDoc, query, where, getDocs, serverTimestamp } from "firebase/firestore";
 
 const newsletterSchema = z.object({
   email: z.string().email(),
@@ -18,18 +20,27 @@ export async function subscribeToNewsletter(formData: { email: string }): Promis
   }
 
   const { email } = validatedFields.data;
+  const subscriptionsRef = collection(db, "newsletterSubscriptions");
 
-  // In a real application, you would save the email to a database or marketing service.
-  console.log(`Newsletter subscription attempt for: ${email}`);
+  try {
+    // Check if the email is already subscribed
+    const q = query(subscriptionsRef, where("email", "==", email));
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      // Don't treat it as an error, just inform the user they are already on the list.
+      return { success: true, message: "You're already on our list. Thanks for being a subscriber!" };
+    }
 
-  // Simulate API call
-  await new Promise(resolve => setTimeout(resolve, 1000));
+    // Add the new email to the collection
+    await addDoc(subscriptionsRef, {
+      email,
+      subscribedAt: serverTimestamp(),
+    });
+    
+    return { success: true, message: "Thank you for subscribing to our newsletter!" };
 
-  // For demonstration, always return success.
-  // Add error handling for actual implementation.
-  if (email.includes("fail")) { // Simulate a failure case
-     return { success: false, message: "This email address is blocked." };
+  } catch (error) {
+    console.error("Error subscribing to newsletter:", error);
+    return { success: false, message: "Could not subscribe. Please try again later." };
   }
-
-  return { success: true, message: "Thank you for subscribing to our newsletter!" };
 }
