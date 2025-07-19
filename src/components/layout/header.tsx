@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { Gavel, Menu, X, LogOut, LayoutDashboard, UserPlus, LogIn } from "lucide-react";
+import { Gavel, Menu, X, LogOut, LayoutDashboard, UserPlus, LogIn, HelpCircle, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { useState } from "react";
@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "../ui/skeleton";
 
-const navItems = [
+const defaultNavItems = [
   { href: "/#how-it-works", label: "How It Works" },
   { href: "/#services", label: "Our Services" },
   { href: "/about-us", label: "About Us" },
@@ -23,12 +23,20 @@ const navItems = [
   { href: "/#contact", label: "Contact Us" },
 ];
 
+const loggedInNavItems = [
+    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/faqs", label: "FAQs", icon: HelpCircle },
+    { href: "/#contact", label: "Contact Us", icon: MessageSquare },
+]
+
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, loading } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const auth = getAuth();
+
+  const navItems = user ? loggedInNavItems : defaultNavItems;
 
   const handleLogout = async () => {
     try {
@@ -130,7 +138,7 @@ export function Header() {
         </nav>
 
         <div className="hidden lg:flex">
-          <AuthLinks />
+          {!user && <AuthLinks />}
         </div>
 
         <div className="lg:hidden">
