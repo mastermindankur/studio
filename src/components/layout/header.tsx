@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "../ui/skeleton";
 
-const defaultNavItems = [
+const navItems = [
   { href: "/#how-it-works", label: "How It Works" },
   { href: "/#services", label: "Our Services" },
   { href: "/about-us", label: "About Us" },
@@ -23,7 +23,7 @@ const defaultNavItems = [
   { href: "/#contact", label: "Contact Us" },
 ];
 
-const loggedInNavItems = [
+const loggedInMobileNavItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/faqs", label: "FAQs", icon: HelpCircle },
     { href: "/#contact", label: "Contact Us", icon: MessageSquare },
@@ -35,8 +35,6 @@ export function Header() {
   const router = useRouter();
   const { toast } = useToast();
   const auth = getAuth();
-
-  const navItems = user ? loggedInNavItems : defaultNavItems;
 
   const handleLogout = async () => {
     try {
@@ -57,7 +55,7 @@ export function Header() {
 
   const AuthLinks = () => {
     if (loading) {
-      return <Skeleton className="h-10 w-24" />;
+      return <Skeleton className="h-10 w-48" />;
     }
     if (user) {
       return (
@@ -85,7 +83,7 @@ export function Header() {
   
   const MobileAuthLinks = () => {
      if (loading) {
-      return <Skeleton className="h-10 w-full" />;
+      return <Skeleton className="h-10 w-full mb-2" />;
     }
     if (user) {
       return (
@@ -117,6 +115,8 @@ export function Header() {
     );
   }
 
+  const currentNavItems = user ? loggedInMobileNavItems : navItems;
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 max-w-screen-2xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -125,20 +125,22 @@ export function Header() {
           <span className="font-headline text-2xl font-bold text-primary">iWills.in</span>
         </Link>
 
-        <nav className="hidden lg:flex items-center space-x-4">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="font-headline text-base text-foreground hover:text-primary transition-colors duration-300 whitespace-nowrap"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        {!user && (
+          <nav className="hidden lg:flex items-center space-x-4">
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="font-headline text-base text-foreground hover:text-primary transition-colors duration-300 whitespace-nowrap"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        )}
 
-        <div className="hidden lg:flex">
-          {!user && <AuthLinks />}
+        <div className="hidden lg:flex flex-1 justify-end">
+          <AuthLinks />
         </div>
 
         <div className="lg:hidden">
@@ -161,7 +163,7 @@ export function Header() {
                       </Button>
                     </SheetClose>
                 </div>
-                {navItems.map((item) => (
+                {!user && currentNavItems.map((item) => (
                   <SheetClose asChild key={item.href}>
                     <Link
                       href={item.href}
