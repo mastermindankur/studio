@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,8 +27,9 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { CalendarIcon, User, Mail, Phone, Info, ChevronRight, Gavel } from "lucide-react";
+import { CalendarIcon, ChevronRight, Gavel, Info } from "lucide-react";
 import { format } from "date-fns";
+import { useRouter } from "next/navigation";
 
 const personalInfoSchema = z.object({
   gender: z.enum(["male", "female", "other"], { required_error: "Please select a gender." }),
@@ -45,6 +47,7 @@ const personalInfoSchema = z.object({
 type PersonalInfoFormValues = z.infer<typeof personalInfoSchema>;
 
 export default function PersonalInformationPage() {
+  const router = useRouter();
   const form = useForm<PersonalInfoFormValues>({
     resolver: zodResolver(personalInfoSchema),
     defaultValues: {
@@ -60,7 +63,8 @@ export default function PersonalInformationPage() {
 
   function onSubmit(data: PersonalInfoFormValues) {
     console.log(data);
-    // TODO: Handle form submission, e.g., save to state/DB and navigate to next step
+    // TODO: Save data to global state management (e.g., Context or Zustand)
+    router.push("/create-will/family-details");
   }
 
   return (
@@ -284,7 +288,6 @@ export default function PersonalInformationPage() {
                     )}
                 />
             </div>
-
 
             <div className="flex justify-end">
               <Button type="submit" size="lg">
