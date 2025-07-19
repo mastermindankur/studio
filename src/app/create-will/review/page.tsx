@@ -24,7 +24,9 @@ export default function ReviewPage() {
   } = formData;
 
   const handleEdit = (path: string) => {
-    saveAndGoTo(formData, `/create-will/${path}`);
+    // saveAndGoTo is designed to save the *current* page's data,
+    // which isn't applicable here. We just navigate. The data is already saved in context.
+    router.push(`/create-will/${path}`);
   };
 
   const handleFinalize = () => {
@@ -36,7 +38,7 @@ export default function ReviewPage() {
   };
   
   const handleBack = () => {
-    saveAndGoTo(formData, "/create-will/executor");
+    router.push("/create-will/executor");
   }
 
   const getAssetName = (id: string) => assets?.assets.find((a: any) => a.id === id)?.description || 'N/A';
