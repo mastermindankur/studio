@@ -120,7 +120,7 @@ function DashboardPageContent() {
   const handleDownloadPdf = async (will: Will) => {
       setPdfGeneratingWillId(will.id);
       try {
-          await generatePdf(will.data, `iWills-in_Will_v${will.version}.pdf`, `will-doc-${will.id}`);
+          await generatePdf(`will-doc-${will.id}`, `iWills-in_Will_v${will.version}.pdf`);
       } catch (error) {
           console.error("Error generating PDF:", error);
       } finally {

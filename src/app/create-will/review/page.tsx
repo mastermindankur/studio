@@ -56,7 +56,7 @@ export default function ReviewPage() {
             });
             
             // Generate PDF after successful save
-            await generatePdf(formData, `iWills-in-Will_v${result.willId?.substring(0,5)}.pdf`);
+            await generatePdf(`will-document-render`, `iWills-in-Will_v${result.willId?.substring(0,5)}.pdf`);
 
             clearForm();
             router.push("/dashboard");

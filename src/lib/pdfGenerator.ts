@@ -6,14 +6,13 @@ import html2canvas from 'html2canvas';
 const ensureImagesLoaded = async (element: HTMLElement): Promise<void> => {
   const images = Array.from(element.getElementsByTagName('img'));
   const promises = images.map(img => {
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<void>((resolve) => {
       if (img.complete && img.naturalHeight !== 0) {
         // If image is already loaded and rendered
         resolve();
       } else {
         img.onload = () => resolve();
         img.onerror = () => {
-          // You could reject here, but for robustness, we'll resolve.
           // An errored image won't block PDF generation, it'll just be missing.
           console.warn(`Could not load image: ${img.src}`);
           resolve();
@@ -25,7 +24,7 @@ const ensureImagesLoaded = async (element: HTMLElement): Promise<void> => {
 };
 
 
-export const generatePdf = async (filename: string = 'iWills-in_Will.pdf', elementId: string): Promise<void> => {
+export const generatePdf = async (elementId: string, filename: string = 'iWills-in_Will.pdf'): Promise<void> => {
   const willElement = document.getElementById(elementId);
   
   if (!willElement) {
@@ -33,34 +32,31 @@ export const generatePdf = async (filename: string = 'iWills-in_Will.pdf', eleme
     return;
   }
   
-  // Temporarily style the element to be rendered by html2canvas
   const originalStyle = {
       visibility: willElement.style.visibility,
       position: willElement.style.position,
       left: willElement.style.left,
       top: willElement.style.top,
       zIndex: willElement.style.zIndex,
-      backgroundColor: willElement.style.backgroundColor
+      width: willElement.style.width,
   };
 
   willElement.style.visibility = 'visible';
   willElement.style.position = 'absolute';
   willElement.style.left = '0px';
   willElement.style.top = '0px';
-  willElement.style.zIndex = '-1000'; // Place it behind everything else
-  willElement.style.backgroundColor = 'white';
+  willElement.style.zIndex = '1000'; // Render on top to ensure it's "visible" to the browser
+  willElement.style.width = '800px'; // A fixed width often helps canvas rendering
 
   try {
-    // Wait for images before capturing
     await ensureImagesLoaded(willElement);
 
     const canvas = await html2canvas(willElement, {
-      scale: 2, // Use a higher scale for better quality
+      scale: 2,
       useCORS: true,
-      logging: false, 
+      logging: false,
     });
     
-    // Restore original styles immediately after capture
     Object.assign(willElement.style, originalStyle);
 
     const imgData = canvas.toDataURL('image/png');
@@ -86,7 +82,6 @@ export const generatePdf = async (filename: string = 'iWills-in_Will.pdf', eleme
 
   } catch (error) {
     console.error("Error generating PDF:", error);
-    // Restore original styles even if an error occurs
     Object.assign(willElement.style, originalStyle);
   }
 };
