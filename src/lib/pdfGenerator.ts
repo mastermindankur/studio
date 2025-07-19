@@ -1,9 +1,31 @@
 
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { WillFormData } from '@/context/WillFormContext';
 
-export const generatePdf = async (formData: WillFormData, filename: string = 'iWills-in_Will.pdf', elementId: string): Promise<void> => {
+// Helper function to ensure all images within an element are loaded
+const ensureImagesLoaded = async (element: HTMLElement): Promise<void> => {
+  const images = Array.from(element.getElementsByTagName('img'));
+  const promises = images.map(img => {
+    return new Promise<void>((resolve, reject) => {
+      if (img.complete && img.naturalHeight !== 0) {
+        // If image is already loaded and rendered
+        resolve();
+      } else {
+        img.onload = () => resolve();
+        img.onerror = () => {
+          // You could reject here, but for robustness, we'll resolve.
+          // An errored image won't block PDF generation, it'll just be missing.
+          console.warn(`Could not load image: ${img.src}`);
+          resolve();
+        };
+      }
+    });
+  });
+  await Promise.all(promises);
+};
+
+
+export const generatePdf = async (filename: string = 'iWills-in_Will.pdf', elementId: string): Promise<void> => {
   const willElement = document.getElementById(elementId);
   
   if (!willElement) {
@@ -11,27 +33,31 @@ export const generatePdf = async (formData: WillFormData, filename: string = 'iW
     return;
   }
   
-  // A simple method to prepare the element for rendering.
+  // Temporarily style the element to be rendered by html2canvas
   const originalStyle = {
-      display: willElement.style.display,
+      visibility: willElement.style.visibility,
       position: willElement.style.position,
       left: willElement.style.left,
       top: willElement.style.top,
       zIndex: willElement.style.zIndex,
-  }
+      backgroundColor: willElement.style.backgroundColor
+  };
 
-  willElement.style.display = 'block';
+  willElement.style.visibility = 'visible';
   willElement.style.position = 'absolute';
   willElement.style.left = '0px';
   willElement.style.top = '0px';
-  willElement.style.zIndex = '1000'; // Bring to front to ensure it's rendered
-  willElement.style.backgroundColor = 'white'; // Ensure a solid background
+  willElement.style.zIndex = '-1000'; // Place it behind everything else
+  willElement.style.backgroundColor = 'white';
 
   try {
+    // Wait for images before capturing
+    await ensureImagesLoaded(willElement);
+
     const canvas = await html2canvas(willElement, {
       scale: 2, // Use a higher scale for better quality
       useCORS: true,
-      logging: true, // Enable logging to see what html2canvas is doing
+      logging: false, 
     });
     
     // Restore original styles immediately after capture
@@ -50,15 +76,9 @@ export const generatePdf = async (formData: WillFormData, filename: string = 'iW
     const canvasWidth = canvas.width;
     const canvasHeight = canvas.height;
     
-    // Calculate the aspect ratio
     const ratio = canvasWidth / canvasHeight;
     const imgWidth = pdfWidth;
     const imgHeight = imgWidth / ratio;
-
-    // We will only add one page for now.
-    if (imgHeight > pdfHeight) {
-        console.warn("Content exceeds single page, but multi-page logic is not yet implemented. Content will be clipped.");
-    }
     
     pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
     
