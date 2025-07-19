@@ -3,6 +3,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import { useAuth } from './AuthContext';
 
 // Define the shape of the entire form data
 export interface WillFormData {
@@ -62,30 +63,47 @@ const initialData: WillFormData = {
 
 const WillFormContext = createContext<WillFormContextType | undefined>(undefined);
 
-const WILL_FORM_STORAGE_KEY = 'willFormData';
+const WILL_FORM_STORAGE_KEY_PREFIX = 'willFormData_';
 
 export const WillFormProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
   const pathname = usePathname();
   const [isDirty, setDirty] = useState(false);
+  const { user, loading: authLoading } = useAuth();
+  const [storageKey, setStorageKey] = useState<string | null>(null);
 
-  const [formData, setFormData] = useState<WillFormData>(() => {
-    if (typeof window === 'undefined') {
-      return initialData;
+  useEffect(() => {
+    if (user) {
+      setStorageKey(`${WILL_FORM_STORAGE_KEY_PREFIX}${user.uid}`);
+    } else {
+      setStorageKey(null);
     }
-    try {
-      const savedData = window.localStorage.getItem(WILL_FORM_STORAGE_KEY);
-      return savedData ? JSON.parse(savedData, (key, value) => {
-        if (key === 'dob' && typeof value === 'string') {
-          return new Date(value);
+  }, [user]);
+
+  const [formData, setFormData] = useState<WillFormData>(initialData);
+
+  useEffect(() => {
+    if (storageKey) {
+        if (typeof window === 'undefined') {
+          return;
         }
-        return value;
-      }) : initialData;
-    } catch (error) {
-      console.error("Error reading from localStorage", error);
-      return initialData;
+        try {
+          const savedData = window.localStorage.getItem(storageKey);
+          setFormData(savedData ? JSON.parse(savedData, (key, value) => {
+            if (key === 'dob' && typeof value === 'string') {
+              return new Date(value);
+            }
+            return value;
+          }) : initialData);
+        } catch (error) {
+          console.error("Error reading from localStorage", error);
+          setFormData(initialData);
+        }
+    } else {
+        setFormData(initialData);
     }
-  });
+  }, [storageKey]);
+
 
   const getStepKey = (path: string): keyof Omit<WillFormData, 'willId'> | null => {
     if (path.includes('personal-information')) return 'personalInfo';
@@ -98,11 +116,13 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const saveToLocalStorage = (data: WillFormData) => {
-     try {
-        window.localStorage.setItem(WILL_FORM_STORAGE_KEY, JSON.stringify(data));
-      } catch (error) {
-        console.error("Error writing to localStorage", error);
-      }
+     if (storageKey) {
+        try {
+            window.localStorage.setItem(storageKey, JSON.stringify(data));
+        } catch (error) {
+            console.error("Error writing to localStorage", error);
+        }
+     }
   }
 
   const saveAndGoTo = (currentStepData: any, path: string) => {
@@ -130,8 +150,6 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
   }, [isDirty]);
 
   const loadWill = (willData: any) => {
-    // When loading an existing will to edit, we don't set a willId
-    // A new ID will be generated on save.
     const dataToLoad = { ...willData };
     delete dataToLoad.willId;
     setFormData(dataToLoad);
@@ -140,8 +158,8 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
 
   const clearForm = () => {
     setFormData(initialData);
-    if (typeof window !== 'undefined') {
-      window.localStorage.removeItem(WILL_FORM_STORAGE_KEY);
+    if (storageKey && typeof window !== 'undefined') {
+      window.localStorage.removeItem(storageKey);
     }
   };
 

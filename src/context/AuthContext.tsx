@@ -4,7 +4,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
-import { Skeleton } from '@/components/ui/skeleton';
 
 interface AuthContextType {
   user: User | null;
@@ -18,13 +17,25 @@ const AuthContext = createContext<AuthContextType>({
   getIdToken: async () => null,
 });
 
+const WILL_FORM_STORAGE_KEY_PREFIX = 'willFormData_';
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
+      if (user) {
+        setUser(user);
+      } else {
+        // When user logs out, clear their specific form data from localStorage
+        const allKeys = Object.keys(localStorage);
+        const userWillKey = allKeys.find(key => key.startsWith(WILL_FORM_STORAGE_KEY_PREFIX));
+        if (userWillKey) {
+            localStorage.removeItem(userWillKey);
+        }
+        setUser(null);
+      }
       setLoading(false);
     });
 
