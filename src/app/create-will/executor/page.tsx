@@ -17,9 +17,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ChevronRight, ChevronLeft, UserCheck, Edit } from "lucide-react";
+import { ChevronRight, ChevronLeft, UserCheck, Edit, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
+import { useWillForm } from "@/context/WillFormContext";
 
 const executorSchema = z.object({
   fullName: z.string().min(2, "Full name is required."),
@@ -49,9 +50,11 @@ type ExecutorFormValues = z.infer<typeof formSchema>;
 
 export default function ExecutorPage() {
   const router = useRouter();
+  const { formData, setFormData } = useWillForm();
+
   const form = useForm<ExecutorFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: formData.executor || {
       primaryExecutor: {
         fullName: "",
         fatherName: "",
@@ -67,14 +70,22 @@ export default function ExecutorPage() {
   const watchAddSecondExecutor = form.watch("addSecondExecutor");
 
   function onSubmit(data: ExecutorFormValues) {
-    console.log(data);
-    // TODO: Save data to global state and generate the will
-    router.push("/dashboard"); // Navigate to dashboard after completion
+    setFormData(prev => ({ ...prev, executor: data }));
+    // In a real app, this would probably go to a review page
+    // For now, redirect to dashboard as a success state
+    router.push("/dashboard"); 
   }
 
   function handleBack() {
+    setFormData(prev => ({ ...prev, executor: form.getValues() }));
     router.push("/create-will/asset-allocation");
   }
+
+  function handleSaveAndExit(data: ExecutorFormValues) {
+    setFormData(prev => ({ ...prev, executor: data }));
+    router.push("/dashboard");
+  }
+
 
   return (
     <div className="container max-w-4xl mx-auto px-4 py-12">
@@ -172,6 +183,9 @@ export default function ExecutorPage() {
             <div className="flex justify-between mt-8">
               <Button type="button" size="lg" variant="outline" onClick={handleBack}>
                 <ChevronLeft className="mr-2 h-5 w-5" /> Previous Step
+              </Button>
+               <Button type="button" size="lg" variant="secondary" onClick={form.handleSubmit(handleSaveAndExit)}>
+                  <Save className="mr-2 h-5 w-5" /> Save & Exit
               </Button>
               <Button type="submit" size="lg">
                 Review & Finish <ChevronRight className="ml-2 h-5 w-5" />

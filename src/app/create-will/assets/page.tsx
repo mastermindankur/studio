@@ -16,13 +16,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ChevronRight, ChevronLeft, PlusCircle, Trash2, Landmark } from "lucide-react";
+import { ChevronRight, ChevronLeft, PlusCircle, Trash2, Landmark, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useWillForm } from "@/context/WillFormContext";
 
 const assetSchema = z.object({
+  id: z.string().optional(), // Keep track of asset for allocation
   type: z.string({ required_error: "Please select an asset type." }),
   description: z.string().min(10, "Description must be at least 10 characters."),
-  value: z.string().regex(/^\d+$/, "Value must be a number."),
+  value: z.string().regex(/^\d+$/, "Value must be a number.").optional(),
 });
 
 const assetsFormSchema = z.object({
@@ -43,11 +45,11 @@ const assetTypes = [
 
 export default function AssetsPage() {
   const router = useRouter();
+  const { formData, setFormData } = useWillForm();
+
   const form = useForm<AssetsFormValues>({
     resolver: zodResolver(assetsFormSchema),
-    defaultValues: {
-      assets: [{ type: "", description: "", value: "" }],
-    },
+    defaultValues: formData.assets,
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -56,13 +58,26 @@ export default function AssetsPage() {
   });
 
   function onSubmit(data: AssetsFormValues) {
-    console.log(data);
-    // TODO: Save data to global state
-    router.push("/create-will/beneficiaries"); // Navigate to next step
+    const assetsWithIds = data.assets.map((asset, index) => ({
+      ...asset,
+      id: asset.id || `asset-${Date.now()}-${index}`,
+    }));
+    setFormData(prev => ({ ...prev, assets: { assets: assetsWithIds } }));
+    router.push("/create-will/beneficiaries");
   }
   
   function handleBack() {
+    setFormData(prev => ({ ...prev, assets: form.getValues() }));
     router.push("/create-will/family-details");
+  }
+
+  function handleSaveAndExit(data: AssetsFormValues) {
+     const assetsWithIds = data.assets.map((asset, index) => ({
+      ...asset,
+      id: asset.id || `asset-${Date.now()}-${index}`,
+    }));
+    setFormData(prev => ({ ...prev, assets: { assets: assetsWithIds } }));
+    router.push("/dashboard");
   }
 
   return (
@@ -159,6 +174,9 @@ export default function AssetsPage() {
             <div className="flex justify-between mt-8">
               <Button type="button" size="lg" variant="outline" onClick={handleBack}>
                 <ChevronLeft className="mr-2 h-5 w-5" /> Previous Step
+              </Button>
+              <Button type="button" size="lg" variant="secondary" onClick={form.handleSubmit(handleSaveAndExit)}>
+                  <Save className="mr-2 h-5 w-5" /> Save & Exit
               </Button>
               <Button type="submit" size="lg">
                 Next Step <ChevronRight className="ml-2 h-5 w-5" />

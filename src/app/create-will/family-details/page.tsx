@@ -15,8 +15,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ChevronRight, ChevronLeft, PlusCircle, Trash2, Users } from "lucide-react";
+import { ChevronRight, ChevronLeft, PlusCircle, Trash2, Users, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useWillForm } from "@/context/WillFormContext";
+import { useEffect } from "react";
 
 const familyDetailsSchema = z.object({
   maritalStatus: z.enum(["married", "unmarried", "divorced", "widowed"], {
@@ -40,28 +42,39 @@ type FamilyDetailsFormValues = z.infer<typeof familyDetailsSchema>;
 
 export default function FamilyDetailsPage() {
   const router = useRouter();
+  const { formData, setFormData } = useWillForm();
+
   const form = useForm<FamilyDetailsFormValues>({
     resolver: zodResolver(familyDetailsSchema),
-    defaultValues: {
-      children: [{ name: "" }],
-    },
+    defaultValues: formData.familyDetails,
   });
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "children",
   });
-
+  
   const watchMaritalStatus = form.watch("maritalStatus");
 
+  useEffect(() => {
+    if (watchMaritalStatus !== 'married') {
+        form.setValue('spouseName', '');
+    }
+  }, [watchMaritalStatus, form]);
+
   function onSubmit(data: FamilyDetailsFormValues) {
-    console.log(data);
-    // TODO: Save data to global state
-    router.push("/create-will/assets"); // Navigate to next step
+    setFormData(prev => ({ ...prev, familyDetails: data }));
+    router.push("/create-will/assets");
   }
   
   function handleBack() {
+    setFormData(prev => ({ ...prev, familyDetails: form.getValues() }));
     router.push("/create-will/personal-information");
+  }
+
+  function handleSaveAndExit(data: FamilyDetailsFormValues) {
+    setFormData(prev => ({ ...prev, familyDetails: data }));
+    router.push("/dashboard");
   }
 
   return (
@@ -157,6 +170,9 @@ export default function FamilyDetailsPage() {
             <div className="flex justify-between">
               <Button type="button" size="lg" variant="outline" onClick={handleBack}>
                 <ChevronLeft className="mr-2 h-5 w-5" /> Previous Step
+              </Button>
+               <Button type="button" size="lg" variant="secondary" onClick={form.handleSubmit(handleSaveAndExit)}>
+                  <Save className="mr-2 h-5 w-5" /> Save & Exit
               </Button>
               <Button type="submit" size="lg">
                 Next Step <ChevronRight className="ml-2 h-5 w-5" />

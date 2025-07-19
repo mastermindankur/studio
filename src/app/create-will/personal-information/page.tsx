@@ -27,9 +27,10 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { CalendarIcon, ChevronRight, Gavel, Info } from "lucide-react";
+import { CalendarIcon, ChevronRight, Gavel, Info, Save } from "lucide-react";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
+import { useWillForm } from "@/context/WillFormContext";
 
 const personalInfoSchema = z.object({
   gender: z.enum(["male", "female", "other"], { required_error: "Please select a gender." }),
@@ -48,23 +49,22 @@ type PersonalInfoFormValues = z.infer<typeof personalInfoSchema>;
 
 export default function PersonalInformationPage() {
   const router = useRouter();
+  const { formData, setFormData } = useWillForm();
+
   const form = useForm<PersonalInfoFormValues>({
     resolver: zodResolver(personalInfoSchema),
-    defaultValues: {
-      fullName: "",
-      fatherHusbandName: "",
-      aadhar: "",
-      occupation: "",
-      address: "",
-      email: "",
-      mobile: "",
-    },
+    defaultValues: formData.personalInfo,
   });
 
   function onSubmit(data: PersonalInfoFormValues) {
-    console.log(data);
-    // TODO: Save data to global state management (e.g., Context or Zustand)
+    setFormData(prev => ({ ...prev, personalInfo: data }));
     router.push("/create-will/family-details");
+  }
+
+  function handleSaveAndExit(data: PersonalInfoFormValues) {
+    setFormData(prev => ({ ...prev, personalInfo: data }));
+    // In a real app, you might show a toast message here
+    router.push("/dashboard");
   }
 
   return (
@@ -289,7 +289,10 @@ export default function PersonalInformationPage() {
                 />
             </div>
 
-            <div className="flex justify-end">
+            <div className="flex justify-between mt-8">
+              <Button type="button" size="lg" variant="secondary" onClick={form.handleSubmit(handleSaveAndExit)}>
+                  <Save className="mr-2 h-5 w-5" /> Save & Exit
+              </Button>
               <Button type="submit" size="lg">
                 Next Step <ChevronRight className="ml-2 h-5 w-5" />
               </Button>

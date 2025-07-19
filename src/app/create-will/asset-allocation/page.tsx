@@ -15,26 +15,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ChevronRight, ChevronLeft, PlusCircle, Trash2, PieChart, Info } from "lucide-react";
+import { ChevronRight, ChevronLeft, PlusCircle, Trash2, PieChart, Info, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-
-// --- Mock Data ---
-// In a real app, this data would come from a global state (Context, Zustand, etc.)
-// filled in the previous steps.
-const MOCK_ASSETS = [
-    { id: 'asset1', description: 'HDFC Bank Savings A/C No. XXXXXX' },
-    { id: 'asset2', description: '2BHK Flat at Address...' },
-    { id: 'asset3', description: 'Maruti Suzuki Swift Car' },
-];
-
-const MOCK_BENEFICIARIES = [
-    { id: 'ben1', name: 'Jane Doe' },
-    { id: 'ben2', name: 'John Doe Jr.' },
-    { id: 'ben3', name: 'Peter Pan' },
-];
-// --- End Mock Data ---
-
+import { useWillForm } from "@/context/WillFormContext";
 
 const allocationSchema = z.object({
   assetId: z.string({ required_error: "Please select an asset." }),
@@ -70,11 +54,14 @@ type AssetAllocationFormValues = z.infer<typeof assetAllocationFormSchema>;
 
 export default function AssetAllocationPage() {
   const router = useRouter();
+  const { formData, setFormData } = useWillForm();
+
+  const MOCK_ASSETS = formData.assets?.assets || [];
+  const MOCK_BENEFICIARIES = formData.beneficiaries?.beneficiaries || [];
+
   const form = useForm<AssetAllocationFormValues>({
     resolver: zodResolver(assetAllocationFormSchema),
-    defaultValues: {
-      allocations: [{ assetId: "", beneficiaryId: "", percentage: 100 }],
-    },
+    defaultValues: formData.assetAllocation || { allocations: [{ assetId: "", beneficiaryId: "", percentage: 100 }] },
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -83,13 +70,18 @@ export default function AssetAllocationPage() {
   });
 
   function onSubmit(data: AssetAllocationFormValues) {
-    console.log(data);
-    // TODO: Save data to global state
-    router.push("/create-will/executor"); // Navigate to next step
+    setFormData(prev => ({ ...prev, assetAllocation: data }));
+    router.push("/create-will/executor");
   }
 
   function handleBack() {
+    setFormData(prev => ({ ...prev, assetAllocation: form.getValues() }));
     router.push("/create-will/beneficiaries");
+  }
+
+  function handleSaveAndExit(data: AssetAllocationFormValues) {
+    setFormData(prev => ({ ...prev, assetAllocation: data }));
+    router.push("/dashboard");
   }
 
   return (
@@ -129,7 +121,7 @@ export default function AssetAllocationPage() {
                             </FormControl>
                             <SelectContent>
                               {MOCK_ASSETS.map(asset => (
-                                <SelectItem key={asset.id} value={asset.id}>{asset.description}</SelectItem>
+                                <SelectItem key={asset.id} value={asset.id!}>{asset.description}</SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
@@ -151,7 +143,7 @@ export default function AssetAllocationPage() {
                             </FormControl>
                             <SelectContent>
                               {MOCK_BENEFICIARIES.map(ben => (
-                                <SelectItem key={ben.id} value={ben.id}>{ben.name}</SelectItem>
+                                <SelectItem key={ben.id} value={ben.id!}>{ben.name}</SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
@@ -208,6 +200,9 @@ export default function AssetAllocationPage() {
             <div className="flex justify-between mt-8">
               <Button type="button" size="lg" variant="outline" onClick={handleBack}>
                 <ChevronLeft className="mr-2 h-5 w-5" /> Previous Step
+              </Button>
+              <Button type="button" size="lg" variant="secondary" onClick={form.handleSubmit(handleSaveAndExit)}>
+                  <Save className="mr-2 h-5 w-5" /> Save & Exit
               </Button>
               <Button type="submit" size="lg">
                 Next Step <ChevronRight className="ml-2 h-5 w-5" />
