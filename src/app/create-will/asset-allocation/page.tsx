@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -100,7 +101,7 @@ export default function AssetAllocationPage() {
               <Info className="h-4 w-4" />
               <AlertTitle>How to Allocate Assets</AlertTitle>
               <AlertDescription>
-                Assign a percentage of each asset to your beneficiaries. The total for each asset cannot exceed 100%. You don't have to allocate 100% of every asset.
+                This is where you decide who gets what. Assign a percentage of each asset to your chosen beneficiaries. The total for each asset cannot exceed 100%. Any unallocated portion will be handled by the residuary clause of your will.
               </AlertDescription>
             </Alert>
 

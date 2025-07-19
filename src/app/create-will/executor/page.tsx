@@ -17,10 +17,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ChevronRight, ChevronLeft, UserCheck, Edit, Save } from "lucide-react";
+import { ChevronRight, ChevronLeft, UserCheck, Edit, Save, Info } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useWillForm } from "@/context/WillFormContext";
 import { useEffect } from "react";
+import { Alert, AlertTitle } from "@/components/ui/alert";
+
 
 const executorSchema = z.object({
   fullName: z.string().min(2, "Full name is required."),
@@ -94,6 +96,13 @@ export default function ExecutorPage() {
             <h1 className="text-3xl font-bold text-primary font-headline">Executor & Instructions</h1>
             <p className="text-foreground/80">Step 6 of 7</p>
         </div>
+        <Alert className="mb-8">
+          <Info className="h-4 w-4" />
+          <AlertTitle>What is an Executor?</AlertTitle>
+          <FormDescription>
+            The Executor is the person you trust to carry out the instructions in your will. They will be responsible for managing your estate, paying any debts, and distributing your assets to the beneficiaries. Choose someone reliable and trustworthy.
+          </FormDescription>
+        </Alert>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             
@@ -128,10 +137,10 @@ export default function ExecutorPage() {
                   </FormControl>
                   <div className="space-y-1 leading-none">
                     <FormLabel>
-                      Add a Second Executor
+                      Appoint a Second Executor
                     </FormLabel>
                     <FormDescription>
-                      Appoint a second executor in case the primary one is unable or unwilling to act.
+                      It's highly recommended to appoint an alternate executor in case the primary one is unable or unwilling to act.
                     </FormDescription>
                   </div>
                 </FormItem>
@@ -159,16 +168,19 @@ export default function ExecutorPage() {
             <Separator />
             
             <div>
-              <h2 className="text-2xl font-semibold text-primary mb-4 font-headline flex items-center"><Edit className="mr-2 h-6 w-6"/> Special Requests or Conditions</h2>
+              <h2 className="text-2xl font-semibold text-primary mb-4 font-headline flex items-center"><Edit className="mr-2 h-6 w-6"/> Special Instructions</h2>
               <FormField
                 control={form.control}
                 name="specialInstructions"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Instructions</FormLabel>
+                    <FormLabel>Instructions for your Executor</FormLabel>
+                    <FormDescription>
+                      You can include specific wishes here, such as instructions for your funeral, care for pets, or explanations for certain decisions in your will. This is optional.
+                    </FormDescription>
                     <FormControl>
                       <Textarea
-                        placeholder="Please include any specific instructions, conditions, or wishes for your executor..."
+                        placeholder="e.g., I wish to be cremated... I want my collection of books to be donated..."
                         className="min-h-[150px]"
                         {...field}
                       />

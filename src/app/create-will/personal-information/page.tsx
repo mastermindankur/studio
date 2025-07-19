@@ -86,6 +86,9 @@ export default function PersonalInformationPage() {
               render={({ field }) => (
                 <FormItem className="space-y-3">
                   <FormLabel>Gender</FormLabel>
+                   <FormDescription>
+                    Your gender as per official records.
+                  </FormDescription>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
@@ -124,6 +127,9 @@ export default function PersonalInformationPage() {
                 render={({ field }) => (
                     <FormItem>
                     <FormLabel>Full Name</FormLabel>
+                     <FormDescription>
+                        Your full legal name as it should appear on the will.
+                      </FormDescription>
                     <FormControl>
                         <Input placeholder="Your full name" {...field} />
                     </FormControl>
@@ -137,6 +143,9 @@ export default function PersonalInformationPage() {
                 render={({ field }) => (
                     <FormItem className="flex flex-col">
                     <FormLabel>Date of Birth</FormLabel>
+                     <FormDescription>
+                        Used to confirm you are of legal age to make a will.
+                      </FormDescription>
                     <Popover>
                         <PopoverTrigger asChild>
                         <FormControl>
@@ -181,6 +190,9 @@ export default function PersonalInformationPage() {
                 render={({ field }) => (
                     <FormItem>
                     <FormLabel>Father/Husband Full Name</FormLabel>
+                     <FormDescription>
+                        Helps in clearly identifying you for the will's validity.
+                      </FormDescription>
                     <FormControl>
                         <Input placeholder="Father's or Husband's full name" {...field} />
                     </FormControl>
@@ -194,6 +206,9 @@ export default function PersonalInformationPage() {
                 render={({ field }) => (
                     <FormItem>
                     <FormLabel>Religion</FormLabel>
+                     <FormDescription>
+                        Succession laws can differ based on religion in India.
+                      </FormDescription>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                         <SelectTrigger>
@@ -228,7 +243,7 @@ export default function PersonalInformationPage() {
                   </FormControl>
                   <FormDescription className="flex items-center gap-1">
                     <Info className="h-3 w-3" />
-                    We'll never share your Aadhar with anyone. It is to ensure your will cannot be challenged.
+                    This ensures your will cannot be challenged on grounds of identity. We never share it.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -241,6 +256,9 @@ export default function PersonalInformationPage() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Occupation</FormLabel>
+                   <FormDescription>
+                      Your current profession or status (e.g., Homemaker, Retired).
+                    </FormDescription>
                   <FormControl>
                     <Input placeholder="e.g., Software Engineer, Doctor, Homemaker" {...field} />
                   </FormControl>
@@ -255,6 +273,9 @@ export default function PersonalInformationPage() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Address</FormLabel>
+                   <FormDescription>
+                      Your full residential address is required for legal identification in the will document.
+                    </FormDescription>
                   <FormControl>
                     <Textarea placeholder="Your full current address" {...field} />
                   </FormControl>
@@ -270,6 +291,9 @@ export default function PersonalInformationPage() {
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>Email Address</FormLabel>
+                         <FormDescription>
+                            We will send the final will document to this email.
+                          </FormDescription>
                         <FormControl>
                             <Input type="email" placeholder="you@example.com" {...field} />
                         </FormControl>
@@ -283,6 +307,9 @@ export default function PersonalInformationPage() {
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>Mobile Number</FormLabel>
+                         <FormDescription>
+                            Used for communication regarding your will creation process.
+                          </FormDescription>
                         <FormControl>
                             <Input type="tel" maxLength={10} placeholder="Enter 10-digit mobile number" {...field} />
                         </FormControl>

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -19,6 +20,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { ChevronRight, ChevronLeft, PlusCircle, Trash2, Landmark, Save } from "lucide-react";
 import { useWillForm } from "@/context/WillFormContext";
 import { useEffect } from "react";
+import { Alert, AlertTitle, AlertDescription as AlertDesc } from "@/components/ui/alert";
+import { Info } from "lucide-react";
+
 
 const assetSchema = z.object({
   id: z.string().optional(), // Keep track of asset for allocation
@@ -93,6 +97,13 @@ export default function AssetsPage() {
             <h1 className="text-3xl font-bold text-primary font-headline">Your Assets</h1>
             <p className="text-foreground/80">Step 3 of 7</p>
         </div>
+         <Alert className="mb-8">
+            <Info className="h-4 w-4" />
+            <AlertTitle>Why list your assets?</AlertTitle>
+            <AlertDesc>
+              Clearly listing all your assets ensures there is no ambiguity. This makes it easier for your executor to distribute your property as you intended.
+            </AlertDesc>
+          </Alert>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="space-y-6">
@@ -105,6 +116,9 @@ export default function AssetsPage() {
                         render={({ field }) => (
                             <FormItem>
                             <FormLabel>Asset Type</FormLabel>
+                             <FormDescription>
+                                Select the category of the asset.
+                              </FormDescription>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl>
                                 <SelectTrigger>
@@ -126,7 +140,10 @@ export default function AssetsPage() {
                         name={`assets.${index}.value`}
                         render={({ field }) => (
                             <FormItem>
-                            <FormLabel>Current Value (in ₹)</FormLabel>
+                            <FormLabel>Estimated Value (in ₹)</FormLabel>
+                             <FormDescription>
+                                An approximate current market value.
+                              </FormDescription>
                             <FormControl>
                                 <Input type="text" inputMode="numeric" placeholder="e.g., 500000" {...field} />
                             </FormControl>
@@ -141,6 +158,9 @@ export default function AssetsPage() {
                     render={({ field }) => (
                       <FormItem className="mt-6">
                         <FormLabel>Asset Description</FormLabel>
+                        <FormDescription>
+                          Provide specific details to identify the asset (e.g., account number, property address, vehicle registration).
+                        </FormDescription>
                         <FormControl>
                           <Textarea
                             placeholder="e.g., HDFC Bank Savings A/C No. XXXXXX, or 2BHK Flat at Address..."

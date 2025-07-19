@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -94,6 +95,9 @@ export default function FamilyDetailsPage() {
               render={({ field }) => (
                 <FormItem className="space-y-3">
                   <FormLabel>Marital Status</FormLabel>
+                   <FormDescription>
+                    This information helps establish the context of your family situation for the will.
+                  </FormDescription>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
@@ -122,6 +126,9 @@ export default function FamilyDetailsPage() {
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>Spouse's Full Name</FormLabel>
+                         <FormDescription>
+                          Provide the full legal name of your spouse.
+                        </FormDescription>
                         <FormControl>
                             <Input placeholder="Enter your spouse's full name" {...field} />
                         </FormControl>
@@ -133,6 +140,9 @@ export default function FamilyDetailsPage() {
             
             <div>
                 <FormLabel>Children's Details</FormLabel>
+                <FormDescription className="mt-2">
+                  List all your children. This is important even if you don't plan to leave them anything, as it shows they were not forgotten, which can prevent legal challenges.
+                </FormDescription>
                 <div className="space-y-4 mt-2">
                     {fields.map((field, index) => (
                          <FormField

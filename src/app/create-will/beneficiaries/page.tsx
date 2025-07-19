@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -87,9 +88,9 @@ export default function BeneficiariesPage() {
             
             <Alert>
               <Users className="h-4 w-4" />
-              <AlertTitle>Add Your Beneficiaries</AlertTitle>
+              <AlertTitle>Who are Beneficiaries?</AlertTitle>
               <AlertDescription>
-                You can add your spouse and children (from Step 2) as beneficiaries here, or add anyone else you wish to include in your will.
+                A beneficiary is any person or entity (like a charity) you choose to receive your assets. You can add family members or anyone else you wish to include.
               </AlertDescription>
             </Alert>
           
@@ -103,6 +104,9 @@ export default function BeneficiariesPage() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Beneficiary Full Name</FormLabel>
+                           <FormDescription>
+                              The full legal name of the person or entity.
+                            </FormDescription>
                           <FormControl>
                             <Input placeholder="e.g., Jane Doe" {...field} />
                           </FormControl>
@@ -116,6 +120,9 @@ export default function BeneficiariesPage() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Relationship to You</FormLabel>
+                          <FormDescription>
+                              Your relationship to this person (e.g., Spouse, Son).
+                            </FormDescription>
                           <FormControl>
                             <Input placeholder="e.g., Spouse, Son, Friend" {...field} />
                           </FormControl>
