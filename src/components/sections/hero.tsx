@@ -26,7 +26,7 @@ export function HeroSection() {
         <div className="relative animate-slide-in-right flex justify-center md:justify-end">
           <div className="rounded-lg overflow-hidden shadow-2xl w-full max-w-md lg:max-w-lg aspect-[4/3]">
             <Image
-              src="/images/hero-image.png"
+              src="/images/hero-image.jpg"
               alt="Family discussing future planning in India"
               width={600}
               height={450}

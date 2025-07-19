@@ -176,7 +176,7 @@ export function ContactForm() {
           <div className="animate-slide-in-right mt-8 md:mt-0">
              <div className="rounded-lg overflow-hidden shadow-xl aspect-square max-w-md mx-auto md:max-w-full">
                 <Image
-                    src="/images/contact-image.png"
+                    src="/images/contact-image.jpg"
                     alt="iWills.in Support"
                     width={600}
                     height={600}
