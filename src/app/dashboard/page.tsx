@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
-import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
+import { collection, query, where, getDocs, orderBy, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
 import { format } from "date-fns";
 import { PlusCircle, FileText, Download, Edit, Loader2, PlayCircle } from "lucide-react";
@@ -85,11 +85,18 @@ function DashboardPageContent() {
           const userWills: Will[] = [];
           querySnapshot.forEach((doc) => {
             const data = doc.data();
+            const willData = data.willData;
+            
+            // Convert Firestore Timestamp to JS Date for dob
+            if (willData?.personalInfo?.dob instanceof Timestamp) {
+                willData.personalInfo.dob = willData.personalInfo.dob.toDate();
+            }
+
             userWills.push({
               id: doc.id,
               version: data.version,
               createdAt: format(data.createdAt.toDate(), "PPPp"),
-              data: data.willData,
+              data: willData,
             });
           });
           setWills(userWills);
