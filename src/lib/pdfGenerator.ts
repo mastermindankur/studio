@@ -4,7 +4,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { WillFormData } from '@/context/WillFormContext';
 
-const ensureImagesLoaded = (element: HTMLElement): Promise<void> => {
+const ensureImagesLoaded = (element: HTMLElement): Promise<void[]> => {
     const images = Array.from(element.getElementsByTagName('img'));
     const promises = images.map(img => {
         if (img.complete && img.naturalHeight !== 0) {
@@ -12,10 +12,10 @@ const ensureImagesLoaded = (element: HTMLElement): Promise<void> => {
         }
         return new Promise<void>((resolve, reject) => {
             img.onload = () => resolve();
-            img.onerror = () => reject(new Error(`Could not load image: ${img.src}`));
+            img.onerror = (err) => reject(new Error(`Could not load image: ${img.src}. Error: ${err}`));
         });
     });
-    return Promise.all(promises).then(() => {});
+    return Promise.all(promises);
 };
 
 export const generatePdf = async (formData: WillFormData, filename: string = 'iWills-in_Will.pdf', elementId: string): Promise<void> => {
@@ -32,20 +32,21 @@ export const generatePdf = async (formData: WillFormData, filename: string = 'iW
       left: willElement.style.left,
       top: willElement.style.top,
       zIndex: willElement.style.zIndex,
-      opacity: willElement.style.opacity,
-      pointerEvents: willElement.style.pointerEvents,
+      visibility: willElement.style.visibility,
       width: willElement.style.width,
   }
+
+  // Make the element renderable but not visible to the user
   willElement.style.display = 'block';
   willElement.style.position = 'absolute';
-  willElement.style.left = '0px';
   willElement.style.top = '0px';
+  willElement.style.left = '0px';
   willElement.style.zIndex = '-1';
-  willElement.style.opacity = '0';
-  willElement.style.pointerEvents = 'none';
+  willElement.style.visibility = 'hidden'; // Use visibility instead of opacity
   willElement.style.width = '800px';
 
   try {
+    // Wait for all images to load before capturing
     await ensureImagesLoaded(willElement);
 
     const canvas = await html2canvas(willElement, {
@@ -58,6 +59,7 @@ export const generatePdf = async (formData: WillFormData, filename: string = 'iW
       windowHeight: willElement.scrollHeight
     });
     
+    // Restore original styles
     Object.assign(willElement.style, originalStyle);
 
     const imgData = canvas.toDataURL('image/png', 1.0);
@@ -93,6 +95,7 @@ export const generatePdf = async (formData: WillFormData, filename: string = 'iW
 
   } catch (error) {
     console.error("Error generating PDF:", error);
+    // Restore original styles even if an error occurs
     Object.assign(willElement.style, originalStyle);
   }
 };
