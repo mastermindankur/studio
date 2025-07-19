@@ -38,4 +38,6 @@ export async function subscribeToNewsletter(formData: { email: string }): Promis
 
   } catch (error) {
     console.error("Error subscribing to newsletter:", error);
-    return { success: false, message: "
+    return { success: false, message: "Could not subscribe. Please try again later." };
+  }
+}
