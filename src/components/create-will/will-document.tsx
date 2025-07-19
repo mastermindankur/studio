@@ -1,4 +1,3 @@
-
 import { WillFormData } from "@/context/WillFormContext";
 import { format } from 'date-fns';
 
@@ -7,7 +6,7 @@ interface WillDocumentProps {
   id?: string;
 }
 
-export function WillDocument({ formData, id = "will-document" }: WillDocumentProps) {
+export function WillDocument({ formData, id = "will-document-render" }: WillDocumentProps) {
   const {
     personalInfo,
     familyDetails,

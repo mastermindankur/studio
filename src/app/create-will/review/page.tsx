@@ -81,8 +81,8 @@ export default function ReviewPage() {
   return (
     <>
       {/* Hidden component for PDF generation */}
-      <div className="hidden print:block">
-        <WillDocument formData={formData} />
+      <div className="hidden">
+        <WillDocument formData={formData} id="will-document-render" />
       </div>
 
       <div className="max-w-4xl mx-auto">
