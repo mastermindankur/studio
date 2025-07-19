@@ -27,7 +27,7 @@ const plans: PricingPlan[] = [
       "Print and Sign",
     ],
     buttonText: "Get Started",
-    buttonLink: "/create-will/personal-information"
+    buttonLink: "/signup"
   },
   {
     title: "Standard Will with Notarization",
@@ -40,7 +40,7 @@ const plans: PricingPlan[] = [
     ],
     isPopular: true,
     buttonText: "Choose Plan",
-    buttonLink: "/create-will/personal-information"
+    buttonLink: "/signup"
   },
   {
     title: "Comprehensive Will with Registration",
@@ -52,7 +52,7 @@ const plans: PricingPlan[] = [
       "Consultation with Legal Experts",
     ],
     buttonText: "Choose Plan",
-    buttonLink: "/create-will/personal-information"
+    buttonLink: "/signup"
   },
 ];
 
