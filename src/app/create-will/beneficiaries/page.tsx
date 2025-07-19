@@ -46,7 +46,7 @@ export default function BeneficiariesPage() {
   function onSubmit(data: BeneficiariesFormValues) {
     console.log(data);
     // TODO: Save data to global state
-    router.push("/create-will/executor"); // Navigate to next step
+    router.push("/create-will/asset-allocation"); // Navigate to next step
   }
 
   function handleBack() {
