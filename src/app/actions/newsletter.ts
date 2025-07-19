@@ -2,8 +2,8 @@
 "use server";
 
 import { z } from "zod";
-import { db } from "@/lib/firebase/config";
-import { collection, addDoc, query, where, getDocs, serverTimestamp } from "firebase/firestore";
+import { adminDb } from "@/lib/firebase/admin-config";
+import { FieldValue } from "firebase-admin/firestore";
 
 const newsletterSchema = z.object({
   email: z.string().email(),
@@ -20,27 +20,22 @@ export async function subscribeToNewsletter(formData: { email: string }): Promis
   }
 
   const { email } = validatedFields.data;
-  const subscriptionsRef = collection(db, "newsletterSubscriptions");
+  const subscriptionsRef = adminDb.collection("newsletterSubscriptions");
 
   try {
-    // Check if the email is already subscribed
-    const q = query(subscriptionsRef, where("email", "==", email));
-    const querySnapshot = await getDocs(q);
+    const q = subscriptionsRef.where("email", "==", email);
+    const querySnapshot = await q.get();
     if (!querySnapshot.empty) {
-      // Don't treat it as an error, just inform the user they are already on the list.
       return { success: true, message: "You're already on our list. Thanks for being a subscriber!" };
     }
 
-    // Add the new email to the collection
-    await addDoc(subscriptionsRef, {
+    await subscriptionsRef.add({
       email,
-      subscribedAt: serverTimestamp(),
+      subscribedAt: FieldValue.serverTimestamp(),
     });
     
     return { success: true, message: "Thank you for subscribing to our newsletter!" };
 
   } catch (error) {
     console.error("Error subscribing to newsletter:", error);
-    return { success: false, message: "Could not subscribe. Please try again later." };
-  }
-}
+    return { success: false, message: "

@@ -2,8 +2,8 @@
 "use server";
 
 import { z } from "zod";
-import { db } from "@/lib/firebase/config";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { adminDb } from "@/lib/firebase/admin-config";
+import { FieldValue } from "firebase-admin/firestore";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
@@ -17,7 +17,6 @@ export async function submitContactForm(formData: z.infer<typeof contactSchema>)
   const validatedFields = contactSchema.safeParse(formData);
 
   if (!validatedFields.success) {
-    // Concatenate all error messages for a more informative response
     const errors = validatedFields.error.flatten().fieldErrors;
     const errorMessages = Object.values(errors).flat().join(" ");
     return {
@@ -29,17 +28,14 @@ export async function submitContactForm(formData: z.infer<typeof contactSchema>)
   const { name, email, phone, subject, message } = validatedFields.data;
 
   try {
-    await addDoc(collection(db, "contacts"), {
+    await adminDb.collection("contacts").add({
       name,
       email,
       phone,
       subject,
       message,
-      submittedAt: serverTimestamp(),
+      submittedAt: FieldValue.serverTimestamp(),
     });
     return { success: true, message: "Thank you for your message! We will get back to you soon." };
   } catch (error) {
-    console.error("Error writing contact form to Firestore: ", error);
-    return { success: false, message: "Could not send message. Please try again later." };
-  }
-}
+    console.error("Error writing contact form to Firestore: ",
