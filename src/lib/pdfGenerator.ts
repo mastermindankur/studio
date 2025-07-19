@@ -1,4 +1,5 @@
 
+
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { WillFormData } from '@/context/WillFormContext';
@@ -25,7 +26,6 @@ export const generatePdf = async (formData: WillFormData, filename: string = 'iW
     return;
   }
   
-  // Temporarily make the element visible for capturing, but invisible to the user.
   const originalStyle = {
       display: willElement.style.display,
       position: willElement.style.position,
@@ -38,8 +38,8 @@ export const generatePdf = async (formData: WillFormData, filename: string = 'iW
   }
   willElement.style.display = 'block';
   willElement.style.position = 'absolute';
-  willElement.style.left = '0';
-  willElement.style.top = '0';
+  willElement.style.left = '0px';
+  willElement.style.top = '0px';
   willElement.style.zIndex = '-1';
   willElement.style.opacity = '0';
   willElement.style.pointerEvents = 'none';
@@ -58,10 +58,9 @@ export const generatePdf = async (formData: WillFormData, filename: string = 'iW
       windowHeight: willElement.scrollHeight
     });
     
-    // Restore original styles
     Object.assign(willElement.style, originalStyle);
 
-    const imgData = canvas.toDataURL('image/jpeg', 0.9);
+    const imgData = canvas.toDataURL('image/png', 1.0);
     const pdf = new jsPDF({
       orientation: 'portrait',
       unit: 'pt',
@@ -74,19 +73,19 @@ export const generatePdf = async (formData: WillFormData, filename: string = 'iW
     const canvasHeight = canvas.height;
     const ratio = canvasWidth > 0 ? canvasWidth / canvasHeight : 1;
     
-    let imgWidth = pdfWidth;
-    let imgHeight = imgWidth / ratio;
+    const imgWidth = pdfWidth;
+    const imgHeight = imgWidth / ratio;
     
     let heightLeft = imgHeight;
     let position = 0;
 
-    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
     heightLeft -= pdfHeight;
 
     while (heightLeft > 0) {
       position -= pdfHeight;
       pdf.addPage();
-      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
       heightLeft -= pdfHeight;
     }
     
@@ -94,7 +93,6 @@ export const generatePdf = async (formData: WillFormData, filename: string = 'iW
 
   } catch (error) {
     console.error("Error generating PDF:", error);
-    // Ensure element styles are restored even if an error occurs
     Object.assign(willElement.style, originalStyle);
   }
 };
