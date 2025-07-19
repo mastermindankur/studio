@@ -10,13 +10,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
-import { Gavel, Loader2, Mail } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Gavel, Loader2, Mail, CheckCircle } from "lucide-react";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  const [isSuccess, setIsSuccess] = useState(false);
   const { toast } = useToast();
   const auth = getAuth(app);
 
@@ -25,11 +24,7 @@ export default function ForgotPasswordPage() {
     setIsLoading(true);
     try {
       await sendPasswordResetEmail(auth, email);
-      toast({
-        title: "Password Reset Email Sent",
-        description: "Please check your inbox for instructions to reset your password.",
-      });
-      router.push("/login");
+      setIsSuccess(true);
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -40,6 +35,27 @@ export default function ForgotPasswordPage() {
       setIsLoading(false);
     }
   };
+
+  if (isSuccess) {
+    return (
+       <div className="flex items-center justify-center min-h-screen bg-background">
+          <Card className="w-full max-w-md mx-4 text-center">
+            <CardHeader>
+               <div className="flex justify-center mb-4">
+                  <CheckCircle className="h-16 w-16 text-green-500" />
+               </div>
+               <CardTitle className="font-headline text-2xl">Email Sent!</CardTitle>
+               <CardDescription>A password reset link has been sent to <strong>{email}</strong>. Please check your inbox.</CardDescription>
+            </CardHeader>
+            <CardFooter className="flex justify-center">
+                <Button asChild>
+                    <Link href="/login">Return to Login</Link>
+                </Button>
+            </CardFooter>
+          </Card>
+       </div>
+    )
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
