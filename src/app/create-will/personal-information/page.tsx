@@ -31,6 +31,7 @@ import { CalendarIcon, ChevronRight, Gavel, Info, Save } from "lucide-react";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useWillForm } from "@/context/WillFormContext";
+import { useEffect } from "react";
 
 const personalInfoSchema = z.object({
   gender: z.enum(["male", "female", "other"], { required_error: "Please select a gender." }),
@@ -49,32 +50,34 @@ type PersonalInfoFormValues = z.infer<typeof personalInfoSchema>;
 
 export default function PersonalInformationPage() {
   const router = useRouter();
-  const { formData, setFormData } = useWillForm();
+  const { formData, setFormData, saveAndGoTo, setDirty } = useWillForm();
 
   const form = useForm<PersonalInfoFormValues>({
     resolver: zodResolver(personalInfoSchema),
     defaultValues: formData.personalInfo,
   });
 
+  useEffect(() => {
+    const subscription = form.watch(() => setDirty(true));
+    return () => subscription.unsubscribe();
+  }, [form, setDirty]);
+
   function onSubmit(data: PersonalInfoFormValues) {
-    setFormData(prev => ({ ...prev, personalInfo: data }));
-    router.push("/create-will/family-details");
+    saveAndGoTo(data, "/create-will/family-details");
   }
 
   function handleSaveAndExit(data: PersonalInfoFormValues) {
-    setFormData(prev => ({ ...prev, personalInfo: data }));
-    // In a real app, you might show a toast message here
-    router.push("/dashboard");
+    saveAndGoTo(data, "/dashboard");
   }
 
   return (
-    <div className="container max-w-4xl mx-auto px-4 py-12">
+    <div className="max-w-4xl mx-auto">
+      <div className="bg-card p-8 rounded-lg shadow-lg mt-8">
         <div className="text-center mb-8">
             <Gavel className="w-12 h-12 text-primary mx-auto mb-2" />
-            <h1 className="text-3xl font-bold text-primary font-headline">Create Your Will</h1>
-            <p className="text-foreground/80">Step 1 of 7: Personal Information</p>
+            <h1 className="text-3xl font-bold text-primary font-headline">Personal Information</h1>
+            <p className="text-foreground/80">Step 1 of 7</p>
         </div>
-      <div className="bg-card p-8 rounded-lg shadow-lg">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField

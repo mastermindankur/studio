@@ -15,9 +15,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ChevronRight, ChevronLeft, PlusCircle, Trash2, Gift, Users, Save } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useWillForm } from "@/context/WillFormContext";
+import { useEffect } from "react";
 
 const beneficiarySchema = z.object({
   id: z.string().optional(),
@@ -32,8 +32,7 @@ const beneficiariesFormSchema = z.object({
 type BeneficiariesFormValues = z.infer<typeof beneficiariesFormSchema>;
 
 export default function BeneficiariesPage() {
-  const router = useRouter();
-  const { formData, setFormData } = useWillForm();
+  const { formData, saveAndGoTo, setDirty } = useWillForm();
 
   const form = useForm<BeneficiariesFormValues>({
     resolver: zodResolver(beneficiariesFormSchema),
@@ -45,38 +44,44 @@ export default function BeneficiariesPage() {
     name: "beneficiaries",
   });
 
+  useEffect(() => {
+    const subscription = form.watch(() => setDirty(true));
+    return () => subscription.unsubscribe();
+  }, [form, setDirty]);
+
   function onSubmit(data: BeneficiariesFormValues) {
-    const beneficiariesWithIds = data.beneficiaries.map((ben, index) => ({
-      ...ben,
-      id: ben.id || `ben-${Date.now()}-${index}`,
-    }));
-    setFormData(prev => ({ ...prev, beneficiaries: { beneficiaries: beneficiariesWithIds } }));
-    router.push("/create-will/asset-allocation");
+    const beneficiariesWithIds = {
+      beneficiaries: data.beneficiaries.map((ben, index) => ({
+        ...ben,
+        id: ben.id || `ben-${Date.now()}-${index}`,
+      }))
+    };
+    saveAndGoTo(beneficiariesWithIds, "/create-will/asset-allocation");
   }
 
   function handleBack() {
-    setFormData(prev => ({ ...prev, beneficiaries: form.getValues() }));
-    router.push("/create-will/assets");
+    saveAndGoTo(form.getValues(), "/create-will/assets");
   }
 
   function handleSaveAndExit(data: BeneficiariesFormValues) {
-    const beneficiariesWithIds = data.beneficiaries.map((ben, index) => ({
-      ...ben,
-      id: ben.id || `ben-${Date.now()}-${index}`,
-    }));
-    setFormData(prev => ({ ...prev, beneficiaries: { beneficiaries: beneficiariesWithIds } }));
-    router.push("/dashboard");
+    const beneficiariesWithIds = {
+      beneficiaries: data.beneficiaries.map((ben, index) => ({
+        ...ben,
+        id: ben.id || `ben-${Date.now()}-${index}`,
+      }))
+    };
+    saveAndGoTo(beneficiariesWithIds, "/dashboard");
   }
 
 
   return (
-    <div className="container max-w-4xl mx-auto px-4 py-12">
-      <div className="text-center mb-8">
-        <Gift className="w-12 h-12 text-primary mx-auto mb-2" />
-        <h1 className="text-3xl font-bold text-primary font-headline">Create Your Will</h1>
-        <p className="text-foreground/80">Step 4 of 7: Your Beneficiaries</p>
-      </div>
-      <div className="bg-card p-8 rounded-lg shadow-lg">
+    <div className="max-w-4xl mx-auto">
+      <div className="bg-card p-8 rounded-lg shadow-lg mt-8">
+        <div className="text-center mb-8">
+            <Gift className="w-12 h-12 text-primary mx-auto mb-2" />
+            <h1 className="text-3xl font-bold text-primary font-headline">Your Beneficiaries</h1>
+            <p className="text-foreground/80">Step 4 of 7</p>
+        </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             

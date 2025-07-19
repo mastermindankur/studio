@@ -2,6 +2,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 
 // Define the shape of the entire form data
 interface WillFormData {
@@ -11,12 +12,15 @@ interface WillFormData {
   beneficiaries: any;
   assetAllocation: any;
   executor: any;
+  review: any;
 }
 
 // Define the context type
 interface WillFormContextType {
   formData: WillFormData;
   setFormData: React.Dispatch<React.SetStateAction<WillFormData>>;
+  saveAndGoTo: (currentData: any, path: string) => void;
+  setDirty: (isDirty: boolean) => void;
   clearForm: () => void;
 }
 
@@ -53,6 +57,7 @@ const initialData: WillFormData = {
     },
     addSecondExecutor: false,
   },
+  review: {},
 };
 
 const WillFormContext = createContext<WillFormContextType | undefined>(undefined);
@@ -60,6 +65,10 @@ const WillFormContext = createContext<WillFormContextType | undefined>(undefined
 const WILL_FORM_STORAGE_KEY = 'willFormData';
 
 export const WillFormProvider = ({ children }: { children: ReactNode }) => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const [isDirty, setDirty] = useState(false);
+
   const [formData, setFormData] = useState<WillFormData>(() => {
     if (typeof window === 'undefined') {
       return initialData;
@@ -67,7 +76,6 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
     try {
       const savedData = window.localStorage.getItem(WILL_FORM_STORAGE_KEY);
       return savedData ? JSON.parse(savedData, (key, value) => {
-        // Revive dates properly
         if (key === 'dob' && typeof value === 'string') {
           return new Date(value);
         }
@@ -79,13 +87,45 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
     }
   });
 
-  useEffect(() => {
-    try {
-      window.localStorage.setItem(WILL_FORM_STORAGE_KEY, JSON.stringify(formData));
-    } catch (error) {
-      console.error("Error writing to localStorage", error);
+  const getStepKey = (path: string): keyof WillFormData | null => {
+    if (path.includes('personal-information')) return 'personalInfo';
+    if (path.includes('family-details')) return 'familyDetails';
+    if (path.includes('assets')) return 'assets';
+    if (path.includes('beneficiaries')) return 'beneficiaries';
+    if (path.includes('asset-allocation')) return 'assetAllocation';
+    if (path.includes('executor')) return 'executor';
+    if (path.includes('review')) return 'review';
+    return null;
+  };
+
+  const saveAndGoTo = (currentStepData: any, path: string) => {
+    const stepKey = getStepKey(pathname);
+    if (stepKey) {
+      const updatedData = { ...formData, [stepKey]: currentStepData };
+      setFormData(updatedData);
+      try {
+        window.localStorage.setItem(WILL_FORM_STORAGE_KEY, JSON.stringify(updatedData));
+      } catch (error) {
+        console.error("Error writing to localStorage", error);
+      }
     }
-  }, [formData]);
+    setDirty(false);
+    router.push(path);
+  };
+  
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isDirty]);
+
 
   const clearForm = () => {
     setFormData(initialData);
@@ -95,7 +135,7 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <WillFormContext.Provider value={{ formData, setFormData, clearForm }}>
+    <WillFormContext.Provider value={{ formData, setFormData, saveAndGoTo, setDirty, clearForm }}>
       {children}
     </WillFormContext.Provider>
   );

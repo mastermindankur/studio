@@ -41,8 +41,7 @@ const familyDetailsSchema = z.object({
 type FamilyDetailsFormValues = z.infer<typeof familyDetailsSchema>;
 
 export default function FamilyDetailsPage() {
-  const router = useRouter();
-  const { formData, setFormData } = useWillForm();
+  const { formData, saveAndGoTo, setDirty } = useWillForm();
 
   const form = useForm<FamilyDetailsFormValues>({
     resolver: zodResolver(familyDetailsSchema),
@@ -57,34 +56,36 @@ export default function FamilyDetailsPage() {
   const watchMaritalStatus = form.watch("maritalStatus");
 
   useEffect(() => {
+    const subscription = form.watch(() => setDirty(true));
+    return () => subscription.unsubscribe();
+  }, [form, setDirty]);
+
+  useEffect(() => {
     if (watchMaritalStatus !== 'married') {
         form.setValue('spouseName', '');
     }
   }, [watchMaritalStatus, form]);
 
   function onSubmit(data: FamilyDetailsFormValues) {
-    setFormData(prev => ({ ...prev, familyDetails: data }));
-    router.push("/create-will/assets");
+    saveAndGoTo(data, "/create-will/assets");
   }
   
   function handleBack() {
-    setFormData(prev => ({ ...prev, familyDetails: form.getValues() }));
-    router.push("/create-will/personal-information");
+    saveAndGoTo(form.getValues(), "/create-will/personal-information");
   }
 
   function handleSaveAndExit(data: FamilyDetailsFormValues) {
-    setFormData(prev => ({ ...prev, familyDetails: data }));
-    router.push("/dashboard");
+    saveAndGoTo(data, "/dashboard");
   }
 
   return (
-    <div className="container max-w-4xl mx-auto px-4 py-12">
+    <div className="max-w-4xl mx-auto">
+      <div className="bg-card p-8 rounded-lg shadow-lg mt-8">
         <div className="text-center mb-8">
             <Users className="w-12 h-12 text-primary mx-auto mb-2" />
-            <h1 className="text-3xl font-bold text-primary font-headline">Create Your Will</h1>
-            <p className="text-foreground/80">Step 2 of 7: Family Details</p>
+            <h1 className="text-3xl font-bold text-primary font-headline">Family Details</h1>
+            <p className="text-foreground/80">Step 2 of 7</p>
         </div>
-      <div className="bg-card p-8 rounded-lg shadow-lg">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField

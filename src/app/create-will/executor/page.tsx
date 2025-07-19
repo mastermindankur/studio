@@ -18,9 +18,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ChevronRight, ChevronLeft, UserCheck, Edit, Save } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import { useWillForm } from "@/context/WillFormContext";
+import { useEffect } from "react";
 
 const executorSchema = z.object({
   fullName: z.string().min(2, "Full name is required."),
@@ -49,8 +49,7 @@ const formSchema = z.object({
 type ExecutorFormValues = z.infer<typeof formSchema>;
 
 export default function ExecutorPage() {
-  const router = useRouter();
-  const { formData, setFormData } = useWillForm();
+  const { formData, saveAndGoTo, setDirty } = useWillForm();
 
   const form = useForm<ExecutorFormValues>({
     resolver: zodResolver(formSchema),
@@ -69,30 +68,32 @@ export default function ExecutorPage() {
 
   const watchAddSecondExecutor = form.watch("addSecondExecutor");
 
+  useEffect(() => {
+    const subscription = form.watch(() => setDirty(true));
+    return () => subscription.unsubscribe();
+  }, [form, setDirty]);
+
   function onSubmit(data: ExecutorFormValues) {
-    setFormData(prev => ({ ...prev, executor: data }));
-    router.push("/create-will/review"); 
+    saveAndGoTo(data, "/create-will/review"); 
   }
 
   function handleBack() {
-    setFormData(prev => ({ ...prev, executor: form.getValues() }));
-    router.push("/create-will/asset-allocation");
+    saveAndGoTo(form.getValues(), "/create-will/asset-allocation");
   }
 
   function handleSaveAndExit(data: ExecutorFormValues) {
-    setFormData(prev => ({ ...prev, executor: data }));
-    router.push("/dashboard");
+    saveAndGoTo(data, "/dashboard");
   }
 
 
   return (
-    <div className="container max-w-4xl mx-auto px-4 py-12">
-      <div className="text-center mb-8">
-        <UserCheck className="w-12 h-12 text-primary mx-auto mb-2" />
-        <h1 className="text-3xl font-bold text-primary font-headline">Create Your Will</h1>
-        <p className="text-foreground/80">Step 6 of 7: Executor & Instructions</p>
-      </div>
-      <div className="bg-card p-8 rounded-lg shadow-lg">
+    <div className="max-w-4xl mx-auto">
+      <div className="bg-card p-8 rounded-lg shadow-lg mt-8">
+        <div className="text-center mb-8">
+            <UserCheck className="w-12 h-12 text-primary mx-auto mb-2" />
+            <h1 className="text-3xl font-bold text-primary font-headline">Executor & Instructions</h1>
+            <p className="text-foreground/80">Step 6 of 7</p>
+        </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             

@@ -17,8 +17,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { ChevronRight, ChevronLeft, PlusCircle, Trash2, Landmark, Save } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useWillForm } from "@/context/WillFormContext";
+import { useEffect } from "react";
 
 const assetSchema = z.object({
   id: z.string().optional(), // Keep track of asset for allocation
@@ -44,8 +44,7 @@ const assetTypes = [
 ];
 
 export default function AssetsPage() {
-  const router = useRouter();
-  const { formData, setFormData } = useWillForm();
+  const { formData, saveAndGoTo, setDirty } = useWillForm();
 
   const form = useForm<AssetsFormValues>({
     resolver: zodResolver(assetsFormSchema),
@@ -57,37 +56,43 @@ export default function AssetsPage() {
     name: "assets",
   });
 
+  useEffect(() => {
+    const subscription = form.watch(() => setDirty(true));
+    return () => subscription.unsubscribe();
+  }, [form, setDirty]);
+
   function onSubmit(data: AssetsFormValues) {
-    const assetsWithIds = data.assets.map((asset, index) => ({
-      ...asset,
-      id: asset.id || `asset-${Date.now()}-${index}`,
-    }));
-    setFormData(prev => ({ ...prev, assets: { assets: assetsWithIds } }));
-    router.push("/create-will/beneficiaries");
+    const assetsWithIds = {
+      assets: data.assets.map((asset, index) => ({
+        ...asset,
+        id: asset.id || `asset-${Date.now()}-${index}`,
+      })),
+    };
+    saveAndGoTo(assetsWithIds, "/create-will/beneficiaries");
   }
   
   function handleBack() {
-    setFormData(prev => ({ ...prev, assets: form.getValues() }));
-    router.push("/create-will/family-details");
+    saveAndGoTo(form.getValues(), "/create-will/family-details");
   }
 
   function handleSaveAndExit(data: AssetsFormValues) {
-     const assetsWithIds = data.assets.map((asset, index) => ({
-      ...asset,
-      id: asset.id || `asset-${Date.now()}-${index}`,
-    }));
-    setFormData(prev => ({ ...prev, assets: { assets: assetsWithIds } }));
-    router.push("/dashboard");
+     const assetsWithIds = {
+      assets: data.assets.map((asset, index) => ({
+        ...asset,
+        id: asset.id || `asset-${Date.now()}-${index}`,
+      })),
+    };
+    saveAndGoTo(assetsWithIds, "/dashboard");
   }
 
   return (
-    <div className="container max-w-4xl mx-auto px-4 py-12">
-      <div className="text-center mb-8">
-        <Landmark className="w-12 h-12 text-primary mx-auto mb-2" />
-        <h1 className="text-3xl font-bold text-primary font-headline">Create Your Will</h1>
-        <p className="text-foreground/80">Step 3 of 7: Your Assets</p>
-      </div>
-      <div className="bg-card p-8 rounded-lg shadow-lg">
+    <div className="max-w-4xl mx-auto">
+      <div className="bg-card p-8 rounded-lg shadow-lg mt-8">
+        <div className="text-center mb-8">
+            <Landmark className="w-12 h-12 text-primary mx-auto mb-2" />
+            <h1 className="text-3xl font-bold text-primary font-headline">Your Assets</h1>
+            <p className="text-foreground/80">Step 3 of 7</p>
+        </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="space-y-6">

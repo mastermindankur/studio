@@ -2,7 +2,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, useFieldArray, Controller } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,9 +16,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChevronRight, ChevronLeft, PlusCircle, Trash2, PieChart, Info, Save } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useWillForm } from "@/context/WillFormContext";
+import { useEffect } from "react";
 
 const allocationSchema = z.object({
   assetId: z.string({ required_error: "Please select an asset." }),
@@ -53,8 +53,7 @@ const assetAllocationFormSchema = z.object({
 type AssetAllocationFormValues = z.infer<typeof assetAllocationFormSchema>;
 
 export default function AssetAllocationPage() {
-  const router = useRouter();
-  const { formData, setFormData } = useWillForm();
+  const { formData, saveAndGoTo, setDirty } = useWillForm();
 
   const MOCK_ASSETS = formData.assets?.assets || [];
   const MOCK_BENEFICIARIES = formData.beneficiaries?.beneficiaries || [];
@@ -69,29 +68,31 @@ export default function AssetAllocationPage() {
     name: "allocations",
   });
 
+  useEffect(() => {
+    const subscription = form.watch(() => setDirty(true));
+    return () => subscription.unsubscribe();
+  }, [form, setDirty]);
+
   function onSubmit(data: AssetAllocationFormValues) {
-    setFormData(prev => ({ ...prev, assetAllocation: data }));
-    router.push("/create-will/executor");
+    saveAndGoTo(data, "/create-will/executor");
   }
 
   function handleBack() {
-    setFormData(prev => ({ ...prev, assetAllocation: form.getValues() }));
-    router.push("/create-will/beneficiaries");
+    saveAndGoTo(form.getValues(), "/create-will/beneficiaries");
   }
 
   function handleSaveAndExit(data: AssetAllocationFormValues) {
-    setFormData(prev => ({ ...prev, assetAllocation: data }));
-    router.push("/dashboard");
+    saveAndGoTo(data, "/dashboard");
   }
 
   return (
-    <div className="container max-w-4xl mx-auto px-4 py-12">
-      <div className="text-center mb-8">
-        <PieChart className="w-12 h-12 text-primary mx-auto mb-2" />
-        <h1 className="text-3xl font-bold text-primary font-headline">Create Your Will</h1>
-        <p className="text-foreground/80">Step 5 of 7: Asset Allocation</p>
-      </div>
-      <div className="bg-card p-8 rounded-lg shadow-lg">
+    <div className="max-w-4xl mx-auto">
+      <div className="bg-card p-8 rounded-lg shadow-lg mt-8">
+        <div className="text-center mb-8">
+            <PieChart className="w-12 h-12 text-primary mx-auto mb-2" />
+            <h1 className="text-3xl font-bold text-primary font-headline">Asset Allocation</h1>
+            <p className="text-foreground/80">Step 5 of 7</p>
+        </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 
