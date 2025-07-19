@@ -68,7 +68,7 @@ export const generatePdf = async (formData: WillFormData, filename: string = 'iW
     const pdfHeight = pdf.internal.pageSize.getHeight();
     const canvasWidth = canvas.width;
     const canvasHeight = canvas.height;
-    const ratio = canvasWidth / canvasHeight;
+    const ratio = canvasWidth > 0 ? canvasWidth / canvasHeight : 1;
     
     let imgWidth = pdfWidth - 40; // with some margin
     let imgHeight = imgWidth / ratio;
@@ -80,7 +80,7 @@ export const generatePdf = async (formData: WillFormData, filename: string = 'iW
     heightLeft -= (pdfHeight - 40);
 
     while (heightLeft > 0) {
-      position = heightLeft - imgHeight; // This should be position -= pdfHeight - 40; but jspdf handles it internally
+      position = position - pdfHeight + 40; // Correctly calculate the position for the next page
       pdf.addPage();
       pdf.addImage(imgData, 'JPEG', 20, position, imgWidth, imgHeight);
       heightLeft -= (pdfHeight - 40);
