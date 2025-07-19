@@ -120,24 +120,26 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 max-w-screen-2xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center space-x-2" aria-label="iWills.in Home">
-          <Gavel className="h-8 w-8 text-primary" />
-          <span className="font-headline text-2xl font-bold text-primary">iWills.in</span>
-        </Link>
+        <div className="flex items-center gap-6 md:gap-10">
+            <Link href="/" className="flex items-center space-x-2" aria-label="iWills.in Home">
+              <Gavel className="h-8 w-8 text-primary" />
+              <span className="font-headline text-2xl font-bold text-primary">iWills.in</span>
+            </Link>
 
-        {!user && (
-          <nav className="hidden lg:flex items-center space-x-4">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="font-headline text-sm text-foreground hover:text-primary transition-colors duration-300 whitespace-nowrap"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-        )}
+            {!user && (
+              <nav className="hidden lg:flex items-center space-x-6">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="font-headline text-sm text-foreground hover:text-primary transition-colors duration-300 whitespace-nowrap"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </nav>
+            )}
+        </div>
 
         <div className="hidden lg:flex flex-1 justify-end">
           <AuthLinks />
