@@ -150,7 +150,7 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
   }, [isDirty]);
 
   const loadWill = (willData: any) => {
-    const dataToLoad = { ...willData };
+    const dataToLoad = { ...initialData, ...willData };
     delete dataToLoad.willId;
     setFormData(dataToLoad);
     saveToLocalStorage(dataToLoad);
@@ -177,3 +177,5 @@ export const useWillForm = () => {
   }
   return context;
 };
+
+    
