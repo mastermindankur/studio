@@ -131,7 +131,7 @@ export function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="font-headline text-base text-foreground hover:text-primary transition-colors duration-300 whitespace-nowrap"
+                className="font-headline text-sm text-foreground hover:text-primary transition-colors duration-300 whitespace-nowrap"
               >
                 {item.label}
               </Link>
@@ -143,7 +143,7 @@ export function Header() {
           <AuthLinks />
         </div>
 
-        <div className="lg:hidden">
+        <div className="lg:hidden flex items-center">
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" aria-label="Open menu">
@@ -163,13 +163,14 @@ export function Header() {
                       </Button>
                     </SheetClose>
                 </div>
-                {!user && currentNavItems.map((item) => (
+                {currentNavItems.map((item) => (
                   <SheetClose asChild key={item.href}>
                     <Link
                       href={item.href}
-                      className="font-headline text-lg text-foreground hover:text-primary transition-colors duration-300 py-2 text-center"
+                      className="font-headline text-lg text-foreground hover:text-primary transition-colors duration-300 py-2 text-center flex items-center justify-center"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
+                      {'icon' in item && <item.icon className="mr-2 h-5 w-5" />}
                       {item.label}
                     </Link>
                   </SheetClose>
