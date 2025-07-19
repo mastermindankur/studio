@@ -1,3 +1,4 @@
+
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { WillFormData } from '@/context/WillFormContext';
@@ -18,8 +19,8 @@ const ensureImagesLoaded = (element: HTMLElement): Promise<void> => {
     return Promise.all(promises).then(() => {});
 };
 
-export const generatePdf = async (formData: WillFormData, filename: string = 'iWills-in_Will.pdf'): Promise<void> => {
-  const willElement = document.getElementById(RENDER_ELEMENT_ID);
+export const generatePdf = async (formData: WillFormData, filename: string = 'iWills-in_Will.pdf', elementId: string = RENDER_ELEMENT_ID): Promise<void> => {
+  const willElement = document.getElementById(elementId);
   
   if (!willElement) {
     console.error("Will document element not found");

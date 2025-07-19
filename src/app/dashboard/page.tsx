@@ -120,7 +120,7 @@ function DashboardPageContent() {
   const handleDownloadPdf = async (will: Will) => {
       setPdfGeneratingWillId(will.id);
       try {
-          await generatePdf(will.data, `iWills-in_Will_v${will.version}.pdf`);
+          await generatePdf(will.data, `iWills-in_Will_v${will.version}.pdf`, `will-doc-${will.id}`);
       } catch (error) {
           console.error("Error generating PDF:", error);
       } finally {
@@ -254,5 +254,3 @@ export default function DashboardPage() {
         </WillFormProvider>
     )
 }
-
-    
