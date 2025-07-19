@@ -1,9 +1,14 @@
+
+"use client";
+
 import { NewsletterSignup } from "@/components/sections/newsletter-signup";
 import { Gavel } from "lucide-react";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
+  const { user } = useAuth();
 
   return (
     <footer className="bg-background text-foreground py-12 mt-auto">
@@ -19,9 +24,11 @@ export function Footer() {
             </p>
           </div>
 
-          <div className="md:col-span-2">
-             <NewsletterSignup />
-          </div>
+          {!user && (
+            <div className="md:col-span-2">
+               <NewsletterSignup />
+            </div>
+          )}
         </div>
         
         <div className="mt-10 border-t border-border pt-8 text-center text-sm text-foreground/80">
