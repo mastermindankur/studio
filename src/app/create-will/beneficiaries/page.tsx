@@ -21,17 +21,10 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 const beneficiarySchema = z.object({
   name: z.string().min(2, "Beneficiary's name must be at least 2 characters."),
   relationship: z.string().min(2, "Relationship must be at least 2 characters."),
-  sharePercentage: z.coerce.number().min(1, "Share must be at least 1%.").max(100, "Share cannot exceed 100%."),
 });
 
 const beneficiariesFormSchema = z.object({
   beneficiaries: z.array(beneficiarySchema),
-}).refine(data => {
-    const totalShare = data.beneficiaries.reduce((acc, b) => acc + b.sharePercentage, 0);
-    return totalShare === 100;
-}, {
-    message: "The total share for all beneficiaries must add up to exactly 100%.",
-    path: ["beneficiaries"],
 });
 
 type BeneficiariesFormValues = z.infer<typeof beneficiariesFormSchema>;
@@ -41,7 +34,7 @@ export default function BeneficiariesPage() {
   const form = useForm<BeneficiariesFormValues>({
     resolver: zodResolver(beneficiariesFormSchema),
     defaultValues: {
-      beneficiaries: [{ name: "", relationship: "", sharePercentage: 0 }],
+      beneficiaries: [{ name: "", relationship: "" }],
     },
   });
 
@@ -53,14 +46,12 @@ export default function BeneficiariesPage() {
   function onSubmit(data: BeneficiariesFormValues) {
     console.log(data);
     // TODO: Save data to global state
-    // router.push("/create-will/executor"); // Navigate to next step
+    router.push("/create-will/executor"); // Navigate to next step
   }
 
   function handleBack() {
     router.push("/create-will/assets");
   }
-  
-  const totalShare = form.watch('beneficiaries').reduce((acc, b) => acc + (b.sharePercentage || 0), 0);
 
   return (
     <div className="container max-w-4xl mx-auto px-4 py-12">
@@ -75,7 +66,7 @@ export default function BeneficiariesPage() {
             
             <Alert>
               <Users className="h-4 w-4" />
-              <AlertTitle>Add Your Family Members</AlertTitle>
+              <AlertTitle>Add Your Beneficiaries</AlertTitle>
               <AlertDescription>
                 You can add your spouse and children (from Step 2) as beneficiaries here, or add anyone else you wish to include in your will.
               </AlertDescription>
@@ -112,19 +103,6 @@ export default function BeneficiariesPage() {
                       )}
                     />
                   </div>
-                  <FormField
-                    control={form.control}
-                    name={`beneficiaries.${index}.sharePercentage`}
-                    render={({ field }) => (
-                      <FormItem className="mt-6">
-                        <FormLabel>Share of Estate (%)</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="e.g., 50" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                   {fields.length > 1 && (
                     <Button
                       type="button"
@@ -146,22 +124,12 @@ export default function BeneficiariesPage() {
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => append({ name: "", relationship: "", sharePercentage: 0 })}
+                onClick={() => append({ name: "", relationship: "" })}
                 >
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Add Another Beneficiary
                 </Button>
-                <div className={`font-semibold ${totalShare !== 100 ? 'text-destructive' : 'text-green-500'}`}>
-                    Total Share: {totalShare}%
-                </div>
             </div>
-            
-            {form.formState.errors.beneficiaries && (
-              <p className="text-sm font-medium text-destructive">
-                {form.formState.errors.beneficiaries.message}
-              </p>
-            )}
-
 
             <div className="flex justify-between mt-8">
               <Button type="button" size="lg" variant="outline" onClick={handleBack}>
