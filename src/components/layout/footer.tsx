@@ -27,7 +27,8 @@ export function Footer() {
         <div className="mt-10 border-t border-border pt-8 text-center text-sm text-foreground/80">
           <p>&copy; {currentYear} iWills.in. All rights reserved.</p>
           <p className="mt-1">
-            <Link href="/privacy-policy" className="hover:text-primary hover:underline transition-colors">Privacy Policy</Link> | 
+            <Link href="/about-us" className="hover:text-primary hover:underline transition-colors ml-1">About Us</Link> |
+            <Link href="/privacy-policy" className="hover:text-primary hover:underline transition-colors ml-1">Privacy Policy</Link> | 
             <Link href="/terms-of-service" className="hover:text-primary hover:underline transition-colors ml-1"> Terms of Service</Link> |
             <Link href="/faqs" className="hover:text-primary hover:underline transition-colors ml-1"> FAQs</Link> |
             <Link href="/disclaimer" className="hover:text-primary hover:underline transition-colors ml-1"> Disclaimer</Link> |
