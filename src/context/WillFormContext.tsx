@@ -65,6 +65,29 @@ const WillFormContext = createContext<WillFormContextType | undefined>(undefined
 
 const WILL_FORM_STORAGE_KEY_PREFIX = 'willFormData_';
 
+// A helper function to deeply merge two objects.
+const mergeDeep = (target: any, source: any) => {
+  const output = { ...target };
+  if (isObject(target) && isObject(source)) {
+    Object.keys(source).forEach(key => {
+      if (isObject(source[key])) {
+        if (!(key in target))
+          Object.assign(output, { [key]: source[key] });
+        else
+          output[key] = mergeDeep(target[key], source[key]);
+      } else {
+        Object.assign(output, { [key]: source[key] });
+      }
+    });
+  }
+  return output;
+}
+
+const isObject = (item: any) => {
+  return (item && typeof item === 'object' && !Array.isArray(item));
+}
+
+
 export const WillFormProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -150,7 +173,8 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
   }, [isDirty]);
 
   const loadWill = (willData: any) => {
-    const dataToLoad = { ...initialData, ...willData };
+    // Deep merge existing will data with the initial structure to ensure all keys are present
+    const dataToLoad = mergeDeep(initialData, willData);
     delete dataToLoad.willId;
     setFormData(dataToLoad);
     saveToLocalStorage(dataToLoad);
