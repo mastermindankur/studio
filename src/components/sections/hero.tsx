@@ -16,7 +16,7 @@ export function HeroSection() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <Button asChild size="lg" className="font-headline text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <Link href="#services">Create Your Will Now</Link>
+              <Link href="/create-will/personal-information">Create Your Will Now</Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="font-headline text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border-primary text-primary hover:bg-primary/10">
               <Link href="#ai-assistant">Ask Our AI Assistant</Link>

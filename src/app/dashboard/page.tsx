@@ -65,7 +65,7 @@ export default function DashboardPage() {
                     You have not created a Will yet. Get started today to protect your family's future.
                 </p>
                 <Button asChild>
-                    <Link href="/#services">Create Your Will</Link>
+                    <Link href="/create-will/personal-information">Create Your Will</Link>
                 </Button>
             </CardContent>
         </Card>

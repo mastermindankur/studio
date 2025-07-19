@@ -4,6 +4,7 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, IndianRupee } from "lucide-react";
+import Link from "next/link";
 
 interface PricingPlan {
   title: string;
@@ -12,7 +13,7 @@ interface PricingPlan {
   features: string[];
   isPopular?: boolean;
   buttonText: string;
-  buttonLink?: string; // Optional: if each button should link somewhere specific
+  buttonLink: string; 
 }
 
 const plans: PricingPlan[] = [
@@ -26,6 +27,7 @@ const plans: PricingPlan[] = [
       "Print and Sign",
     ],
     buttonText: "Get Started",
+    buttonLink: "/create-will/personal-information"
   },
   {
     title: "Standard Will with Notarization",
@@ -38,6 +40,7 @@ const plans: PricingPlan[] = [
     ],
     isPopular: true,
     buttonText: "Choose Plan",
+    buttonLink: "/create-will/personal-information"
   },
   {
     title: "Comprehensive Will with Registration",
@@ -49,6 +52,7 @@ const plans: PricingPlan[] = [
       "Consultation with Legal Experts",
     ],
     buttonText: "Choose Plan",
+    buttonLink: "/create-will/personal-information"
   },
 ];
 
@@ -101,9 +105,9 @@ export function Pricing() {
                   size="lg" 
                   className="w-full font-headline text-lg"
                   variant={plan.isPopular ? "default" : "secondary"}
-                  asChild={!!plan.buttonLink}
+                  asChild
                 >
-                  {plan.buttonLink ? <a href={plan.buttonLink}>{plan.buttonText}</a> : plan.buttonText}
+                  <Link href={plan.buttonLink}>{plan.buttonText}</Link>
                 </Button>
               </CardFooter>
             </Card>

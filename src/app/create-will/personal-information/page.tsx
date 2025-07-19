@@ -1,0 +1,299 @@
+"use client";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
+import { CalendarIcon, User, Mail, Phone, Info, ChevronRight, Gavel } from "lucide-react";
+import { format } from "date-fns";
+
+const personalInfoSchema = z.object({
+  gender: z.enum(["male", "female", "other"], { required_error: "Please select a gender." }),
+  fullName: z.string().min(2, "Full name must be at least 2 characters."),
+  dob: z.date({ required_error: "A date of birth is required." }),
+  fatherHusbandName: z.string().min(2, "This field is required."),
+  religion: z.string({ required_error: "Please select a religion." }),
+  aadhar: z.string().regex(/^\d{12}$/, "Please enter a valid 12-digit Aadhar number."),
+  occupation: z.string().min(2, "Occupation is required."),
+  address: z.string().min(10, "Address must be at least 10 characters."),
+  email: z.string().email("Invalid email address."),
+  mobile: z.string().regex(/^\d{10}$/, "Please enter a valid 10-digit mobile number."),
+});
+
+type PersonalInfoFormValues = z.infer<typeof personalInfoSchema>;
+
+export default function PersonalInformationPage() {
+  const form = useForm<PersonalInfoFormValues>({
+    resolver: zodResolver(personalInfoSchema),
+    defaultValues: {
+      fullName: "",
+      fatherHusbandName: "",
+      aadhar: "",
+      occupation: "",
+      address: "",
+      email: "",
+      mobile: "",
+    },
+  });
+
+  function onSubmit(data: PersonalInfoFormValues) {
+    console.log(data);
+    // TODO: Handle form submission, e.g., save to state/DB and navigate to next step
+  }
+
+  return (
+    <div className="container max-w-4xl mx-auto px-4 py-12">
+        <div className="text-center mb-8">
+            <Gavel className="w-12 h-12 text-primary mx-auto mb-2" />
+            <h1 className="text-3xl font-bold text-primary font-headline">Create Your Will</h1>
+            <p className="text-foreground/80">Step 1 of 6: Personal Information</p>
+        </div>
+      <div className="bg-card p-8 rounded-lg shadow-lg">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <FormField
+              control={form.control}
+              name="gender"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel>Gender</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-6"
+                    >
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="male" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Male</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="female" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Female</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="other" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Other</FormLabel>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="grid md:grid-cols-2 gap-8">
+                <FormField
+                control={form.control}
+                name="fullName"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Full Name</FormLabel>
+                    <FormControl>
+                        <Input placeholder="Your full name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={form.control}
+                name="dob"
+                render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                    <FormLabel>Date of Birth</FormLabel>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                        <FormControl>
+                            <Button
+                            variant={"outline"}
+                            className={cn(
+                                "pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                            )}
+                            >
+                            {field.value ? (
+                                format(field.value, "PPP")
+                            ) : (
+                                <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                        </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) =>
+                            date > new Date() || date < new Date("1900-01-01")
+                            }
+                            initialFocus
+                        />
+                        </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8">
+                <FormField
+                control={form.control}
+                name="fatherHusbandName"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Father/Husband Full Name</FormLabel>
+                    <FormControl>
+                        <Input placeholder="Father's or Husband's full name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={form.control}
+                name="religion"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Religion</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select your religion" />
+                        </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                        <SelectItem value="hindu">Hindu</SelectItem>
+                        <SelectItem value="muslim">Muslim</SelectItem>
+                        <SelectItem value="christian">Christian</SelectItem>
+                        <SelectItem value="sikh">Sikh</SelectItem>
+                        <SelectItem value="jain">Jain</SelectItem>
+                        <SelectItem value="buddhist">Buddhist</SelectItem>
+                        <SelectItem value="parsi">Parsi</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+            </div>
+            
+            <FormField
+              control={form.control}
+              name="aadhar"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Your Aadhar Number</FormLabel>
+                  <FormControl>
+                    <Input type="text" maxLength={12} placeholder="Enter 12-digit Aadhar number" {...field} />
+                  </FormControl>
+                  <FormDescription className="flex items-center gap-1">
+                    <Info className="h-3 w-3" />
+                    We'll never share your Aadhar with anyone. It is to ensure your will cannot be challenged.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="occupation"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Occupation</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., Software Engineer, Doctor, Homemaker" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="address"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Address</FormLabel>
+                  <FormControl>
+                    <Textarea placeholder="Your full current address" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="grid md:grid-cols-2 gap-8">
+                 <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Email Address</FormLabel>
+                        <FormControl>
+                            <Input type="email" placeholder="you@example.com" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                 <FormField
+                    control={form.control}
+                    name="mobile"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Mobile Number</FormLabel>
+                        <FormControl>
+                            <Input type="tel" maxLength={10} placeholder="Enter 10-digit mobile number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            </div>
+
+
+            <div className="flex justify-end">
+              <Button type="submit" size="lg">
+                Next Step <ChevronRight className="ml-2 h-5 w-5" />
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </div>
+    </div>
+  );
+}
