@@ -116,9 +116,9 @@ export default function AssetsPage() {
                         render={({ field }) => (
                             <FormItem>
                             <FormLabel>Asset Type</FormLabel>
-                             <FormDescription>
+                             <p className="text-[0.8rem] text-muted-foreground">
                                 Select the category of the asset.
-                              </FormDescription>
+                              </p>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl>
                                 <SelectTrigger>
@@ -141,9 +141,9 @@ export default function AssetsPage() {
                         render={({ field }) => (
                             <FormItem>
                             <FormLabel>Estimated Value (in ₹)</FormLabel>
-                             <FormDescription>
+                             <p className="text-[0.8rem] text-muted-foreground">
                                 An approximate current market value.
-                              </FormDescription>
+                              </p>
                             <FormControl>
                                 <Input type="text" inputMode="numeric" placeholder="e.g., 500000" {...field} />
                             </FormControl>

@@ -21,7 +21,7 @@ import { ChevronRight, ChevronLeft, UserCheck, Edit, Save, Info } from "lucide-r
 import { Separator } from "@/components/ui/separator";
 import { useWillForm } from "@/context/WillFormContext";
 import { useEffect } from "react";
-import { Alert, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertTitle, AlertDescription as AlertDesc } from "@/components/ui/alert";
 
 
 const executorSchema = z.object({
@@ -96,14 +96,14 @@ export default function ExecutorPage() {
             <h1 className="text-3xl font-bold text-primary font-headline">Executor & Instructions</h1>
             <p className="text-foreground/80">Step 6 of 7</p>
         </div>
-        <Alert className="mb-8">
-          <Info className="h-4 w-4" />
-          <AlertTitle>What is an Executor?</AlertTitle>
-          <FormDescription>
-            The Executor is the person you trust to carry out the instructions in your will. They will be responsible for managing your estate, paying any debts, and distributing your assets to the beneficiaries. Choose someone reliable and trustworthy.
-          </FormDescription>
-        </Alert>
         <Form {...form}>
+            <Alert className="mb-8">
+            <Info className="h-4 w-4" />
+            <AlertTitle>What is an Executor?</AlertTitle>
+            <AlertDesc>
+                The Executor is the person you trust to carry out the instructions in your will. They will be responsible for managing your estate, paying any debts, and distributing your assets to the beneficiaries. Choose someone reliable and trustworthy.
+            </AlertDesc>
+            </Alert>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             
             <div>
