@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ChevronRight, ChevronLeft, Gavel, PlusCircle, Trash2, Users } from "lucide-react";
+import { ChevronRight, ChevronLeft, PlusCircle, Trash2, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const familyDetailsSchema = z.object({
@@ -168,4 +168,3 @@ export default function FamilyDetailsPage() {
     </div>
   );
 }
-
