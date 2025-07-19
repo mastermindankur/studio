@@ -5,14 +5,14 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { useRouter, usePathname } from 'next/navigation';
 
 // Define the shape of the entire form data
-interface WillFormData {
+export interface WillFormData {
+  willId?: string;
   personalInfo: any;
   familyDetails: any;
   assets: any;
   beneficiaries: any;
   assetAllocation: any;
   executor: any;
-  review: any;
 }
 
 // Define the context type
@@ -22,6 +22,7 @@ interface WillFormContextType {
   saveAndGoTo: (currentData: any, path: string) => void;
   setDirty: (isDirty: boolean) => void;
   clearForm: () => void;
+  loadWill: (willData: any) => void;
 }
 
 const initialData: WillFormData = {
@@ -57,7 +58,6 @@ const initialData: WillFormData = {
     },
     addSecondExecutor: false,
   },
-  review: {},
 };
 
 const WillFormContext = createContext<WillFormContextType | undefined>(undefined);
@@ -87,27 +87,30 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
     }
   });
 
-  const getStepKey = (path: string): keyof WillFormData | null => {
+  const getStepKey = (path: string): keyof Omit<WillFormData, 'willId'> | null => {
     if (path.includes('personal-information')) return 'personalInfo';
     if (path.includes('family-details')) return 'familyDetails';
     if (path.includes('assets')) return 'assets';
     if (path.includes('beneficiaries')) return 'beneficiaries';
     if (path.includes('asset-allocation')) return 'assetAllocation';
     if (path.includes('executor')) return 'executor';
-    if (path.includes('review')) return 'review';
     return null;
   };
+
+  const saveToLocalStorage = (data: WillFormData) => {
+     try {
+        window.localStorage.setItem(WILL_FORM_STORAGE_KEY, JSON.stringify(data));
+      } catch (error) {
+        console.error("Error writing to localStorage", error);
+      }
+  }
 
   const saveAndGoTo = (currentStepData: any, path: string) => {
     const stepKey = getStepKey(pathname);
     if (stepKey) {
       const updatedData = { ...formData, [stepKey]: currentStepData };
       setFormData(updatedData);
-      try {
-        window.localStorage.setItem(WILL_FORM_STORAGE_KEY, JSON.stringify(updatedData));
-      } catch (error) {
-        console.error("Error writing to localStorage", error);
-      }
+      saveToLocalStorage(updatedData);
     }
     setDirty(false);
     router.push(path);
@@ -126,6 +129,14 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
     };
   }, [isDirty]);
 
+  const loadWill = (willData: any) => {
+    // When loading an existing will to edit, we don't set a willId
+    // A new ID will be generated on save.
+    const dataToLoad = { ...willData };
+    delete dataToLoad.willId;
+    setFormData(dataToLoad);
+    saveToLocalStorage(dataToLoad);
+  };
 
   const clearForm = () => {
     setFormData(initialData);
@@ -135,7 +146,7 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <WillFormContext.Provider value={{ formData, setFormData, saveAndGoTo, setDirty, clearForm }}>
+    <WillFormContext.Provider value={{ formData, setFormData, saveAndGoTo, setDirty, clearForm, loadWill }}>
       {children}
     </WillFormContext.Provider>
   );
