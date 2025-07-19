@@ -72,7 +72,7 @@ export default function PersonalInformationPage() {
         <div className="text-center mb-8">
             <Gavel className="w-12 h-12 text-primary mx-auto mb-2" />
             <h1 className="text-3xl font-bold text-primary font-headline">Create Your Will</h1>
-            <p className="text-foreground/80">Step 1 of 6: Personal Information</p>
+            <p className="text-foreground/80">Step 1 of 7: Personal Information</p>
         </div>
       <div className="bg-card p-8 rounded-lg shadow-lg">
         <Form {...form}>
@@ -145,7 +145,7 @@ export default function PersonalInformationPage() {
                             )}
                             >
                             {field.value ? (
-                                format(field.value, "PPP")
+                                format(new Date(field.value), "PPP")
                             ) : (
                                 <span>Pick a date</span>
                             )}

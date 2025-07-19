@@ -89,7 +89,7 @@ export default function AssetAllocationPage() {
       <div className="text-center mb-8">
         <PieChart className="w-12 h-12 text-primary mx-auto mb-2" />
         <h1 className="text-3xl font-bold text-primary font-headline">Create Your Will</h1>
-        <p className="text-foreground/80">Step 5 of 6: Asset Allocation</p>
+        <p className="text-foreground/80">Step 5 of 7: Asset Allocation</p>
       </div>
       <div className="bg-card p-8 rounded-lg shadow-lg">
         <Form {...form}>
@@ -120,7 +120,7 @@ export default function AssetAllocationPage() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {MOCK_ASSETS.map(asset => (
+                              {MOCK_ASSETS.map((asset: any) => (
                                 <SelectItem key={asset.id} value={asset.id!}>{asset.description}</SelectItem>
                               ))}
                             </SelectContent>
@@ -142,7 +142,7 @@ export default function AssetAllocationPage() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {MOCK_BENEFICIARIES.map(ben => (
+                              {MOCK_BENEFICIARIES.map((ben: any) => (
                                 <SelectItem key={ben.id} value={ben.id!}>{ben.name}</SelectItem>
                               ))}
                             </SelectContent>

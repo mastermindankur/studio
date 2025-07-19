@@ -74,7 +74,7 @@ export default function BeneficiariesPage() {
       <div className="text-center mb-8">
         <Gift className="w-12 h-12 text-primary mx-auto mb-2" />
         <h1 className="text-3xl font-bold text-primary font-headline">Create Your Will</h1>
-        <p className="text-foreground/80">Step 4 of 6: Your Beneficiaries</p>
+        <p className="text-foreground/80">Step 4 of 7: Your Beneficiaries</p>
       </div>
       <div className="bg-card p-8 rounded-lg shadow-lg">
         <Form {...form}>

@@ -85,7 +85,7 @@ export default function AssetsPage() {
       <div className="text-center mb-8">
         <Landmark className="w-12 h-12 text-primary mx-auto mb-2" />
         <h1 className="text-3xl font-bold text-primary font-headline">Create Your Will</h1>
-        <p className="text-foreground/80">Step 3 of 6: Your Assets</p>
+        <p className="text-foreground/80">Step 3 of 7: Your Assets</p>
       </div>
       <div className="bg-card p-8 rounded-lg shadow-lg">
         <Form {...form}>

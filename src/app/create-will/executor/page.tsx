@@ -71,9 +71,7 @@ export default function ExecutorPage() {
 
   function onSubmit(data: ExecutorFormValues) {
     setFormData(prev => ({ ...prev, executor: data }));
-    // In a real app, this would probably go to a review page
-    // For now, redirect to dashboard as a success state
-    router.push("/dashboard"); 
+    router.push("/create-will/review"); 
   }
 
   function handleBack() {
@@ -92,7 +90,7 @@ export default function ExecutorPage() {
       <div className="text-center mb-8">
         <UserCheck className="w-12 h-12 text-primary mx-auto mb-2" />
         <h1 className="text-3xl font-bold text-primary font-headline">Create Your Will</h1>
-        <p className="text-foreground/80">Step 6 of 6: Executor & Instructions</p>
+        <p className="text-foreground/80">Step 6 of 7: Executor & Instructions</p>
       </div>
       <div className="bg-card p-8 rounded-lg shadow-lg">
         <Form {...form}>
@@ -188,7 +186,7 @@ export default function ExecutorPage() {
                   <Save className="mr-2 h-5 w-5" /> Save & Exit
               </Button>
               <Button type="submit" size="lg">
-                Review & Finish <ChevronRight className="ml-2 h-5 w-5" />
+                Proceed to Review <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
           </form>

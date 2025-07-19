@@ -82,7 +82,7 @@ export default function FamilyDetailsPage() {
         <div className="text-center mb-8">
             <Users className="w-12 h-12 text-primary mx-auto mb-2" />
             <h1 className="text-3xl font-bold text-primary font-headline">Create Your Will</h1>
-            <p className="text-foreground/80">Step 2 of 6: Family Details</p>
+            <p className="text-foreground/80">Step 2 of 7: Family Details</p>
         </div>
       <div className="bg-card p-8 rounded-lg shadow-lg">
         <Form {...form}>
