@@ -24,7 +24,7 @@ const ensureImagesLoaded = async (element: HTMLElement): Promise<void> => {
 };
 
 
-export const generatePdf = async (elementId: string, filename: string = 'iWills-in_Will.pdf'): Promise<void> => {
+export const generatePdf = async (elementId: string, filename: string): Promise<void> => {
   const willElement = document.getElementById(elementId);
   
   if (!willElement) {
@@ -33,31 +33,27 @@ export const generatePdf = async (elementId: string, filename: string = 'iWills-
   }
   
   const originalStyle = {
-      visibility: willElement.style.visibility,
-      position: willElement.style.position,
-      left: willElement.style.left,
-      top: willElement.style.top,
-      zIndex: willElement.style.zIndex,
-      width: willElement.style.width,
+      display: willElement.style.display,
   };
 
-  willElement.style.visibility = 'visible';
-  willElement.style.position = 'absolute';
-  willElement.style.left = '0px';
-  willElement.style.top = '0px';
-  willElement.style.zIndex = '1000'; // Render on top to ensure it's "visible" to the browser
-  willElement.style.width = '800px'; // A fixed width often helps canvas rendering
+  // Temporarily make the element visible for rendering
+  willElement.style.display = 'block';
 
   try {
     await ensureImagesLoaded(willElement);
 
     const canvas = await html2canvas(willElement, {
-      scale: 2,
+      scale: 2, // Higher scale for better quality
       useCORS: true,
       logging: false,
+      width: willElement.scrollWidth,
+      height: willElement.scrollHeight,
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
     });
     
-    Object.assign(willElement.style, originalStyle);
+    // Restore original style
+    willElement.style.display = originalStyle.display;
 
     const imgData = canvas.toDataURL('image/png');
     
@@ -76,12 +72,24 @@ export const generatePdf = async (elementId: string, filename: string = 'iWills-
     const imgWidth = pdfWidth;
     const imgHeight = imgWidth / ratio;
     
-    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pdfHeight;
+
+    while (heightLeft > 0) {
+      position = position - pdfHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pdfHeight;
+    }
     
     pdf.save(filename);
 
   } catch (error) {
     console.error("Error generating PDF:", error);
-    Object.assign(willElement.style, originalStyle);
+    // Restore original style even if an error occurs
+    willElement.style.display = originalStyle.display;
   }
 };
