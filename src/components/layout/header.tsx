@@ -117,23 +117,23 @@ export function Header() {
           <span className="font-headline text-2xl font-bold text-primary">iWills.in</span>
         </Link>
 
-        <nav className="hidden md:flex items-center space-x-4">
+        <nav className="hidden lg:flex items-center space-x-4">
           {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="font-headline text-base text-foreground hover:text-primary transition-colors duration-300"
+              className="font-headline text-base text-foreground hover:text-primary transition-colors duration-300 whitespace-nowrap"
             >
               {item.label}
             </Link>
           ))}
         </nav>
 
-        <div className="hidden md:flex">
+        <div className="hidden lg:flex">
           <AuthLinks />
         </div>
 
-        <div className="md:hidden">
+        <div className="lg:hidden">
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" aria-label="Open menu">
