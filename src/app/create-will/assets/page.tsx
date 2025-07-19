@@ -58,7 +58,7 @@ export default function AssetsPage() {
   function onSubmit(data: AssetsFormValues) {
     console.log(data);
     // TODO: Save data to global state
-    // router.push("/create-will/beneficiaries"); // Navigate to next step
+    router.push("/create-will/beneficiaries"); // Navigate to next step
   }
   
   function handleBack() {
