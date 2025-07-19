@@ -8,7 +8,7 @@ import { FieldValue } from "firebase-admin/firestore";
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
   email: z.string().email("Invalid email address."),
-  phone: z.string().optional(),
+  phone: z.string().min(10, "A valid phone number is required."),
   subject: z.string().min(5, "Subject must be at least 5 characters."),
   message: z.string().min(10, "Message must be at least 10 characters."),
 });
