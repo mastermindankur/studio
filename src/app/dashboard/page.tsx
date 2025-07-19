@@ -13,7 +13,7 @@ import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
 import { format } from "date-fns";
 import { PlusCircle, FileText, Download, Edit, Loader2 } from "lucide-react";
-import { useWillForm } from "@/context/WillFormContext";
+import { useWillForm, WillFormProvider } from "@/context/WillFormContext";
 import { useRouter } from "next/navigation";
 import { generatePdf } from "@/lib/pdfGenerator";
 import { WillDocument } from "@/components/create-will/will-document";
@@ -26,7 +26,7 @@ interface Will {
     data: any;
 }
 
-export default function DashboardPage() {
+function DashboardPageContent() {
   const { user, loading: authLoading } = useAuth();
   const [wills, setWills] = useState<Will[]>([]);
   const [loadingWills, setLoadingWills] = useState(true);
@@ -179,4 +179,12 @@ export default function DashboardPage() {
        ))}
     </div>
   );
+}
+
+export default function DashboardPage() {
+    return (
+        <WillFormProvider>
+            <DashboardPageContent />
+        </WillFormProvider>
+    )
 }
