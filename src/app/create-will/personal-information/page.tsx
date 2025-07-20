@@ -28,7 +28,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { CalendarIcon, ChevronRight, Gavel, Info, Save } from "lucide-react";
-import { format, subYears, addYears } from "date-fns";
+import { format, subYears } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useWillForm } from "@/context/WillFormContext";
 import { useEffect, useState } from "react";
@@ -72,7 +72,6 @@ export default function PersonalInformationPage() {
 
   const today = new Date();
   const eighteenYearsAgo = subYears(today, 18);
-  const [calendarMonth, setCalendarMonth] = useState(subYears(today, 20));
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -97,7 +96,7 @@ export default function PersonalInformationPage() {
                     <RadioGroup
                       onValueChange={field.onChange}
                       defaultValue={field.value}
-                      className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-6"
+                      className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-6"
                     >
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
@@ -171,8 +170,7 @@ export default function PersonalInformationPage() {
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
-                            month={calendarMonth}
-                            onMonthChange={setCalendarMonth}
+                            month={subYears(new Date(), 30)}
                             mode="single"
                             selected={field.value}
                             onSelect={field.onChange}
@@ -181,22 +179,6 @@ export default function PersonalInformationPage() {
                             }
                             initialFocus
                         />
-                         <div className="flex justify-center gap-2 p-2">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => setCalendarMonth(subYears(calendarMonth, 1))}
-                            >
-                                Previous Year
-                            </Button>
-                             <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => setCalendarMonth(addYears(calendarMonth, 1))}
-                            >
-                                Next Year
-                            </Button>
-                        </div>
                         </PopoverContent>
                     </Popover>
                     <FormMessage />
