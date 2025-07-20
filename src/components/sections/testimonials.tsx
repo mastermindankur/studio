@@ -75,17 +75,13 @@ export function Testimonials() {
           </p>
         </div>
         
-        {/* Mobile: Auto-scrolling marquee */}
-        <div className="md:hidden relative w-full overflow-hidden">
-            <div className="flex animate-marquee-slow hover:pause">
-                {[...testimonials, ...testimonials].map((testimonial, index) => (
-                    <div key={index} className="px-4">
-                       <TestimonialCard testimonial={testimonial} />
-                    </div>
-                ))}
-            </div>
-            <div className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-primary/5 to-transparent"></div>
-            <div className="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-primary/5 to-transparent"></div>
+        {/* Mobile: Swipeable container */}
+        <div className="md:hidden">
+          <div className="flex overflow-x-auto snap-x snap-mandatory space-x-4 pb-4 -mx-4 px-4">
+            {testimonials.map((testimonial, index) => (
+              <TestimonialCard key={index} testimonial={testimonial} />
+            ))}
+          </div>
         </div>
 
         {/* Desktop: Static grid */}
