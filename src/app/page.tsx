@@ -26,11 +26,11 @@ export default function Home() {
         <SectionSeparator />
         <ServiceShowcase />
         <SectionSeparator />
-        <Testimonials />
-        <SectionSeparator />
         <Pricing />
         <SectionSeparator />
         <AIAssistant />
+        <SectionSeparator />
+        <Testimonials />
         <SectionSeparator />
         <ContactForm />
       </main>
