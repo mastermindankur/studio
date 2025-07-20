@@ -100,6 +100,10 @@ export default {
           '0%': { opacity: '0', transform: 'translateX(30px)' },
           '100%': { opacity: '1', transform: 'translateX(0)' },
         },
+        'marquee-slow': {
+          from: { transform: 'translateX(0)' },
+          to: { transform: 'translateX(-50%)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -107,8 +111,18 @@ export default {
         'fade-in': 'fadeIn 0.5s ease-out forwards',
         'slide-in-left': 'slideInFromLeft 0.5s ease-out forwards',
         'slide-in-right': 'slideInFromRight 0.5s ease-out forwards',
+        'marquee-slow': 'marquee-slow 40s linear infinite',
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [
+    require('tailwindcss-animate'),
+    function ({ addUtilities }: { addUtilities: any }) {
+      addUtilities({
+        '.pause': {
+          'animation-play-state': 'paused',
+        },
+      });
+    },
+  ],
 } satisfies Config;

@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Quote } from "lucide-react";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 interface Testimonial {
   quote: string;
@@ -40,6 +41,29 @@ const testimonials: Testimonial[] = [
   },
 ];
 
+const TestimonialCard = ({ testimonial }: { testimonial: Testimonial }) => (
+  <Card className="flex flex-col justify-between bg-card shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-lg overflow-hidden w-[90vw] sm:w-80 md:w-full flex-shrink-0 snap-center md:snap-align-none">
+    <CardContent className="p-6 md:p-8 text-center flex-grow flex flex-col">
+      <Quote className="w-10 h-10 text-primary/50 mx-auto mb-6" aria-hidden="true" />
+      <p className="text-foreground/80 italic text-lg mb-6 leading-relaxed flex-grow">"{testimonial.quote}"</p>
+      <div className="flex items-center justify-center mt-auto">
+        <Avatar className="h-12 w-12 mr-4">
+          {testimonial.avatarSrc && (
+              <AvatarImage asChild src={testimonial.avatarSrc} alt={testimonial.author}>
+                <Image src={testimonial.avatarSrc} alt={testimonial.author} width={100} height={100} data-ai-hint={testimonial.imageHint} />
+              </AvatarImage>
+          )}
+          <AvatarFallback className="bg-primary text-primary-foreground font-semibold">{testimonial.avatarFallback}</AvatarFallback>
+        </Avatar>
+        <div>
+          <p className="font-headline font-semibold text-primary text-lg">{testimonial.author}</p>
+          <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+);
+
 export function Testimonials() {
   return (
     <section id="testimonials" className="py-16 md:py-24 bg-primary/5">
@@ -50,28 +74,24 @@ export function Testimonials() {
             Hear from Indians who've secured their family's future with iWills.in.
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        {/* Mobile: Auto-scrolling marquee */}
+        <div className="md:hidden relative w-full overflow-hidden">
+            <div className="flex animate-marquee-slow hover:pause">
+                {[...testimonials, ...testimonials].map((testimonial, index) => (
+                    <div key={index} className="px-4">
+                       <TestimonialCard testimonial={testimonial} />
+                    </div>
+                ))}
+            </div>
+            <div className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-primary/5 to-transparent"></div>
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-primary/5 to-transparent"></div>
+        </div>
+
+        {/* Desktop: Static grid */}
+        <div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-8">
           {testimonials.map((testimonial, index) => (
-            <Card key={index} className="flex flex-col justify-between bg-card shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-lg overflow-hidden animate-fade-in" style={{ animationDelay: `${index * 150}ms` }}>
-              <CardContent className="p-6 md:p-8 text-center">
-                <Quote className="w-10 h-10 text-primary/50 mx-auto mb-6" aria-hidden="true" />
-                <p className="text-foreground/80 italic text-lg mb-6 leading-relaxed">"{testimonial.quote}"</p>
-                <div className="flex items-center justify-center">
-                  <Avatar className="h-12 w-12 mr-4">
-                    {testimonial.avatarSrc && (
-                       <AvatarImage asChild src={testimonial.avatarSrc} alt={testimonial.author}>
-                         <Image src={testimonial.avatarSrc} alt={testimonial.author} width={100} height={100} data-ai-hint={testimonial.imageHint} />
-                       </AvatarImage>
-                    )}
-                    <AvatarFallback className="bg-primary text-primary-foreground font-semibold">{testimonial.avatarFallback}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-headline font-semibold text-primary text-lg">{testimonial.author}</p>
-                    <p className="text-sm text-muted-foreground">{testimonial.role}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <TestimonialCard key={index} testimonial={testimonial} />
           ))}
         </div>
       </div>
