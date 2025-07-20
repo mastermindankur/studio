@@ -35,6 +35,8 @@ export function Header() {
   const router = useRouter();
   const { toast } = useToast();
   const auth = getAuth();
+  
+  const logoHref = user ? "/dashboard" : "/";
 
   const handleLogout = async () => {
     try {
@@ -121,7 +123,7 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 max-w-screen-2xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-6 md:gap-10">
-            <Link href="/" className="flex items-center space-x-2" aria-label="iWills.in Home">
+            <Link href={logoHref} className="flex items-center space-x-2" aria-label="iWills.in Home">
               <Gavel className="h-8 w-8 text-primary" />
               <span className="font-headline text-2xl font-bold text-primary">iWills.in</span>
             </Link>
@@ -155,7 +157,7 @@ export function Header() {
             <SheetContent side="right" className="w-full max-w-xs bg-background p-6 flex flex-col">
               <div className="flex flex-col space-y-4 flex-grow">
                 <div className="flex justify-between items-center mb-4">
-                   <Link href="/" className="flex items-center space-x-2" onClick={() => setIsMobileMenuOpen(false)} aria-label="iWills.in Home">
+                   <Link href={logoHref} className="flex items-center space-x-2" onClick={() => setIsMobileMenuOpen(false)} aria-label="iWills.in Home">
                      <Gavel className="h-7 w-7 text-primary" />
                      <span className="font-headline text-xl font-bold text-primary">iWills.in</span>
                    </Link>
