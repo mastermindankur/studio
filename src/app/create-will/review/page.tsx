@@ -30,7 +30,11 @@ export default function ReviewPage() {
     beneficiaries,
     assetAllocation,
     executor,
+    version,
+    createdAt
   } = formData;
+
+  const isEditing = !!version;
 
   const handleEdit = (path: string) => {
     router.push(`/create-will/${path}`);
@@ -95,7 +99,13 @@ export default function ReviewPage() {
           <div className="text-center mb-8">
               <FileCheck className="w-12 h-12 text-primary mx-auto mb-2" />
               <h1 className="text-3xl font-bold text-primary font-headline">Review & Finalize</h1>
-              <p className="text-foreground/80">Step 7 of 7</p>
+              {isEditing ? (
+                 <p className="text-foreground/80 mt-2">
+                    Editing Will Version {version} (created on {createdAt ? format(new Date(createdAt), "PPP") : 'N/A'})
+                 </p>
+              ) : (
+                 <p className="text-foreground/80">Step 7 of 7</p>
+              )}
           </div>
         
           <div className="space-y-8">

@@ -96,7 +96,12 @@ function DashboardPageContent() {
               id: doc.id,
               version: data.version,
               createdAt: data.createdAt.toDate(),
-              data: willData,
+              data: {
+                ...willData,
+                willId: doc.id,
+                version: data.version,
+                createdAt: data.createdAt.toDate()
+              },
             });
           });
           setWills(userWills);
@@ -114,7 +119,7 @@ function DashboardPageContent() {
   
   const handleEdit = (willData: any) => {
     loadWill(willData);
-    router.push("/create-will/personal-information");
+    router.push("/create-will/review");
   };
 
   const handleDownloadPdf = async (will: Will) => {

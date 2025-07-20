@@ -8,6 +8,8 @@ import { useAuth } from './AuthContext';
 // Define the shape of the entire form data
 export interface WillFormData {
   willId?: string;
+  version?: number;
+  createdAt?: Date;
   personalInfo: any;
   familyDetails: any;
   assets: any;
@@ -113,7 +115,7 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
         try {
           const savedData = window.localStorage.getItem(storageKey);
           setFormData(savedData ? JSON.parse(savedData, (key, value) => {
-            if (key === 'dob' && typeof value === 'string') {
+            if ((key === 'dob' || key === 'createdAt') && typeof value === 'string') {
               return new Date(value);
             }
             return value;
@@ -128,7 +130,7 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
   }, [storageKey]);
 
 
-  const getStepKey = (path: string): keyof Omit<WillFormData, 'willId'> | null => {
+  const getStepKey = (path: string): keyof Omit<WillFormData, 'willId' | 'version' | 'createdAt'> | null => {
     if (path.includes('personal-information')) return 'personalInfo';
     if (path.includes('family-details')) return 'familyDetails';
     if (path.includes('assets')) return 'assets';
@@ -175,7 +177,6 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
   const loadWill = (willData: any) => {
     // Deep merge existing will data with the initial structure to ensure all keys are present
     const dataToLoad = mergeDeep(initialData, willData);
-    delete dataToLoad.willId;
     setFormData(dataToLoad);
     saveToLocalStorage(dataToLoad);
   };
@@ -201,5 +202,3 @@ export const useWillForm = () => {
   }
   return context;
 };
-
-    
