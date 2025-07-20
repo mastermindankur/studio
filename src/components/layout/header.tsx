@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { Gavel, Menu, X, LogOut, LayoutDashboard, UserPlus, LogIn, HelpCircle, MessageSquare, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { getAuth, signOut } from "firebase/auth";
@@ -217,6 +217,10 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-full max-w-xs bg-background p-0 flex flex-col">
+              <SheetHeader className="sr-only">
+                  <SheetTitle>Mobile Menu</SheetTitle>
+                  <SheetDescription>Main navigation and account links for mobile devices.</SheetDescription>
+              </SheetHeader>
                 {user ? (
                    <MobileAuthLinks />
                 ) : (
