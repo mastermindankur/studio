@@ -79,7 +79,7 @@ export function ContactForm() {
         </div>
         
         <div className="grid md:grid-cols-2 gap-12 items-start">
-          <div className="bg-card p-8 md:p-10 rounded-lg shadow-xl animate-slide-in-left">
+          <div className="bg-card p-8 md:p-10 rounded-lg shadow-xl">
             <h3 className="font-headline text-2xl font-semibold text-primary mb-6">Send Us a Message</h3>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -173,7 +173,7 @@ export function ContactForm() {
               </form>
             </Form>
           </div>
-          <div className="animate-slide-in-right mt-8 md:mt-0">
+          <div className="mt-8 md:mt-0">
              <div className="rounded-lg overflow-hidden shadow-xl aspect-square max-w-md mx-auto md:max-w-full">
                 <Image
                     src="/images/contact-image.jpg"
