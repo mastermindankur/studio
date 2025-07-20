@@ -152,11 +152,13 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
 
   const saveAndGoTo = (currentStepData: any, path: string) => {
     const stepKey = getStepKey(pathname);
+    let updatedData = formData;
     if (stepKey) {
-      const updatedData = { ...formData, [stepKey]: currentStepData };
-      setFormData(updatedData);
-      saveToLocalStorage(updatedData);
+      // Merge the latest data from the current step into the existing context
+      updatedData = { ...formData, [stepKey]: currentStepData };
     }
+    setFormData(updatedData);
+    saveToLocalStorage(updatedData);
     setDirty(false);
     router.push(path);
   };
