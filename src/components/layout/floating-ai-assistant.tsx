@@ -78,9 +78,9 @@ export function FloatingAIAssistant() {
     };
 
     return (
-        <div className="fixed bottom-4 left-4 z-50">
+        <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end">
         {isOpen && (
-            <Card className="w-[calc(100vw-2rem)] max-w-sm flex flex-col shadow-2xl rounded-lg animate-fade-in">
+            <Card className="w-[calc(100vw-2rem)] max-w-sm flex flex-col shadow-2xl rounded-lg animate-fade-in mb-4">
             <CardHeader className="flex flex-row items-center justify-between p-4 border-b">
                 <div className="flex items-center gap-3">
                 <Avatar className="h-8 w-8">
@@ -97,7 +97,7 @@ export function FloatingAIAssistant() {
                 <span className="sr-only">Close chat</span>
                 </Button>
             </CardHeader>
-            <CardContent className="flex-grow p-0 overflow-hidden flex">
+            <CardContent className="flex-grow p-0 overflow-hidden flex h-[60vh]">
                 <ScrollArea className="h-full w-full p-4" ref={scrollAreaRef}>
                 <div className="space-y-6">
                     {messages.map((message) => (
