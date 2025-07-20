@@ -119,7 +119,7 @@ export default function BeneficiariesPage() {
                   </div>
                 )
               ))}
-              {!familyDetails?.spouseName && (!familyDetails?.children || familyDetails.children.length === 0 || !familyDetails.children[0].name) && (
+              {(!familyDetails?.spouseName || familyDetails.spouseName.trim() === '') && (!familyDetails?.children || familyDetails.children.every(c => !c.name || c.name.trim() === '')) && (
                  <p className="text-sm text-center text-muted-foreground py-4">No primary family members were listed in the previous step.</p>
               )}
             </div>
