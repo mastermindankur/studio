@@ -19,7 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ChevronRight, ChevronLeft, PlusCircle, Trash2, PieChart, Info, Save } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useWillForm } from "@/context/WillFormContext";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { format } from "date-fns";
 
 const allocationSchema = z.object({
@@ -58,7 +58,38 @@ export default function AssetAllocationPage() {
   const { formData, saveAndGoTo, setDirty } = useWillForm();
 
   const MOCK_ASSETS = formData.assets?.assets || [];
-  const MOCK_BENEFICIARIES = formData.beneficiaries?.beneficiaries || [];
+  
+  const combinedBeneficiaries = useMemo(() => {
+    const allBeneficiaries = new Map();
+
+    // Add from beneficiaries step (they have explicit IDs)
+    formData.beneficiaries?.beneficiaries?.forEach(b => {
+      if (b.id && b.name) {
+        allBeneficiaries.set(b.id, { id: b.id, name: b.name });
+      }
+    });
+
+    // Add spouse from family details
+    if (formData.familyDetails?.spouseName) {
+        const spouseId = `spouse-${formData.familyDetails.spouseName.replace(/\s+/g, '-').toLowerCase()}`;
+        if (!allBeneficiaries.has(spouseId)) {
+            allBeneficiaries.set(spouseId, { id: spouseId, name: `${formData.familyDetails.spouseName} (Spouse)` });
+        }
+    }
+
+    // Add children from family details
+    formData.familyDetails?.children?.forEach(c => {
+        if (c.name) {
+            const childId = `child-${c.name.replace(/\s+/g, '-').toLowerCase()}`;
+            if (!allBeneficiaries.has(childId)) {
+                allBeneficiaries.set(childId, { id: childId, name: `${c.name} (Child)` });
+            }
+        }
+    });
+
+    return Array.from(allBeneficiaries.values());
+  }, [formData.beneficiaries, formData.familyDetails]);
+
 
   const form = useForm<AssetAllocationFormValues>({
     resolver: zodResolver(assetAllocationFormSchema),
@@ -154,7 +185,7 @@ export default function AssetAllocationPage() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {MOCK_BENEFICIARIES.map((ben: any) => (
+                              {combinedBeneficiaries.map((ben: any) => (
                                 <SelectItem key={ben.id} value={ben.id!}>{ben.name}</SelectItem>
                               ))}
                             </SelectContent>
