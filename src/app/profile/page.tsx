@@ -11,13 +11,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, User, KeyRound } from "lucide-react";
+import { Loader2, User, KeyRound, Phone } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { updateUserProfile } from "../actions/user";
 
 export default function ProfilePage() {
   const { user, loading } = useAuth();
   const [displayName, setDisplayName] = useState("");
-  const [isSubmittingName, setIsSubmittingName] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [isSubmittingProfile, setIsSubmittingProfile] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [isSubmittingPassword, setIsSubmittingPassword] = useState(false);
@@ -26,21 +28,33 @@ export default function ProfilePage() {
   const auth = getAuth();
 
   useEffect(() => {
-    if (user?.displayName) {
-      setDisplayName(user.displayName);
+    if (user) {
+      setDisplayName(user.displayName || "");
+      setPhoneNumber(user.phoneNumber || "");
     }
   }, [user]);
 
-  const handleUpdateName = async (e: React.FormEvent) => {
+  const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !auth.currentUser) return;
-    setIsSubmittingName(true);
+    if (!user) return;
+    setIsSubmittingProfile(true);
     try {
-      await updateProfile(auth.currentUser, { displayName });
-      toast({
-        title: "Success",
-        description: "Your name has been updated.",
-      });
+      // First, update client-side display name for immediate feedback
+      if (auth.currentUser) {
+        await updateProfile(auth.currentUser, { displayName });
+      }
+      
+      // Then, update backend for both name and phone
+      const result = await updateUserProfile(user.uid, { displayName, phoneNumber });
+
+      if (result.success) {
+        toast({
+          title: "Success",
+          description: "Your profile has been updated.",
+        });
+      } else {
+        throw new Error(result.message);
+      }
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -48,7 +62,7 @@ export default function ProfilePage() {
         description: error.message,
       });
     } finally {
-      setIsSubmittingName(false);
+      setIsSubmittingProfile(false);
     }
   };
 
@@ -127,7 +141,7 @@ export default function ProfilePage() {
           <div className="md:col-span-2">
             <Card>
               <CardContent className="p-6">
-                <form onSubmit={handleUpdateName} className="space-y-4">
+                <form onSubmit={handleUpdateProfile} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
                     <Input id="email" type="email" value={user.email || ""} disabled />
@@ -142,9 +156,19 @@ export default function ProfilePage() {
                       placeholder="Your Name"
                     />
                   </div>
-                  <Button type="submit" disabled={isSubmittingName}>
-                    {isSubmittingName ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <User className="mr-2 h-4 w-4" />}
-                    {isSubmittingName ? "Saving..." : "Save Name"}
+                   <div className="space-y-2">
+                    <Label htmlFor="phoneNumber">Mobile Number</Label>
+                    <Input
+                      id="phoneNumber"
+                      type="tel"
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      placeholder="e.g. +919876543210"
+                    />
+                  </div>
+                  <Button type="submit" disabled={isSubmittingProfile}>
+                    {isSubmittingProfile ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <User className="mr-2 h-4 w-4" />}
+                    {isSubmittingProfile ? "Saving..." : "Save Profile"}
                   </Button>
                 </form>
                 
