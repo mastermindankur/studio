@@ -15,11 +15,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { ChevronRight, ChevronLeft, PlusCircle, Trash2, Gift, Users, Save } from "lucide-react";
+import { ChevronRight, ChevronLeft, PlusCircle, Trash2, Gift, Users, Save, Info } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useWillForm } from "@/context/WillFormContext";
 import { useEffect } from "react";
 import { format } from "date-fns";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 const beneficiarySchema = z.object({
   id: z.string().optional(),
@@ -46,7 +48,7 @@ export default function BeneficiariesPage() {
     name: "beneficiaries",
   });
   
-  const { version, createdAt } = formData;
+  const { version, createdAt, familyDetails } = formData;
   const isEditing = !!version;
 
   useEffect(() => {
@@ -93,16 +95,47 @@ export default function BeneficiariesPage() {
               <p className="text-foreground/80">Step 4 of 7</p>
             )}
         </div>
+
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="text-xl font-semibold text-primary flex items-center gap-2"><Users /> Primary Family Members</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              These family members are automatically included from the 'Family Details' step. You can allocate assets to them in the next step.
+            </p>
+            <div className="space-y-3">
+              {familyDetails?.spouseName && (
+                <div className="flex items-center justify-between p-3 bg-muted rounded-md">
+                  <span className="font-medium">{familyDetails.spouseName}</span>
+                  <Badge variant="secondary">Spouse</Badge>
+                </div>
+              )}
+              {familyDetails?.children?.map((child, index) => (
+                child.name && (
+                  <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-md">
+                    <span className="font-medium">{child.name}</span>
+                    <Badge variant="secondary">Child</Badge>
+                  </div>
+                )
+              ))}
+              {!familyDetails?.spouseName && (!familyDetails?.children || familyDetails.children.length === 0 || !familyDetails.children[0].name) && (
+                 <p className="text-sm text-center text-muted-foreground py-4">No primary family members were listed in the previous step.</p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Alert className="mb-8">
+          <Info className="h-4 w-4" />
+          <AlertTitle>Add Other Beneficiaries (Optional)</AlertTitle>
+          <AlertDescription>
+            You can add anyone else you wish to include (like friends, other relatives, or charities) below. It is not mandatory to give an asset to every beneficiary you list.
+          </AlertDescription>
+        </Alert>
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            
-            <Alert>
-              <Users className="h-4 w-4" />
-              <AlertTitle>Who are Beneficiaries?</AlertTitle>
-              <AlertDescription>
-                A beneficiary is any person or entity (like a charity) you choose to receive your assets. You can add family members or anyone else you wish to include.
-              </AlertDescription>
-            </Alert>
           
             <div className="space-y-6">
               {fields.map((field, index) => (
@@ -131,17 +164,17 @@ export default function BeneficiariesPage() {
                         <FormItem>
                           <FormLabel>Relationship to You</FormLabel>
                           <FormDescription>
-                              Your relationship to this person (e.g., Spouse, Son).
+                              Your relationship (e.g., Friend, Nephew, Charity).
                             </FormDescription>
                           <FormControl>
-                            <Input placeholder="e.g., Spouse, Son, Friend" {...field} />
+                            <Input placeholder="e.g., Friend, Charity" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                   </div>
-                  {fields.length > 1 && (
+                  {fields.length > 0 && (
                     <Button
                       type="button"
                       variant="destructive"
