@@ -75,33 +75,19 @@ const TestimonialCard = ({ testimonial, isVisible }: { testimonial: Testimonial,
 export function Testimonials() {
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const scrollTimeout = useRef<NodeJS.Timeout | null>(null);
-
 
   const handleScroll = (event: UIEvent<HTMLDivElement>) => {
-    if (scrollTimeout.current) {
-        clearTimeout(scrollTimeout.current);
+    const target = event.currentTarget;
+    if (!target.children[0]) return;
+
+    const scrollLeft = target.scrollLeft;
+    const cardWidth = target.children[0].clientWidth;
+    const newIndex = Math.round(scrollLeft / cardWidth);
+
+    if (newIndex !== activeIndex) {
+      setActiveIndex(newIndex);
     }
-    // Store the target in a variable to avoid accessing the event object in the timeout
-    const currentTarget = event.currentTarget;
-    scrollTimeout.current = setTimeout(() => {
-        if (!currentTarget.children[0]) return;
-        const scrollLeft = currentTarget.scrollLeft;
-        const cardWidth = currentTarget.children[0].clientWidth; // Use child width
-        const newIndex = Math.round(scrollLeft / cardWidth);
-        if (newIndex !== activeIndex) {
-            setActiveIndex(newIndex);
-        }
-    }, 100);
   };
-  
-  useEffect(() => {
-    return () => {
-        if (scrollTimeout.current) {
-            clearTimeout(scrollTimeout.current);
-        }
-    }
-  }, []);
 
   return (
     <section id="testimonials" className="py-16 md:py-24 bg-primary/5">
