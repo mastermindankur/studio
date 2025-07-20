@@ -28,10 +28,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { CalendarIcon, ChevronRight, Gavel, Info, Save } from "lucide-react";
-import { format, subYears } from "date-fns";
+import { format, subYears, addYears } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useWillForm } from "@/context/WillFormContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const personalInfoSchema = z.object({
   gender: z.enum(["male", "female", "other"], { required_error: "Please select a gender." }),
@@ -50,7 +50,7 @@ type PersonalInfoFormValues = z.infer<typeof personalInfoSchema>;
 
 export default function PersonalInformationPage() {
   const router = useRouter();
-  const { formData, setFormData, saveAndGoTo, setDirty } = useWillForm();
+  const { formData, saveAndGoTo, setDirty } = useWillForm();
 
   const form = useForm<PersonalInfoFormValues>({
     resolver: zodResolver(personalInfoSchema),
@@ -72,7 +72,7 @@ export default function PersonalInformationPage() {
 
   const today = new Date();
   const eighteenYearsAgo = subYears(today, 18);
-  const defaultMonth = subYears(today, 20);
+  const [calendarMonth, setCalendarMonth] = useState(subYears(today, 20));
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -171,11 +171,9 @@ export default function PersonalInformationPage() {
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
+                            month={calendarMonth}
+                            onMonthChange={setCalendarMonth}
                             mode="single"
-                            captionLayout="dropdown-buttons"
-                            fromYear={1920}
-                            toYear={eighteenYearsAgo.getFullYear()}
-                            defaultMonth={field.value || defaultMonth}
                             selected={field.value}
                             onSelect={field.onChange}
                             disabled={(date) =>
@@ -183,6 +181,22 @@ export default function PersonalInformationPage() {
                             }
                             initialFocus
                         />
+                         <div className="flex justify-center gap-2 p-2">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setCalendarMonth(subYears(calendarMonth, 1))}
+                            >
+                                Previous Year
+                            </Button>
+                             <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setCalendarMonth(addYears(calendarMonth, 1))}
+                            >
+                                Next Year
+                            </Button>
+                        </div>
                         </PopoverContent>
                     </Popover>
                     <FormMessage />
