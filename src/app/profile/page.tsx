@@ -18,7 +18,7 @@ import { updateUserProfile } from "../actions/user";
 export default function ProfilePage() {
   const { user, loading } = useAuth();
   const [displayName, setDisplayName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("+91");
   const [isSubmittingProfile, setIsSubmittingProfile] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -30,7 +30,7 @@ export default function ProfilePage() {
   useEffect(() => {
     if (user) {
       setDisplayName(user.displayName || "");
-      setPhoneNumber(user.phoneNumber || "");
+      setPhoneNumber(user.phoneNumber || "+91");
     }
   }, [user]);
 
@@ -103,6 +103,22 @@ export default function ProfilePage() {
     }
   };
 
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value.startsWith('+91')) {
+      setPhoneNumber(value);
+    } else if (value.startsWith('+9')) {
+      setPhoneNumber('+91');
+    } else if (value.startsWith('+')) {
+       setPhoneNumber(value);
+    }
+     else if (value === "") {
+      setPhoneNumber("+91");
+    } else {
+        setPhoneNumber("+91" + value);
+    }
+  };
+
 
   if (loading) {
     return (
@@ -162,8 +178,8 @@ export default function ProfilePage() {
                       id="phoneNumber"
                       type="tel"
                       value={phoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value)}
-                      placeholder="e.g. +919876543210"
+                      onChange={handlePhoneChange}
+                      placeholder="+919876543210"
                     />
                   </div>
                   <Button type="submit" disabled={isSubmittingProfile}>
