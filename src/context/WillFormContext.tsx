@@ -4,6 +4,8 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from './AuthContext';
+import { updateWill } from '@/app/actions/will';
+import { useToast } from '@/hooks/use-toast';
 
 // Define the shape of the entire form data
 export interface WillFormData {
@@ -96,6 +98,7 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
   const [isDirty, setDirty] = useState(false);
   const { user, loading: authLoading } = useAuth();
   const [storageKey, setStorageKey] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (user) {
@@ -150,16 +153,27 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
      }
   }
 
-  const saveAndGoTo = (currentStepData: any, path: string) => {
+  const saveAndGoTo = async (currentStepData: any, path: string) => {
     const stepKey = getStepKey(pathname);
-    let updatedData = formData;
+    let updatedData = { ...formData };
     if (stepKey) {
-      // Merge the latest data from the current step into the existing context
       updatedData = { ...formData, [stepKey]: currentStepData };
     }
+    
     setFormData(updatedData);
     saveToLocalStorage(updatedData);
     setDirty(false);
+
+    // If exiting to dashboard while editing an existing will, update it in Firestore.
+    if (path === '/dashboard' && updatedData.willId && user) {
+        const result = await updateWill(updatedData.willId, { ...updatedData, userId: user.uid });
+        if (result.success) {
+            toast({ title: "Will Updated", description: "Your changes have been saved." });
+        } else {
+            toast({ variant: "destructive", title: "Update Failed", description: result.message });
+        }
+    }
+
     router.push(path);
   };
   

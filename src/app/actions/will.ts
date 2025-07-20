@@ -20,21 +20,12 @@ async function getUserIdFromToken(idToken: string): Promise<string> {
 
 export async function saveWill(formData: z.infer<typeof willDataSchema>): Promise<{ success: boolean; message?: string; willId?: string; version?: number }> {
   try {
-    // This is a workaround for getting the token in a server action
-    // In a real app, you might pass this explicitly or use a different auth pattern
-    // For this context, we assume a mechanism to get the user's ID securely.
-    // As a placeholder, we cannot directly get the token here.
-    // The logic will need to be called from a client component that provides the token.
-    // For now, we will assume a placeholder userId.
-    // In a real scenario, the calling client component would fetch the token and pass it.
-    
-    // THIS IS A SIMPLIFICATION. A real app needs to securely get the user ID on the server.
-    const userId = formData.userId; // Assuming userId is passed in from the client
+    const userId = formData.userId; 
     if (!userId) {
       return { success: false, message: "User is not authenticated." };
     }
 
-    const { userId: _, ...willData } = formData; // Remove userId from the data to be saved
+    const { userId: _, ...willData } = formData; 
     
     const willsRef = adminDb.collection("wills");
     
@@ -56,5 +47,37 @@ export async function saveWill(formData: z.infer<typeof willDataSchema>): Promis
   } catch (error: any) {
     console.error("Error saving will to Firestore: ", error);
     return { success: false, message: "Could not save will. Please try again later." };
+  }
+}
+
+
+export async function updateWill(willId: string, formData: z.infer<typeof willDataSchema>): Promise<{ success: boolean; message?: string; }> {
+  try {
+    const userId = formData.userId;
+    if (!userId) {
+      return { success: false, message: "User is not authenticated." };
+    }
+
+    const { userId: _, ...willData } = formData; // Remove userId from the data to be saved
+
+    const willRef = adminDb.collection("wills").doc(willId);
+    
+    // Verify the will belongs to the user before updating
+    const doc = await willRef.get();
+    if (!doc.exists || doc.data()?.userId !== userId) {
+        return { success: false, message: "Will not found or permission denied." };
+    }
+
+    // We only update the willData, not createdAt or version number
+    await willRef.update({
+        'willData': willData,
+        'updatedAt': FieldValue.serverTimestamp() // Add an updated timestamp
+    });
+
+    return { success: true, message: "Will updated successfully." };
+
+  } catch (error: any) {
+    console.error(`Error updating will ${willId}:`, error);
+    return { success: false, message: "Could not update will. Please try again later." };
   }
 }
