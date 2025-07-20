@@ -1,5 +1,6 @@
 
 import admin from "firebase-admin";
+import { getAuth } from "firebase-admin/auth";
 
 const serviceAccount = {
   projectId: process.env.FIREBASE_PROJECT_ID,
@@ -18,3 +19,4 @@ if (!admin.apps.length) {
 }
 
 export const adminDb = admin.firestore();
+export const adminAuth = getAuth();

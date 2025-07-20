@@ -2,9 +2,8 @@
 "use server";
 
 import { z } from "zod";
-import { adminDb } from "@/lib/firebase/admin-config";
+import { adminDb, adminAuth } from "@/lib/firebase/admin-config";
 import { FieldValue } from "firebase-admin/firestore";
-import { auth as adminAuth } from 'firebase-admin';
 import { getApps } from "firebase-admin/app";
 
 // Simplified schema for validation. In a real app, this should be more specific.
@@ -15,7 +14,7 @@ async function getUserIdFromToken(idToken: string): Promise<string> {
         // This should not happen if admin-config is initialized correctly
         throw new Error("Firebase admin not initialized");
     }
-    const decodedToken = await adminAuth().verifyIdToken(idToken);
+    const decodedToken = await adminAuth.verifyIdToken(idToken);
     return decodedToken.uid;
 }
 
