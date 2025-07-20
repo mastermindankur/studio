@@ -82,6 +82,11 @@ export function Testimonials() {
               <TestimonialCard key={index} testimonial={testimonial} />
             ))}
           </div>
+          <div className="flex justify-center items-center gap-2 mt-4">
+              <div className="h-2 w-2 bg-primary/40 rounded-full"></div>
+              <div className="h-2 w-2 bg-primary/40 rounded-full"></div>
+              <div className="h-2 w-2 bg-primary/40 rounded-full"></div>
+          </div>
         </div>
 
         {/* Desktop: Static grid */}
