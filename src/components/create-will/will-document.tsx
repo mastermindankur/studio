@@ -1,3 +1,4 @@
+
 import { WillFormData } from "@/context/WillFormContext";
 import { format } from 'date-fns';
 
@@ -16,8 +17,29 @@ export function WillDocument({ formData, id = "will-document-render" }: WillDocu
     executor,
   } = formData;
 
-  const getAssetName = (id: string) => assets?.assets.find((a: any) => a.id === id)?.description || 'N/A';
-  const getBeneficiaryName = (id: string) => beneficiaries?.beneficiaries.find((b: any) => b.id === id)?.name || 'N/A';
+  const getAssetName = (assetId: string) => {
+    const asset = assets?.assets?.find((a: any) => a.id === assetId);
+    return asset ? asset.description : 'Unknown Asset';
+  };
+  
+  const getBeneficiaryName = (beneficiaryId: string) => {
+    // First check in explicit beneficiaries
+    const beneficiary = beneficiaries?.beneficiaries?.find((b: any) => b.id === beneficiaryId);
+    if (beneficiary) return beneficiary.name;
+  
+    // Then check in family details (spouse)
+    const spouseId = `spouse-${familyDetails?.spouseName?.replace(/\s+/g, '-').toLowerCase()}`;
+    if (beneficiaryId === spouseId) return `${familyDetails.spouseName} (Spouse)`;
+  
+    // Then check in family details (children)
+    const child = familyDetails?.children?.find((c: any) => {
+      const childId = `child-${c.name?.replace(/\s+/g, '-').toLowerCase()}`;
+      return beneficiaryId === childId;
+    });
+    if (child) return `${child.name} (Child)`;
+  
+    return 'Unknown Beneficiary';
+  };
 
   const today = new Date();
 
