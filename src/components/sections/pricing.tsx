@@ -64,11 +64,10 @@ export function Pricing() {
 
   const handleScroll = (event: UIEvent<HTMLDivElement>) => {
     if (!scrollRef.current) return;
-    const scrollLeft = event.currentTarget.scrollLeft;
     const cardWidth = scrollRef.current.children[0]?.clientWidth || 0;
     if (cardWidth === 0) return;
 
-    const newIndex = Math.round(scrollLeft / cardWidth);
+    const newIndex = Math.round(event.currentTarget.scrollLeft / cardWidth);
     if (newIndex !== activeIndex) {
       setActiveIndex(newIndex);
     }
@@ -81,9 +80,6 @@ export function Pricing() {
           <h2 className="font-headline text-3xl sm:text-4xl font-bold text-primary mb-4">
             Transparent Pricing for Your Peace of Mind
           </h2>
-          <p className="text-lg text-foreground/80 max-w-2xl mx-auto">
-            Choose the plan that best suits your needs for creating your Will in India. No hidden fees.
-          </p>
         </div>
 
         {/* Mobile: Swipeable container */}
