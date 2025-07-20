@@ -18,13 +18,13 @@ interface Message {
   sender: "user" | "ai";
 }
 
-const initialBotMessage: Message = {
-    id: "initial-message",
-    text: "I can answer your questions about Will creation in India and guide you through the process. For complex legal advice, please consult a professional.",
-    sender: "ai",
-};
-
 export function FloatingAIAssistant() {
+  const initialBotMessage: Message = {
+      id: "initial-message",
+      text: "I can answer your questions about Will creation in India and guide you through the process. For complex legal advice, please consult a professional.",
+      sender: "ai",
+  };
+
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([initialBotMessage]);
   const [input, setInput] = useState("");
