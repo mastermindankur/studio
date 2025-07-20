@@ -59,11 +59,12 @@ export function ServiceShowcase() {
 
   const handleScroll = (event: UIEvent<HTMLDivElement>) => {
     if (!scrollRef.current) return;
-    const scrollLeft = event.currentTarget.scrollLeft;
     const cardWidth = scrollRef.current.children[0]?.clientWidth || 0;
     if (cardWidth === 0) return;
 
+    const scrollLeft = event.currentTarget.scrollLeft;
     const newIndex = Math.round(scrollLeft / cardWidth);
+
     if (newIndex !== activeIndex) {
       setActiveIndex(newIndex);
     }
@@ -74,9 +75,6 @@ export function ServiceShowcase() {
       <div className="container max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 md:mb-16">
           <h2 className="font-headline text-3xl sm:text-4xl font-bold text-primary mb-4">Online Will Creation in India: Simple & Secure</h2>
-          <p className="text-lg text-foreground/80 max-w-2xl mx-auto">
-            iWills.in offers a streamlined and reliable way to create your Will, ensuring your assets are distributed as per your wishes under Indian law.
-          </p>
         </div>
         
         {/* Mobile: Swipeable container */}
