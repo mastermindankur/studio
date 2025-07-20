@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from '@/context/AuthContext';
+import { FloatingAIAssistant } from '@/components/layout/floating-ai-assistant';
 
 export const metadata: Metadata = {
   title: 'iWills.in - Online Will Creation for India',
@@ -21,6 +22,7 @@ export default function RootLayout({
         <AuthProvider>
             {children}
             <Toaster />
+            <FloatingAIAssistant />
         </AuthProvider>
       </body>
     </html>

@@ -25,7 +25,7 @@ export function HeroSection() {
               <Link href={createWillHref}>Create Your Will Now</Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="font-headline text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border-primary text-primary hover:bg-primary/10">
-              <Link href="#ai-assistant">Ask Our AI Assistant</Link>
+              <Link href="#ai-chat-trigger">Ask Our AI Assistant</Link>
             </Button>
           </div>
         </div>

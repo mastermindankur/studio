@@ -6,7 +6,6 @@ import { HowItWorks } from "@/components/sections/how-it-works";
 import { ServiceShowcase } from "@/components/sections/service-showcase";
 import { Testimonials } from "@/components/sections/testimonials";
 import { Pricing } from "@/components/sections/pricing";
-import { AIAssistant } from "@/components/sections/ai-assistant";
 import { ContactForm } from "@/components/sections/contact-form";
 
 const SectionSeparator = () => (
@@ -27,8 +26,6 @@ export default function Home() {
         <ServiceShowcase />
         <SectionSeparator />
         <Pricing />
-        <SectionSeparator />
-        <AIAssistant />
         <SectionSeparator />
         <Testimonials />
         <SectionSeparator />

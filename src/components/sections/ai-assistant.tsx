@@ -1,156 +1,259 @@
-
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
+import { Gavel, Menu, X, LogOut, LayoutDashboard, UserPlus, LogIn, HelpCircle, MessageSquare, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
+import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { getAuth, signOut } from "firebase/auth";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "../ui/skeleton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Bot, User, SendHorizontal, Loader2 } from "lucide-react";
-import { willAssistantAction } from "@/app/actions/chat"; 
-import { cn } from "@/lib/utils";
-import Image from "next/image";
 
-interface Message {
-  id: string;
-  text: string;
-  sender: "user" | "ai";
-}
 
-const initialBotMessage: Message = {
-    id: "initial-message",
-    text: "I can answer your questions about Will creation in India and guide you through the process. For complex legal advice, please consult a professional.",
-    sender: "ai",
-};
+const navItems = [
+  { href: "/#how-it-works", label: "How It Works" },
+  { href: "/#services", label: "Our Services" },
+  { href: "/about-us", label: "About Us" },
+  { href: "/#testimonials", label: "Testimonials" },
+  { href: "/#pricing", label: "Pricing" },
+  { href: "/#ai-chat-trigger", label: "AI Assistant" },
+  { href: "/faqs", label: "FAQs" },
+  { href: "/#contact", label: "Contact Us" },
+];
 
-export function AIAssistant() {
-  const [messages, setMessages] = useState<Message[]>([initialBotMessage]);
-  const [input, setInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
+const loggedInMobileNavItems = [
+    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/profile", label: "Profile", icon: User },
+    { href: "/faqs", label: "FAQs", icon: HelpCircle },
+    { href: "/#contact", label: "Contact Us", icon: MessageSquare },
+]
 
-  useEffect(() => {
-    if (scrollAreaRef.current) {
-      const viewport = scrollAreaRef.current.querySelector('div[data-radix-scroll-area-viewport]');
-      if (viewport) {
-        viewport.scrollTop = viewport.scrollHeight;
-      }
-    }
-  }, [messages]);
+export function Header() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, loading } = useAuth();
+  const router = useRouter();
+  const { toast } = useToast();
+  const auth = getAuth();
+  
+  const logoHref = user ? "/dashboard" : "/";
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!input.trim() || isLoading) return;
-
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      text: input,
-      sender: "user",
-    };
-    setMessages((prev) => [...prev, userMessage]);
-    setInput("");
-    setIsLoading(true);
-
+  const handleLogout = async () => {
     try {
-      const aiResponse = await willAssistantAction({ query: input }); 
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: aiResponse.response,
-        sender: "ai",
-      };
-      setMessages((prev) => [...prev, aiMessage]);
+      await signOut(auth);
+      toast({
+        title: "Logged Out",
+        description: "You have been successfully logged out.",
+      });
+      router.push("/");
     } catch (error) {
-      console.error("AI Will Assistant Error:", error);
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: "Sorry, I encountered an error. Please try again later.",
-        sender: "ai",
-      };
-      setMessages((prev) => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
+      toast({
+        variant: "destructive",
+        title: "Logout Failed",
+        description: "An error occurred while logging out. Please try again.",
+      });
     }
   };
+  
+  const getUserInitials = (email: string | null | undefined) => {
+    if (!email) return 'U';
+    return email.charAt(0).toUpperCase();
+  }
+
+  const AuthLinks = () => {
+    if (loading) {
+      return <Skeleton className="h-10 w-48" />;
+    }
+    if (user) {
+      return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                    <Avatar className="h-10 w-10">
+                        {/* AvatarImage can be added here if user has a profile picture */}
+                        <AvatarFallback className="bg-primary text-primary-foreground text-lg">
+                            {getUserInitials(user.displayName || user.email)}
+                        </AvatarFallback>
+                    </Avatar>
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">{user.displayName || "User"}</p>
+                        <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                    </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                    <Link href="/dashboard"><LayoutDashboard className="mr-2 h-4 w-4" /> Dashboard</Link>
+                </DropdownMenuItem>
+                 <DropdownMenuItem asChild>
+                    <Link href="/profile"><User className="mr-2 h-4 w-4" /> Profile</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout}>
+                    <LogOut className="mr-2 h-4 w-4" /> Logout
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    }
+    return (
+      <div className="flex items-center gap-2">
+        <Button asChild variant="ghost">
+          <Link href="/login"><LogIn className="mr-2 h-4 w-4" /> Login</Link>
+        </Button>
+        <Button asChild>
+          <Link href="/signup"><UserPlus className="mr-2 h-4 w-4" /> Sign Up</Link>
+        </Button>
+      </div>
+    );
+  };
+  
+  const MobileAuthLinks = () => {
+     if (loading) {
+      return <Skeleton className="h-10 w-full mb-2" />;
+    }
+    if (user) {
+      return (
+        <>
+            <div className="flex items-center gap-4 px-4 py-2">
+                <Avatar className="h-12 w-12">
+                    <AvatarFallback className="bg-primary text-primary-foreground text-xl">
+                       {getUserInitials(user.displayName || user.email)}
+                    </AvatarFallback>
+                </Avatar>
+                <div>
+                     <p className="text-base font-medium leading-none">{user.displayName || "User"}</p>
+                     <p className="text-sm leading-none text-muted-foreground">{user.email}</p>
+                </div>
+            </div>
+             <div className="mt-2 pt-2 border-t border-border">
+                {loggedInMobileNavItems.map((item) => (
+                  <SheetClose asChild key={item.href}>
+                    <Link
+                      href={item.href}
+                      className="font-headline text-lg text-foreground hover:text-primary transition-colors duration-300 py-3 text-center flex items-center justify-center"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <item.icon className="mr-2 h-5 w-5" />
+                      {item.label}
+                    </Link>
+                  </SheetClose>
+                ))}
+            </div>
+
+            <div className="mt-auto pt-4 border-t border-border">
+                 <Button onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }} variant="outline" className="w-full">
+                    <LogOut className="mr-2 h-5 w-5" /> Logout
+                </Button>
+            </div>
+        </>
+      );
+    }
+    return (
+       <div className="mt-auto pt-6 border-t border-border space-y-4">
+          <SheetClose asChild>
+            <Link href="/login" className="font-headline text-lg text-foreground hover:text-primary transition-colors duration-300 py-2 text-center flex items-center justify-center">
+                <LogIn className="mr-2 h-5 w-5" /> Login
+            </Link>
+          </SheetClose>
+          <SheetClose asChild>
+            <Button asChild className="w-full">
+                <Link href="/signup"><UserPlus className="mr-2 h-5 w-5" /> Sign Up</Link>
+            </Button>
+          </SheetClose>
+       </div>
+    );
+  }
+
+  const currentNavItems = user ? [] : navItems;
 
   return (
-    <section id="ai-assistant" className="py-16 md:py-24 bg-primary/5">
-      <div className="container max-w-screen-lg mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12 md:mb-16">
-          <h2 className="font-headline text-3xl sm:text-4xl font-bold text-primary mb-4">AI Will Assistant for India</h2>
-        </div>
-        <div className="bg-card shadow-2xl rounded-lg overflow-hidden max-w-4xl mx-auto">
-          <ScrollArea className="h-[400px] md:h-[500px] w-full p-4 sm:p-6" ref={scrollAreaRef}>
-            <div className="space-y-6">
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={cn(
-                    "flex items-start gap-3 animate-fade-in",
-                    message.sender === "user" ? "justify-end" : "justify-start"
-                  )}
-                >
-                  {message.sender === "ai" && (
-                    <Avatar className="h-8 w-8 border border-primary/50">
-                      <AvatarImage asChild src="https://placehold.co/40x40.png" alt="AI Assistant Avatar">
-                        <Image src="https://placehold.co/40x40.png" alt="AI Assistant Avatar" width={40} height={40} data-ai-hint="robot chat" />
-                      </AvatarImage>
-                      <AvatarFallback><Bot className="h-4 w-4 text-primary" /></AvatarFallback>
-                    </Avatar>
-                  )}
-                  <div
-                    className={cn(
-                      "max-w-[80%] rounded-xl px-4 py-3 shadow-md",
-                      message.sender === "user"
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground"
-                    )}
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-16 max-w-screen-2xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center gap-6 md:gap-10">
+            <Link href={logoHref} className="flex items-center space-x-2" aria-label="iWills.in Home">
+              <Gavel className="h-8 w-8 text-primary" />
+              <span className="font-headline text-2xl font-bold text-primary">iWills.in</span>
+            </Link>
+
+            {!user && (
+              <nav className="hidden lg:flex items-center space-x-6">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="font-headline text-sm text-foreground hover:text-primary transition-colors duration-300 whitespace-nowrap"
                   >
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.text}</p>
-                  </div>
-                  {message.sender === "user" && (
-                    <Avatar className="h-8 w-8 border border-accent/50">
-                       <AvatarImage asChild src="https://placehold.co/40x40.png" alt="User Avatar">
-                         <Image src="https://placehold.co/40x40.png" alt="User Avatar" width={40} height={40} data-ai-hint="person icon" />
-                       </AvatarImage>
-                      <AvatarFallback><User className="h-4 w-4 text-accent" /></AvatarFallback>
-                    </Avatar>
-                  )}
-                </div>
-              ))}
-              {isLoading && (
-                <div className="flex items-start gap-3 justify-start">
-                   <Avatar className="h-8 w-8 border border-primary/50">
-                      <AvatarImage asChild src="https://placehold.co/40x40.png" alt="AI Assistant Avatar">
-                        <Image src="https://placehold.co/40x40.png" alt="AI Assistant Avatar" width={40} height={40} data-ai-hint="robot chat" />
-                      </AvatarImage>
-                     <AvatarFallback><Bot className="h-4 w-4 text-primary" /></AvatarFallback>
-                   </Avatar>
-                  <div className="max-w-[70%] rounded-xl px-4 py-3 shadow-md bg-muted text-muted-foreground">
-                    <Loader2 className="h-5 w-5 animate-spin text-primary" />
-                  </div>
-                </div>
-              )}
-            </div>
-          </ScrollArea>
-          <form
-            onSubmit={handleSubmit}
-            className="p-4 border-t border-border bg-muted/50 flex items-center gap-3"
-          >
-            <Input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask about Will creation in India..."
-              className="flex-grow bg-background focus:ring-primary text-base"
-              aria-label="Type your question about Will creation"
-              disabled={isLoading}
-            />
-            <Button type="submit" size="icon" disabled={isLoading || !input.trim()} aria-label="Send message">
-              {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <SendHorizontal className="h-5 w-5" />}
-            </Button>
-          </form>
+                    {item.label}
+                  </Link>
+                ))}
+              </nav>
+            )}
+        </div>
+
+        <div className="hidden lg:flex flex-1 justify-end">
+          <AuthLinks />
+        </div>
+
+        <div className="lg:hidden flex items-center">
+          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" aria-label="Open menu">
+                <Menu className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-full max-w-xs bg-background p-0 flex flex-col">
+                {user ? (
+                   <MobileAuthLinks />
+                ) : (
+                    <>
+                        <div className="p-6 flex flex-col space-y-4 flex-grow">
+                            <div className="flex justify-between items-center mb-4">
+                                <Link href={logoHref} className="flex items-center space-x-2" onClick={() => setIsMobileMenuOpen(false)} aria-label="iWills.in Home">
+                                    <Gavel className="h-7 w-7 text-primary" />
+                                    <span className="font-headline text-xl font-bold text-primary">iWills.in</span>
+                                </Link>
+                                <SheetClose asChild>
+                                    <Button variant="ghost" size="icon" aria-label="Close menu">
+                                    <X className="h-6 w-6" />
+                                    </Button>
+                                </SheetClose>
+                            </div>
+                            {currentNavItems.map((item) => (
+                            <SheetClose asChild key={item.href}>
+                                <Link
+                                href={item.href}
+                                className="font-headline text-lg text-foreground hover:text-primary transition-colors duration-300 py-2 text-center flex items-center justify-center"
+                                onClick={() => setIsMobileMenuOpen(false)}
+                                >
+                                {'icon' in item && <item.icon className="mr-2 h-5 w-5" />}
+                                {item.label}
+                                </Link>
+                            </SheetClose>
+                            ))}
+                        </div>
+                        <div className="p-6">
+                            <MobileAuthLinks />
+                        </div>
+                    </>
+                )}
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
-    </section>
+    </header>
   );
 }

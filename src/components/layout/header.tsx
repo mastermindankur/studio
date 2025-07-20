@@ -28,7 +28,7 @@ const navItems = [
   { href: "/about-us", label: "About Us" },
   { href: "/#testimonials", label: "Testimonials" },
   { href: "/#pricing", label: "Pricing" },
-  { href: "/#ai-assistant", label: "AI Assistant" },
+  { href: "/#ai-chat-trigger", label: "AI Assistant" },
   { href: "/faqs", label: "FAQs" },
   { href: "/#contact", label: "Contact Us" },
 ];
