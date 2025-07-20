@@ -94,7 +94,7 @@ export function FloatingAIAssistant() {
               <span className="sr-only">Close chat</span>
             </Button>
           </CardHeader>
-          <CardContent className="flex-grow p-0">
+          <CardContent className="flex-grow p-0 overflow-hidden">
             <ScrollArea className="h-full w-full p-4" ref={scrollAreaRef}>
               <div className="space-y-6">
                 {messages.map((message) => (
