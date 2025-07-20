@@ -57,6 +57,9 @@ export default function PersonalInformationPage() {
     defaultValues: formData.personalInfo,
   });
 
+  const { version, createdAt } = formData;
+  const isEditing = !!version;
+
   useEffect(() => {
     const subscription = form.watch(() => setDirty(true));
     return () => subscription.unsubscribe();
@@ -79,7 +82,13 @@ export default function PersonalInformationPage() {
         <div className="text-center mb-8">
             <Gavel className="w-12 h-12 text-primary mx-auto mb-2" />
             <h1 className="text-3xl font-bold text-primary font-headline">Personal Information</h1>
-            <p className="text-foreground/80">Step 1 of 7</p>
+            {isEditing ? (
+              <p className="text-foreground/80 mt-2">
+                Editing Will Version {version} (created on {createdAt ? format(new Date(createdAt), "PPP") : 'N/A'})
+              </p>
+            ) : (
+              <p className="text-foreground/80">Step 1 of 7</p>
+            )}
         </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

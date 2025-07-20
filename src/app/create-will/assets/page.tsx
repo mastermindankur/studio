@@ -22,6 +22,7 @@ import { useWillForm } from "@/context/WillFormContext";
 import { useEffect } from "react";
 import { Alert, AlertTitle, AlertDescription as AlertDesc } from "@/components/ui/alert";
 import { Info } from "lucide-react";
+import { format } from "date-fns";
 
 
 const assetSchema = z.object({
@@ -59,6 +60,9 @@ export default function AssetsPage() {
     control: form.control,
     name: "assets",
   });
+  
+  const { version, createdAt } = formData;
+  const isEditing = !!version;
 
   useEffect(() => {
     const subscription = form.watch(() => setDirty(true));
@@ -95,7 +99,13 @@ export default function AssetsPage() {
         <div className="text-center mb-8">
             <Landmark className="w-12 h-12 text-primary mx-auto mb-2" />
             <h1 className="text-3xl font-bold text-primary font-headline">Your Assets</h1>
-            <p className="text-foreground/80">Step 3 of 7</p>
+            {isEditing ? (
+              <p className="text-foreground/80 mt-2">
+                Editing Will Version {version} (created on {createdAt ? format(new Date(createdAt), "PPP") : 'N/A'})
+              </p>
+            ) : (
+              <p className="text-foreground/80">Step 3 of 7</p>
+            )}
         </div>
          <Alert className="mb-8">
             <Info className="h-4 w-4" />

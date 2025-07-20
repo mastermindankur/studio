@@ -22,6 +22,7 @@ import { Separator } from "@/components/ui/separator";
 import { useWillForm } from "@/context/WillFormContext";
 import { useEffect } from "react";
 import { Alert, AlertTitle, AlertDescription as AlertDesc } from "@/components/ui/alert";
+import { format } from "date-fns";
 
 
 const executorSchema = z.object({
@@ -69,6 +70,8 @@ export default function ExecutorPage() {
   });
 
   const watchAddSecondExecutor = form.watch("addSecondExecutor");
+  const { version, createdAt } = formData;
+  const isEditing = !!version;
 
   useEffect(() => {
     const subscription = form.watch(() => setDirty(true));
@@ -94,7 +97,13 @@ export default function ExecutorPage() {
         <div className="text-center mb-8">
             <UserCheck className="w-12 h-12 text-primary mx-auto mb-2" />
             <h1 className="text-3xl font-bold text-primary font-headline">Executor & Instructions</h1>
-            <p className="text-foreground/80">Step 6 of 7</p>
+            {isEditing ? (
+              <p className="text-foreground/80 mt-2">
+                Editing Will Version {version} (created on {createdAt ? format(new Date(createdAt), "PPP") : 'N/A'})
+              </p>
+            ) : (
+              <p className="text-foreground/80">Step 6 of 7</p>
+            )}
         </div>
         <Form {...form}>
             <Alert className="mb-8">

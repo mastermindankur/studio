@@ -20,6 +20,7 @@ import { ChevronRight, ChevronLeft, PlusCircle, Trash2, PieChart, Info, Save } f
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useWillForm } from "@/context/WillFormContext";
 import { useEffect } from "react";
+import { format } from "date-fns";
 
 const allocationSchema = z.object({
   assetId: z.string({ required_error: "Please select an asset." }),
@@ -68,6 +69,9 @@ export default function AssetAllocationPage() {
     control: form.control,
     name: "allocations",
   });
+  
+  const { version, createdAt } = formData;
+  const isEditing = !!version;
 
   useEffect(() => {
     const subscription = form.watch(() => setDirty(true));
@@ -92,7 +96,13 @@ export default function AssetAllocationPage() {
         <div className="text-center mb-8">
             <PieChart className="w-12 h-12 text-primary mx-auto mb-2" />
             <h1 className="text-3xl font-bold text-primary font-headline">Asset Allocation</h1>
-            <p className="text-foreground/80">Step 5 of 7</p>
+            {isEditing ? (
+              <p className="text-foreground/80 mt-2">
+                Editing Will Version {version} (created on {createdAt ? format(new Date(createdAt), "PPP") : 'N/A'})
+              </p>
+            ) : (
+              <p className="text-foreground/80">Step 5 of 7</p>
+            )}
         </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

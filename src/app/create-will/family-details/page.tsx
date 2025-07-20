@@ -20,6 +20,7 @@ import { ChevronRight, ChevronLeft, PlusCircle, Trash2, Users, Save } from "luci
 import { useRouter } from "next/navigation";
 import { useWillForm } from "@/context/WillFormContext";
 import { useEffect } from "react";
+import { format } from "date-fns";
 
 const familyDetailsSchema = z.object({
   maritalStatus: z.enum(["married", "unmarried", "divorced", "widowed"], {
@@ -55,6 +56,8 @@ export default function FamilyDetailsPage() {
   });
   
   const watchMaritalStatus = form.watch("maritalStatus");
+  const { version, createdAt } = formData;
+  const isEditing = !!version;
 
   useEffect(() => {
     const subscription = form.watch(() => setDirty(true));
@@ -85,7 +88,13 @@ export default function FamilyDetailsPage() {
         <div className="text-center mb-8">
             <Users className="w-12 h-12 text-primary mx-auto mb-2" />
             <h1 className="text-3xl font-bold text-primary font-headline">Family Details</h1>
-            <p className="text-foreground/80">Step 2 of 7</p>
+            {isEditing ? (
+              <p className="text-foreground/80 mt-2">
+                Editing Will Version {version} (created on {createdAt ? format(new Date(createdAt), "PPP") : 'N/A'})
+              </p>
+            ) : (
+              <p className="text-foreground/80">Step 2 of 7</p>
+            )}
         </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
