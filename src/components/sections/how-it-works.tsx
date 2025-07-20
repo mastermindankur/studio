@@ -47,7 +47,7 @@ export function HowItWorks() {
           <Workflow className="w-16 h-16 text-primary mx-auto mb-4" />
           <h2 className="font-headline text-3xl sm:text-4xl font-bold text-primary mb-4">4 Simple Steps to Create Your Will</h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-2 gap-4 md:gap-8">
           {steps.map((step, index) => (
             <Card key={index} className="flex flex-col bg-card hover:shadow-xl transition-shadow duration-300 rounded-lg overflow-hidden animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
               <CardHeader className="p-6">
@@ -57,12 +57,12 @@ export function HowItWorks() {
                   </div>
                   <div>
                     <p className="font-body text-sm font-semibold text-primary">{step.stepNumber}</p>
-                    <CardTitle className="font-headline text-xl text-primary">{step.title}</CardTitle>
+                    <CardTitle className="font-headline text-lg md:text-xl text-primary">{step.title}</CardTitle>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="p-6 pt-0 flex-grow">
-                <p className="text-foreground/70 text-base leading-relaxed">
+                <p className="text-foreground/70 text-sm md:text-base leading-relaxed">
                   {step.description}
                 </p>
               </CardContent>
