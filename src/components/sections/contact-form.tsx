@@ -189,8 +189,18 @@ export function ContactForm() {
                 <p className="text-foreground/80 mb-1">Plot No. 42, Tech Park</p>
                 <p className="text-foreground/80 mb-1">Cyberabad, Hyderabad, Telangana 500081</p>
                 <p className="text-foreground/80 mb-3">India</p>
-                <p className="text-foreground/80 mb-1"><strong>Phone:</strong> +91-8919321064</p>
-                <p className="text-foreground/80"><strong>Email:</strong> hello@iwills.in</p>
+                <p className="text-foreground/80 mb-1">
+                  <strong>Phone:</strong>{" "}
+                  <a href="https://wa.me/918919321064" target="_blank" rel="noopener noreferrer" className="hover:underline text-primary">
+                    +91-8919321064
+                  </a>
+                </p>
+                <p className="text-foreground/80">
+                  <strong>Email:</strong>{" "}
+                   <a href="mailto:hello@iwills.in?subject=Inquiry%20from%20iWills.in%20Website" className="hover:underline text-primary">
+                    hello@iwills.in
+                  </a>
+                </p>
              </div>
           </div>
         </div>

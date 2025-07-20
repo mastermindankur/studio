@@ -38,9 +38,18 @@ export default function CancellationAndRefundsPage() {
 
           <h2 className="font-headline text-2xl font-semibold text-primary mt-6">Contact Us</h2>
           <p>If you have any questions or concerns regarding our Cancellations and Refund Policy, please don't hesitate to contact our customer support team:</p>
-          <p><strong>Email Us:</strong> hello@iwills.in</p>
-          <p><strong>Phone:</strong> +91-8919321064</p>
-
+           <p>
+              <strong>Email Us:</strong>{' '}
+              <a href="mailto:hello@iwills.in?subject=Inquiry%20from%20iWills.in%20Website" className="text-primary hover:underline">
+                hello@iwills.in
+              </a>
+            </p>
+            <p>
+              <strong>Phone:</strong>{' '}
+              <a href="https://wa.me/918919321064" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                +91-8919321064
+              </a>
+            </p>
         </div>
       </main>
       <Footer />
