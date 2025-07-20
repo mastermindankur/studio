@@ -9,6 +9,13 @@ import { Pricing } from "@/components/sections/pricing";
 import { AIAssistant } from "@/components/sections/ai-assistant";
 import { ContactForm } from "@/components/sections/contact-form";
 
+const SectionSeparator = () => (
+  <div className="container max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="w-full h-[1px] bg-border" />
+  </div>
+);
+
+
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
@@ -16,10 +23,15 @@ export default function Home() {
       <main className="flex-grow">
         <HeroSection />
         <HowItWorks />
+        <SectionSeparator />
         <ServiceShowcase />
+        <SectionSeparator />
         <Testimonials />
+        <SectionSeparator />
         <Pricing />
+        <SectionSeparator />
         <AIAssistant />
+        <SectionSeparator />
         <ContactForm />
       </main>
       <Footer />
