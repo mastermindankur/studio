@@ -28,7 +28,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { CalendarIcon, ChevronRight, Gavel, Info, Save } from "lucide-react";
-import { format } from "date-fns";
+import { format, subYears } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useWillForm } from "@/context/WillFormContext";
 import { useEffect } from "react";
@@ -69,6 +69,10 @@ export default function PersonalInformationPage() {
   function handleSaveAndExit(data: PersonalInfoFormValues) {
     saveAndGoTo(data, "/dashboard");
   }
+
+  const today = new Date();
+  const eighteenYearsAgo = subYears(today, 18);
+  const defaultMonth = subYears(today, 20);
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -168,10 +172,14 @@ export default function PersonalInformationPage() {
                         <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
                             mode="single"
+                            captionLayout="dropdown-buttons"
+                            fromYear={1920}
+                            toYear={eighteenYearsAgo.getFullYear()}
+                            defaultMonth={field.value || defaultMonth}
                             selected={field.value}
                             onSelect={field.onChange}
                             disabled={(date) =>
-                            date > new Date() || date < new Date("1900-01-01")
+                            date > eighteenYearsAgo || date < new Date("1920-01-01")
                             }
                             initialFocus
                         />
