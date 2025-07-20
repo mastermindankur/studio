@@ -20,6 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAIChatStore } from "@/hooks/use-ai-chat-store";
 
 
 const navItems = [
@@ -28,7 +29,7 @@ const navItems = [
   { href: "/about-us", label: "About Us" },
   { href: "/#testimonials", label: "Testimonials" },
   { href: "/#pricing", label: "Pricing" },
-  { href: "/#ai-chat-trigger", label: "AI Assistant" },
+  { type: "button", label: "AI Assistant" },
   { href: "/faqs", label: "FAQs" },
   { href: "/#contact", label: "Contact Us" },
 ];
@@ -46,6 +47,7 @@ export function Header() {
   const router = useRouter();
   const { toast } = useToast();
   const auth = getAuth();
+  const { openChat } = useAIChatStore();
   
   const logoHref = user ? "/dashboard" : "/";
 
@@ -193,13 +195,23 @@ export function Header() {
             {!user && (
               <nav className="hidden lg:flex items-center space-x-6">
                 {navItems.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="font-headline text-sm text-foreground hover:text-primary transition-colors duration-300 whitespace-nowrap"
-                  >
-                    {item.label}
-                  </Link>
+                    item.type === 'button' ? (
+                         <button
+                            key={item.label}
+                            onClick={openChat}
+                            className="font-headline text-sm text-foreground hover:text-primary transition-colors duration-300 whitespace-nowrap"
+                            >
+                            {item.label}
+                        </button>
+                    ) : (
+                        <Link
+                            key={item.href}
+                            href={item.href!}
+                            className="font-headline text-sm text-foreground hover:text-primary transition-colors duration-300 whitespace-nowrap"
+                        >
+                            {item.label}
+                        </Link>
+                    )
                 ))}
               </nav>
             )}
@@ -238,16 +250,27 @@ export function Header() {
                                 </SheetClose>
                             </div>
                             {currentNavItems.map((item) => (
-                            <SheetClose asChild key={item.href}>
-                                <Link
-                                href={item.href}
-                                className="font-headline text-lg text-foreground hover:text-primary transition-colors duration-300 py-2 text-center flex items-center justify-center"
-                                onClick={() => setIsMobileMenuOpen(false)}
-                                >
-                                {'icon' in item && <item.icon className="mr-2 h-5 w-5" />}
-                                {item.label}
-                                </Link>
-                            </SheetClose>
+                                <SheetClose asChild key={item.label}>
+                                    {item.type === 'button' ? (
+                                        <button
+                                            onClick={() => {
+                                                openChat();
+                                                setIsMobileMenuOpen(false);
+                                            }}
+                                            className="font-headline text-lg text-foreground hover:text-primary transition-colors duration-300 py-2 text-center flex items-center justify-center"
+                                        >
+                                            {item.label}
+                                        </button>
+                                    ) : (
+                                        <Link
+                                            href={item.href!}
+                                            className="font-headline text-lg text-foreground hover:text-primary transition-colors duration-300 py-2 text-center flex items-center justify-center"
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                        >
+                                            {item.label}
+                                        </Link>
+                                    )}
+                                </SheetClose>
                             ))}
                         </div>
                         <div className="p-6">

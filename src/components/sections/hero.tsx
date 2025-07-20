@@ -5,9 +5,11 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
+import { useAIChatStore } from "@/hooks/use-ai-chat-store";
 
 export function HeroSection() {
   const { user } = useAuth();
+  const { openChat } = useAIChatStore();
   const createWillHref = user ? "/create-will/personal-information" : "/signup";
 
   return (
@@ -24,8 +26,8 @@ export function HeroSection() {
             <Button asChild size="lg" className="font-headline text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
               <Link href={createWillHref}>Create Your Will Now</Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="font-headline text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border-primary text-primary hover:bg-primary/10">
-              <Link href="#ai-chat-trigger">Ask Our AI Assistant</Link>
+            <Button onClick={openChat} variant="outline" size="lg" className="font-headline text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border-primary text-primary hover:bg-primary/10">
+              Ask Our AI Assistant
             </Button>
           </div>
         </div>
