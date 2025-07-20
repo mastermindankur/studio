@@ -49,14 +49,19 @@ export default function ReviewPage() {
         const saveData = { ...formData, userId: user.uid };
         const result = await saveWill(saveData);
 
-        if (result.success) {
+        if (result.success && result.version) {
             toast({
                 title: "Will Saved Successfully!",
                 description: "Your will has been saved. Your PDF download will begin shortly.",
             });
             
+            const now = new Date();
+            const dateStr = format(now, 'yyyy-MM-dd');
+            const timeStr = format(now, 'HH-mm');
+            const pdfFilename = `iWills-in_Will_v${result.version}_${dateStr}_${timeStr}.pdf`;
+
             // Generate PDF after successful save
-            await generatePdf(`will-document-render`, `iWills-in-Will_v${result.willId?.substring(0,5)}.pdf`);
+            await generatePdf(`will-document-render`, pdfFilename);
 
             clearForm();
             router.push("/dashboard");

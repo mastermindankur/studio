@@ -22,7 +22,7 @@ import { WillDocument } from "@/components/create-will/will-document";
 interface Will {
     id: string;
     version: number;
-    createdAt: string;
+    createdAt: Date;
     data: any;
 }
 
@@ -95,7 +95,7 @@ function DashboardPageContent() {
             userWills.push({
               id: doc.id,
               version: data.version,
-              createdAt: format(data.createdAt.toDate(), "PPPp"),
+              createdAt: data.createdAt.toDate(),
               data: willData,
             });
           });
@@ -120,7 +120,10 @@ function DashboardPageContent() {
   const handleDownloadPdf = async (will: Will) => {
       setPdfGeneratingWillId(will.id);
       try {
-          await generatePdf(`will-doc-${will.id}`, `iWills-in_Will_v${will.version}.pdf`);
+          const dateStr = format(will.createdAt, 'yyyy-MM-dd');
+          const timeStr = format(will.createdAt, 'HH-mm');
+          const pdfFilename = `iWills-in_Will_v${will.version}_${dateStr}_${timeStr}.pdf`;
+          await generatePdf(`will-doc-${will.id}`, pdfFilename);
       } catch (error) {
           console.error("Error generating PDF:", error);
       } finally {
@@ -204,7 +207,7 @@ function DashboardPageContent() {
                             <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                                 <div>
                                     <CardTitle className="flex items-center"><FileText className="mr-2"/>Will - Version {will.version}</CardTitle>
-                                    <CardDescription>Created on: {will.createdAt}</CardDescription>
+                                    <CardDescription>Created on: {format(will.createdAt, "PPPp")}</CardDescription>
                                 </div>
                                 <div className="flex gap-2 w-full sm:w-auto">
                                     <Button variant="outline" size="sm" onClick={() => handleDownloadPdf(will)} disabled={pdfGeneratingWillId === will.id} className="flex-1">

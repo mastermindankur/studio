@@ -18,7 +18,7 @@ async function getUserIdFromToken(idToken: string): Promise<string> {
     return decodedToken.uid;
 }
 
-export async function saveWill(formData: z.infer<typeof willDataSchema>): Promise<{ success: boolean; message?: string; willId?: string }> {
+export async function saveWill(formData: z.infer<typeof willDataSchema>): Promise<{ success: boolean; message?: string; willId?: string; version?: number }> {
   try {
     // This is a workaround for getting the token in a server action
     // In a real app, you might pass this explicitly or use a different auth pattern
@@ -51,7 +51,7 @@ export async function saveWill(formData: z.infer<typeof willDataSchema>): Promis
     
     const docRef = await willsRef.add(newWillDoc);
 
-    return { success: true, message: "Will saved successfully.", willId: docRef.id };
+    return { success: true, message: "Will saved successfully.", willId: docRef.id, version: newVersion };
 
   } catch (error: any) {
     console.error("Error saving will to Firestore: ", error);
