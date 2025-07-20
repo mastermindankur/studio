@@ -1,7 +1,11 @@
 
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { FileText, Laptop, ShieldCheck, Bot, IndianRupee, Clock } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { useState, useRef, UIEvent } from "react";
+import { cn } from "@/lib/utils";
 
 interface Service {
   icon: LucideIcon;
@@ -50,6 +54,21 @@ const services: Service[] = [
 ];
 
 export function ServiceShowcase() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const handleScroll = (event: UIEvent<HTMLDivElement>) => {
+    if (!scrollRef.current) return;
+    const scrollLeft = event.currentTarget.scrollLeft;
+    const cardWidth = scrollRef.current.children[0]?.clientWidth || 0;
+    if (cardWidth === 0) return;
+
+    const newIndex = Math.round(scrollLeft / cardWidth);
+    if (newIndex !== activeIndex) {
+      setActiveIndex(newIndex);
+    }
+  };
+
   return (
     <section id="services" className="py-16 md:py-24 bg-primary/5">
       <div className="container max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -59,7 +78,47 @@ export function ServiceShowcase() {
             iWills.in offers a streamlined and reliable way to create your Will, ensuring your assets are distributed as per your wishes under Indian law.
           </p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        
+        {/* Mobile: Swipeable container */}
+        <div className="md:hidden">
+            <div 
+                ref={scrollRef}
+                onScroll={handleScroll}
+                className="flex overflow-x-auto snap-x snap-mandatory space-x-4 pb-4 -mx-4 px-4 scrollbar-hide"
+            >
+                {services.map((service, index) => (
+                    <div key={index} className="w-[85vw] sm:w-80 flex-shrink-0 snap-center">
+                        <Card className="flex flex-col h-full hover:shadow-xl transition-shadow duration-300 rounded-lg overflow-hidden bg-card animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
+                            <CardHeader className="p-6">
+                                <div className="mb-4 flex justify-center">
+                                <service.icon className="w-12 h-12 text-primary" aria-hidden="true" />
+                                </div>
+                                <CardTitle className="font-headline text-2xl text-center text-primary">{service.title}</CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-6 flex-grow">
+                                <CardDescription className="text-center text-foreground/70 text-base leading-relaxed">
+                                {service.description}
+                                </CardDescription>
+                            </CardContent>
+                        </Card>
+                    </div>
+                ))}
+            </div>
+            <div className="flex justify-center items-center gap-2 mt-4">
+                {services.map((_, index) => (
+                    <div 
+                        key={index}
+                        className={cn(
+                            "h-2 w-2 rounded-full transition-all duration-300",
+                            index === activeIndex ? "bg-primary w-4" : "bg-primary/40"
+                        )}
+                    />
+                ))}
+            </div>
+        </div>
+
+        {/* Desktop: Static grid */}
+        <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => (
             <Card key={index} className="flex flex-col hover:shadow-xl transition-shadow duration-300 rounded-lg overflow-hidden bg-card animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
               <CardHeader className="p-6">
