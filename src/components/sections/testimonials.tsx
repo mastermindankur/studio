@@ -82,9 +82,11 @@ export function Testimonials() {
     if (scrollTimeout.current) {
         clearTimeout(scrollTimeout.current);
     }
+    // Store the target in a variable to avoid accessing the event object in the timeout
+    const currentTarget = event.currentTarget;
     scrollTimeout.current = setTimeout(() => {
-        const scrollLeft = event.currentTarget.scrollLeft;
-        const cardWidth = event.currentTarget.offsetWidth;
+        const scrollLeft = currentTarget.scrollLeft;
+        const cardWidth = currentTarget.offsetWidth;
         const newIndex = Math.round(scrollLeft / cardWidth);
         if (newIndex !== activeIndex) {
             setActiveIndex(newIndex);
