@@ -85,13 +85,14 @@ export function Testimonials() {
     // Store the target in a variable to avoid accessing the event object in the timeout
     const currentTarget = event.currentTarget;
     scrollTimeout.current = setTimeout(() => {
+        if (!currentTarget.children[0]) return;
         const scrollLeft = currentTarget.scrollLeft;
-        const cardWidth = currentTarget.offsetWidth;
+        const cardWidth = currentTarget.children[0].clientWidth; // Use child width
         const newIndex = Math.round(scrollLeft / cardWidth);
         if (newIndex !== activeIndex) {
             setActiveIndex(newIndex);
         }
-    }, 150);
+    }, 100);
   };
   
   useEffect(() => {
