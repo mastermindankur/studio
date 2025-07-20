@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, User, KeyRound, Phone } from "lucide-react";
+import { Loader2, User, KeyRound } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { updateUserProfile } from "../actions/user";
 
@@ -152,7 +152,7 @@ export default function ProfilePage() {
         <div className="grid gap-8 md:grid-cols-3">
           <div className="md:col-span-1">
              <h2 className="text-xl font-semibold">Account Details</h2>
-             <p className="text-muted-foreground mt-1">Manage your account information.</p>
+             <p className="text-muted-foreground mt-1">Manage your account information and password.</p>
           </div>
           <div className="md:col-span-2">
             <Card>
