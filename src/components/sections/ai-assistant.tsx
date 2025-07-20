@@ -17,8 +17,14 @@ interface Message {
   sender: "user" | "ai";
 }
 
+const initialBotMessage: Message = {
+    id: "initial-message",
+    text: "I can answer your questions about Will creation in India and guide you through the process. For complex legal advice, please consult a professional.",
+    sender: "ai",
+};
+
 export function AIAssistant() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([initialBotMessage]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -71,9 +77,6 @@ export function AIAssistant() {
       <div className="container max-w-screen-lg mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 md:mb-16">
           <h2 className="font-headline text-3xl sm:text-4xl font-bold text-primary mb-4">AI Will Assistant for India</h2>
-          <p className="text-lg text-foreground/80 max-w-2xl mx-auto">
-            Our AI assistant can answer your questions about Will creation in India and guide you through the process. For complex legal advice, please consult a professional.
-          </p>
         </div>
         <div className="bg-card shadow-2xl rounded-lg overflow-hidden max-w-4xl mx-auto">
           <ScrollArea className="h-[400px] md:h-[500px] w-full p-4 sm:p-6" ref={scrollAreaRef}>
