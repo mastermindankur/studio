@@ -2,12 +2,18 @@
 "use client"
 
 import * as React from "react"
-import { addYears, subYears } from "date-fns"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { DayPicker, DropdownProps } from "react-day-picker"
+import { DayPicker } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
@@ -17,12 +23,18 @@ function Calendar({
   showOutsideDays = true,
   ...props
 }: CalendarProps) {
-  const [month, setMonth] = React.useState(props.month ?? new Date())
+  const handleYearChange = (value: string) => {
+    const newDate = new Date(props.month || new Date());
+    newDate.setFullYear(parseInt(value, 10));
+    props.onMonthChange?.(newDate);
+  };
 
-  React.useEffect(() => {
-    setMonth(props.month ?? new Date())
-  }, [props.month])
-
+  const handleMonthChange = (value: string) => {
+    const newDate = new Date(props.month || new Date());
+    newDate.setMonth(parseInt(value, 10));
+    props.onMonthChange?.(newDate);
+  };
+  
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
@@ -31,7 +43,8 @@ function Calendar({
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
         caption: "flex justify-center pt-1 relative items-center",
-        caption_label: "text-sm font-medium",
+        caption_label: "text-sm font-medium hidden",
+        caption_dropdowns: "flex gap-2",
         nav: "space-x-1 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
@@ -61,48 +74,52 @@ function Calendar({
         day_hidden: "invisible",
         ...classNames,
       }}
-      month={month}
-      onMonthChange={setMonth}
       components={{
-        IconLeft: ({ className, ...props }) => (
-          <ChevronLeft className={cn("h-4 w-4", className)} {...props} />
-        ),
-        IconRight: ({ className, ...props }) => (
-          <ChevronRight className={cn("h-4 w-4", className)} {...props} />
-        ),
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        Dropdown: ({ ..._ }: DropdownProps) => (
-          <>
-            <button
-              onClick={() => setMonth(subYears(month, 1))}
-              className={cn(
-                buttonVariants({ variant: "outline" }),
-                "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 absolute left-1"
-              )}
-              aria-label="Previous year"
-              type="button"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-            <div className="text-sm font-medium">
-              {month.toLocaleString("default", {
-                month: "long",
-                year: "numeric",
-              })}
-            </div>
-            <button
-              onClick={() => setMonth(addYears(month, 1))}
-              className={cn(
-                buttonVariants({ variant: "outline" }),
-                "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 absolute right-1"
-              )}
-              aria-label="Next year"
-              type="button"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          </>
-        ),
+        IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" {...props} />,
+        IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" {...props} />,
+        Dropdown: ({ ...dropdownProps}) => {
+            const fromYear = props.fromYear || new Date().getFullYear() - 100;
+            const toYear = props.toYear || new Date().getFullYear();
+            const currentMonth = props.month?.getMonth() || new Date().getMonth();
+            const currentYear = props.month?.getFullYear() || new Date().getFullYear();
+
+            const years = [];
+            for (let i = fromYear; i <= toYear; i++) {
+                years.push(i);
+            }
+            const months = Array.from({length: 12}, (_, i) => new Date(0, i).toLocaleString('default', { month: 'long' }));
+            
+            return (
+              <div className="flex gap-2">
+                <Select
+                  value={String(currentMonth)}
+                  onValueChange={handleMonthChange}
+                >
+                  <SelectTrigger>{months[currentMonth]}</SelectTrigger>
+                  <SelectContent>
+                    {months.map((month, i) => (
+                      <SelectItem key={month} value={String(i)}>
+                        {month}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select
+                  value={String(currentYear)}
+                  onValueChange={handleYearChange}
+                >
+                  <SelectTrigger>{currentYear}</SelectTrigger>
+                  <SelectContent>
+                     {years.map((year) => (
+                      <SelectItem key={year} value={String(year)}>
+                        {year}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )
+        }
       }}
       {...props}
     />

@@ -170,13 +170,17 @@ export default function PersonalInformationPage() {
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
-                            month={subYears(new Date(), 30)}
                             mode="single"
                             selected={field.value}
                             onSelect={field.onChange}
+                            month={field.value || subYears(new Date(), 30)}
+                            onMonthChange={field.onChange}
                             disabled={(date) =>
-                            date > eighteenYearsAgo || date < new Date("1920-01-01")
+                                date > eighteenYearsAgo || date < new Date("1920-01-01")
                             }
+                            captionLayout="dropdown-buttons"
+                            fromYear={1920}
+                            toYear={eighteenYearsAgo.getFullYear()}
                             initialFocus
                         />
                         </PopoverContent>
