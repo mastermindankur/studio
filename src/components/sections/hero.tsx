@@ -39,6 +39,7 @@ export function HeroSection() {
               className="object-cover w-full h-full"
               data-ai-hint="indian family planning"
               priority
+              unoptimized
             />
           </div>
            <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-primary/20 rounded-full -z-10 hidden md:block"></div>
