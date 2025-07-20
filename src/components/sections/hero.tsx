@@ -13,7 +13,7 @@ export function HeroSection() {
   return (
     <section id="hero" className="py-20 md:py-32 bg-gradient-to-br from-background to-primary/10">
       <div className="container max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center">
-        <div className="animate-slide-in-left">
+        <div>
           <h1 className="font-headline text-4xl sm:text-5xl lg:text-6xl font-bold text-primary mb-6 leading-tight">
             Secure Your Legacy: <br /> Online Will Creation for India.
           </h1>
@@ -29,7 +29,7 @@ export function HeroSection() {
             </Button>
           </div>
         </div>
-        <div className="relative animate-slide-in-right flex justify-center md:justify-end">
+        <div className="relative flex justify-center md:justify-end">
           <div className="rounded-lg overflow-hidden shadow-2xl w-full max-w-md lg:max-w-lg aspect-[4/3]">
             <Image
               src="/images/hero-image.jpg"

@@ -81,7 +81,7 @@ export default function FamilyDetailsPage() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="bg-card p-8 rounded-lg shadow-lg mt-8">
+      <div className="bg-card p-6 sm:p-8 rounded-lg shadow-lg mt-8">
         <div className="text-center mb-8">
             <Users className="w-12 h-12 text-primary mx-auto mb-2" />
             <h1 className="text-3xl font-bold text-primary font-headline">Family Details</h1>
@@ -178,14 +178,14 @@ export default function FamilyDetailsPage() {
                 </Button>
             </div>
 
-            <div className="flex justify-between">
-              <Button type="button" size="lg" variant="outline" onClick={handleBack}>
+            <div className="flex flex-col sm:flex-row justify-between gap-4">
+              <Button type="button" size="lg" variant="outline" onClick={handleBack} className="w-full sm:w-auto">
                 <ChevronLeft className="mr-2 h-5 w-5" /> Previous Step
               </Button>
-               <Button type="button" size="lg" variant="secondary" onClick={form.handleSubmit(handleSaveAndExit)}>
+               <Button type="button" size="lg" variant="secondary" onClick={form.handleSubmit(handleSaveAndExit)} className="w-full sm:w-auto">
                   <Save className="mr-2 h-5 w-5" /> Save & Exit
               </Button>
-              <Button type="submit" size="lg">
+              <Button type="submit" size="lg" className="w-full sm:w-auto">
                 Next Step <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
             </div>

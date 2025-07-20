@@ -169,11 +169,11 @@ function DashboardPageContent() {
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-grow container max-w-screen-lg mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-        <div className="flex justify-between items-center mb-8">
-            <h1 className="font-headline text-3xl sm:text-4xl font-bold text-primary">
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+            <h1 className="font-headline text-2xl sm:text-3xl lg:text-4xl font-bold text-primary text-center sm:text-left">
             Welcome, {user.displayName || user.email}
             </h1>
-            <Button onClick={handleCreateNew}><PlusCircle className="mr-2"/>Create New Will</Button>
+            <Button onClick={handleCreateNew} className="w-full sm:w-auto"><PlusCircle className="mr-2"/>Create New Will</Button>
         </div>
 
         {inProgressWillPath && (
@@ -201,18 +201,18 @@ function DashboardPageContent() {
                 {wills.map((will) => (
                     <Card key={will.id}>
                         <CardHeader>
-                            <div className="flex justify-between items-start">
+                            <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                                 <div>
                                     <CardTitle className="flex items-center"><FileText className="mr-2"/>Will - Version {will.version}</CardTitle>
                                     <CardDescription>Created on: {will.createdAt}</CardDescription>
                                 </div>
-                                <div className="flex gap-2">
-                                    <Button variant="outline" size="sm" onClick={() => handleDownloadPdf(will)} disabled={pdfGeneratingWillId === will.id}>
+                                <div className="flex gap-2 w-full sm:w-auto">
+                                    <Button variant="outline" size="sm" onClick={() => handleDownloadPdf(will)} disabled={pdfGeneratingWillId === will.id} className="flex-1">
                                         {pdfGeneratingWillId === will.id ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Download className="mr-2 h-4 w-4"/>}
-                                        {pdfGeneratingWillId === will.id ? "Generating..." : "PDF"}
+                                        {pdfGeneratingWillId === will.id ? "..." : "PDF"}
                                     </Button>
-                                    <Button variant="secondary" size="sm" onClick={() => handleEdit(will.data)}>
-                                        <Edit className="mr-2 h-4 w-4"/>Edit as New Version
+                                    <Button variant="secondary" size="sm" onClick={() => handleEdit(will.data)} className="flex-1">
+                                        <Edit className="mr-2 h-4 w-4"/>Edit
                                     </Button>
                                 </div>
                             </div>
@@ -221,7 +221,7 @@ function DashboardPageContent() {
                 ))}
             </div>
         ) : !inProgressWillPath ? (
-             <Card className="text-center py-12">
+             <Card className="text-center py-12 px-6">
                 <CardHeader>
                     <CardTitle>You haven't created a Will yet</CardTitle>
                     <CardDescription>

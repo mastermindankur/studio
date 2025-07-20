@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Edit, FileCheck, User, Users, Landmark, Gift, PieChart, UserCheck, Loader2 } from "lucide-react";
+import { CheckCircle, Edit, FileCheck, User, Users, Landmark, Gift, PieChart, UserCheck, Loader2, ChevronLeft } from "lucide-react";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { WillDocument } from "@/components/create-will/will-document";
@@ -86,7 +86,7 @@ export default function ReviewPage() {
       </div>
 
       <div className="max-w-4xl mx-auto">
-        <div className="bg-card p-8 rounded-lg shadow-lg mt-8">
+        <div className="bg-card p-6 sm:p-8 rounded-lg shadow-lg mt-8">
           <div className="text-center mb-8">
               <FileCheck className="w-12 h-12 text-primary mx-auto mb-2" />
               <h1 className="text-3xl font-bold text-primary font-headline">Review & Finalize</h1>
@@ -102,7 +102,7 @@ export default function ReviewPage() {
                   </div>
                   <Button variant="outline" size="sm" onClick={() => handleEdit("personal-information")}><Edit className="mr-2 h-4 w-4"/> Edit</Button>
               </CardHeader>
-              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-sm">
                   <div><strong>Full Name:</strong> {personalInfo?.fullName}</div>
                   <div><strong>Gender:</strong> {personalInfo?.gender}</div>
                   <div><strong>Date of Birth:</strong> {personalInfo?.dob ? format(new Date(personalInfo.dob), "PPP") : 'N/A'}</div>
@@ -187,7 +187,7 @@ export default function ReviewPage() {
               <CardContent className="space-y-2 text-sm">
                   {assetAllocation?.allocations.map((alloc: any, index: number) => (
                       <div key={index} className="p-3 border rounded-md flex justify-between items-center">
-                          <span><strong>{getAssetName(alloc.assetId)}</strong> to <strong>{getBeneficiaryName(alloc.beneficiaryId)}</strong></span>
+                          <span className="truncate pr-2"><strong>{getAssetName(alloc.assetId)}</strong> to <strong>{getBeneficiaryName(alloc.beneficiaryId)}</strong></span>
                           <Badge>{alloc.percentage}%</Badge>
                       </div>
                   ))}
@@ -230,9 +230,11 @@ export default function ReviewPage() {
 
           </div>
           
-          <div className="mt-12 flex justify-between">
-              <Button size="lg" variant="outline" onClick={handleBack} disabled={isFinalizing}>Back</Button>
-              <Button size="lg" onClick={handleFinalize} disabled={isFinalizing}>
+          <div className="mt-12 flex flex-col sm:flex-row justify-between gap-4">
+              <Button size="lg" variant="outline" onClick={handleBack} disabled={isFinalizing} className="w-full sm:w-auto">
+                <ChevronLeft className="mr-2 h-5 w-5" /> Back
+              </Button>
+              <Button size="lg" onClick={handleFinalize} disabled={isFinalizing} className="w-full sm:w-auto">
               {isFinalizing ? (
                   <Loader2 className="mr-2 h-5 w-5 animate-spin"/>
               ) : (

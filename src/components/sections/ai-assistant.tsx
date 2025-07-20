@@ -76,7 +76,7 @@ export function AIAssistant() {
           </p>
         </div>
         <div className="bg-card shadow-2xl rounded-lg overflow-hidden">
-          <ScrollArea className="h-[400px] md:h-[500px] w-full p-6" ref={scrollAreaRef}>
+          <ScrollArea className="h-[400px] md:h-[500px] w-full p-4 sm:p-6" ref={scrollAreaRef}>
             <div className="space-y-6">
               {messages.map((message) => (
                 <div
@@ -96,7 +96,7 @@ export function AIAssistant() {
                   )}
                   <div
                     className={cn(
-                      "max-w-[70%] rounded-xl px-4 py-3 shadow-md",
+                      "max-w-[80%] rounded-xl px-4 py-3 shadow-md",
                       message.sender === "user"
                         ? "bg-primary text-primary-foreground"
                         : "bg-muted text-muted-foreground"
