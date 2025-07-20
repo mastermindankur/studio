@@ -46,9 +46,6 @@ export function HowItWorks() {
         <div className="text-center mb-12 md:mb-16">
           <Workflow className="w-16 h-16 text-primary mx-auto mb-4" />
           <h2 className="font-headline text-3xl sm:text-4xl font-bold text-primary mb-4">4 Simple Steps to Create Your Will</h2>
-          <p className="text-lg text-foreground/80 max-w-2xl mx-auto">
-            Our streamlined process makes Will creation straightforward and hassle-free, all from the comfort of your home.
-          </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {steps.map((step, index) => (
