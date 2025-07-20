@@ -1,9 +1,15 @@
 
+"use client";
+
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
+import { useAuth } from "@/context/AuthContext";
 
 export function HeroSection() {
+  const { user } = useAuth();
+  const createWillHref = user ? "/create-will/personal-information" : "/signup";
+
   return (
     <section id="hero" className="py-20 md:py-32 bg-gradient-to-br from-background to-primary/10">
       <div className="container max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center">
@@ -16,7 +22,7 @@ export function HeroSection() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <Button asChild size="lg" className="font-headline text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <Link href="/create-will/personal-information">Create Your Will Now</Link>
+              <Link href={createWillHref}>Create Your Will Now</Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="font-headline text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border-primary text-primary hover:bg-primary/10">
               <Link href="#ai-assistant">Ask Our AI Assistant</Link>
