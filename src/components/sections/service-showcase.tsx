@@ -51,7 +51,7 @@ const services: Service[] = [
 
 export function ServiceShowcase() {
   return (
-    <section id="services" className="py-16 md:py-24 bg-background">
+    <section id="services" className="py-16 md:py-24 bg-primary/5">
       <div className="container max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 md:mb-16">
           <h2 className="font-headline text-3xl sm:text-4xl font-bold text-primary mb-4">Online Will Creation in India: Simple & Secure</h2>
