@@ -168,6 +168,10 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
         try {
             const collectionName = section === 'assetAllocation' ? 'assetAllocations' : section;
             await updateWillSection(user.uid, collectionName, currentData);
+            toast({
+                title: "Progress Saved",
+                description: "Your information has been successfully saved.",
+            });
         } catch (e) {
             console.error("Could not save draft to firestore", e);
              toast({ variant: "destructive", title: "Save Failed", description: "Could not save your progress." });
