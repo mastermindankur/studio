@@ -58,7 +58,7 @@ export default function AssetsPage() {
         ...asset,
         id: asset.id || `asset-${Date.now()}-${index}`,
     }));
-    saveAndGoTo('assets', { assets: assetsWithIds }, "/create-will/assets/review");
+    saveAndGoTo('assets', { assets: assetsWithIds }, "/dashboard");
   }
 
   const handleAddNewAsset = () => {
