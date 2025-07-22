@@ -117,20 +117,32 @@ export function AddAssetModal({ isOpen, onClose, onSave, assetData }: AddAssetMo
   const estimatedValue = useWatch({ control: form.control, name: 'details.value' });
   const formattedValue = formatIndianCurrency(estimatedValue);
 
-  useEffect(() => {
-    if (assetData) {
-      form.reset({ ...defaultValues, ...assetData });
-    } else {
-      form.reset(defaultValues);
-    }
-  }, [assetData, form, isOpen]);
-
-
+  // Effect to populate the form when editing an asset
   useEffect(() => {
     if (isOpen) {
+      if (assetData) {
+        // When editing, reset the form with the specific asset's data
+        form.reset({ ...defaultValues, ...assetData });
+      } else {
+        // When adding new, reset to the absolute default values
+        form.reset(defaultValues);
+      }
+    }
+  }, [assetData, isOpen, form]);
+
+  // Effect to clear irrelevant fields when asset type changes
+  useEffect(() => {
+    if (isOpen) {
+      const currentDetails = form.getValues('details');
+      // Reset details to the default, but keep common fields like description and value
       form.reset({
-          ...defaultValues,
-          type: assetType,
+        ...defaultValues,
+        type: assetType, // Keep the selected type
+        details: {
+          ...defaultValues.details, // Start with clean details
+          description: currentDetails.description, // Preserve the description
+          value: currentDetails.value // Preserve the value
+        }
       });
     }
   }, [assetType, form, isOpen]);
