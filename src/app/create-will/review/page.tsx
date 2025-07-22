@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useWillForm } from "@/context/WillFormContext";
@@ -85,7 +86,7 @@ export default function ReviewPage() {
 
   const getAssetName = (id: string) => {
     const asset = assets?.assets.find((a: any) => a.id === id);
-    if (asset) return asset.description;
+    if (asset) return asset.details.description;
     
     return 'N/A';
   };
@@ -179,8 +180,8 @@ export default function ReviewPage() {
                   <CardContent className="space-y-4 text-sm">
                       {assets?.assets.map((asset: any, index: number) => (
                           <div key={index} className="p-3 border rounded-md">
-                              <p><strong>{asset.description}</strong> ({asset.type})</p>
-                              <p>Value: ₹{asset.value || 'Not specified'}</p>
+                              <p><strong>{asset.details.description}</strong> ({asset.type})</p>
+                              <p>Value: ₹{asset.details.value || 'Not specified'}</p>
                           </div>
                       ))}
                   </CardContent>
