@@ -45,9 +45,15 @@ export const initialData: WillFormData = {
   familyDetails: {
     children: [],
   },
-  assets: [],
-  beneficiaries: [],
-  assetAllocation: [],
+  assets: {
+    assets: [],
+  },
+  beneficiaries: {
+    beneficiaries: [],
+  },
+  assetAllocation: {
+    allocations: [],
+  },
   executor: {
     primaryExecutor: {
       fullName: "",
@@ -122,9 +128,9 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
             const loadedData = {
                 personalInfo: personalInfo || initialData.personalInfo,
                 familyDetails: familyDetails || initialData.familyDetails,
-                assets: assets.length > 0 ? assets : initialData.assets,
-                beneficiaries: beneficiaries.length > 0 ? beneficiaries : initialData.beneficiaries,
-                assetAllocation: assetAllocation.length > 0 ? assetAllocation : initialData.assetAllocation,
+                assets: { assets: assets.length > 0 ? assets : initialData.assets.assets },
+                beneficiaries: { beneficiaries: beneficiaries.length > 0 ? beneficiaries : initialData.beneficiaries.beneficiaries },
+                assetAllocation: { allocations: assetAllocation.length > 0 ? assetAllocation : initialData.assetAllocation.allocations },
                 executor: executor || initialData.executor,
             };
             setFormData(loadedData);
@@ -157,10 +163,11 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
                 'assetAllocation': 'allocations'
             };
             
+            const listSectionKey = listSections[section];
             const collectionName = section === 'assetAllocation' ? 'assetAllocations' : section;
 
-            if (Object.keys(listSections).includes(section)) {
-                const items = currentData;
+            if (listSectionKey && currentData[listSectionKey]) {
+                const items = currentData[listSectionKey];
                 const existingItems = await getWillListSection(user.uid, collectionName);
                 
                 // Simplified approach: clear and re-add.

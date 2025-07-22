@@ -64,12 +64,12 @@ export default function AssetsPage() {
 
   const form = useForm<AssetsFormValues>({
     resolver: zodResolver(assetsFormSchema),
-    defaultValues: { assets: formData.assets },
+    defaultValues: formData.assets || { assets: [] },
   });
 
   useEffect(() => {
     if (!loading && formData.assets) {
-        form.reset({ assets: formData.assets });
+        form.reset(formData.assets);
     }
   }, [loading, formData.assets, form]);
 
@@ -94,7 +94,7 @@ export default function AssetsPage() {
         ...asset,
         id: asset.id || `asset-${Date.now()}-${index}`,
     }));
-    saveAndGoTo('assets', assetsWithIds, "/dashboard");
+    saveAndGoTo('assets', { assets: assetsWithIds }, "/create-will/beneficiaries");
   }
 
   return (
@@ -214,7 +214,7 @@ export default function AssetsPage() {
             
             <div className="flex flex-col sm:flex-row justify-end gap-4">
               <Button type="submit" size="lg" className="w-full sm:w-auto">
-                Save &amp; Go to Dashboard <ChevronRight className="ml-2 h-5 w-5" />
+                Save & Continue <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
           </form>
