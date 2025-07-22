@@ -81,7 +81,7 @@ function DashboardPageContent() {
                 getWillSection(user.uid, 'familyDetails'),
                 getWillListSection(user.uid, 'assets'),
                 getWillListSection(user.uid, 'beneficiaries'),
-                getWillListSection(user.uid, 'assetAllocations'),
+                getWillSection(user.uid, 'assetAllocation'),
                 getWillSection(user.uid, 'executor')
             ]);
             
@@ -91,7 +91,7 @@ function DashboardPageContent() {
                 familyDetails: familyDetails || initialData.familyDetails,
                 assets: { assets: assets || [] },
                 beneficiaries: { beneficiaries: beneficiaries || [] },
-                assetAllocation: { allocations: assetAllocation || [] },
+                assetAllocation: assetAllocation || initialData.assetAllocation,
                 executor: executor || initialData.executor,
             };
             setDraft(draftData);
@@ -257,3 +257,5 @@ export default function DashboardPage() {
         </WillFormProvider>
     )
 }
+
+    
