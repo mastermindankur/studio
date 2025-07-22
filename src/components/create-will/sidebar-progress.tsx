@@ -12,7 +12,9 @@ import {
   PieChart,
   UserCheck,
   FileCheck,
+  LayoutDashboard,
 } from "lucide-react";
+import { Button } from "../ui/button";
 
 const steps = [
   { name: "Personal Info", path: "/create-will/personal-information", icon: User },
@@ -27,39 +29,19 @@ const steps = [
 export function SidebarProgress() {
   const pathname = usePathname();
   const router = useRouter();
-  const { formData, saveAndGoTo, setFormData } = useWillForm();
-
-  const currentStepIndex = steps.findIndex((step) => pathname === step.path);
-
-  const getStepKey = (path: string) => {
-    if (path.includes('personal-information')) return 'personalInfo';
-    if (path.includes('family-details')) return 'familyDetails';
-    if (path.includes('assets')) return 'assets';
-    if (path.includes('beneficiaries')) return 'beneficiaries';
-    if (path.includes('asset-allocation')) return 'assetAllocation';
-    if (path.includes('executor')) return 'executor';
-    if (path.includes('review')) return 'review';
-    return null;
-  };
 
   const handleStepClick = (path: string) => {
-    const currentStepKey = getStepKey(pathname);
-
-    // Get the current form data from the form state, not context, to ensure it's up-to-date
-    // This requires a way to access form.getValues() here, which is tricky.
-    // The current saveAndGoTo saves context data, which is fine for button clicks.
-    // For now, we'll rely on the existing saveAndGoTo logic which saves on button clicks.
-    // A more robust solution might involve a shared "save" function.
-    
-    // For now, let's just navigate. The context should be up-to-date from previous navigations.
     router.push(path);
   };
   
   return (
-    <nav className="space-y-1 sticky top-24">
-      {steps.map((step, stepIdx) => {
-        const isCompleted = stepIdx < currentStepIndex;
-        const isCurrent = stepIdx === currentStepIndex;
+    <nav className="space-y-2 sticky top-24">
+        <Button variant="outline" className="w-full justify-start mb-4" onClick={() => router.push('/dashboard')}>
+            <LayoutDashboard className="mr-2 h-4 w-4"/> Back to Dashboard
+        </Button>
+      {steps.map((step) => {
+        const isCurrent = pathname === step.path;
+        const Icon = step.icon;
 
         return (
           <button
@@ -69,30 +51,18 @@ export function SidebarProgress() {
               "group flex w-full items-center rounded-md p-3 text-left text-sm font-medium transition-colors duration-200",
               isCurrent
                 ? "bg-primary text-primary-foreground"
-                : isCompleted
-                ? "bg-card text-foreground hover:bg-muted"
-                : "bg-card text-muted-foreground hover:bg-muted"
+                : "bg-card text-foreground hover:bg-muted"
             )}
             aria-current={isCurrent ? "step" : undefined}
           >
-            <div className={cn(
-                "flex h-6 w-6 items-center justify-center rounded-full mr-4 text-xs font-bold shrink-0",
-                 isCurrent
-                ? "bg-primary-foreground text-primary"
-                : isCompleted
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted-foreground/20 text-muted-foreground"
-            )}>
-              {isCompleted ? <FileCheck className="h-4 w-4" /> : stepIdx + 1}
-            </div>
-
-            <div className="flex flex-col">
-              <span className="text-xs text-foreground/60 group-hover:text-foreground">Step {stepIdx + 1}</span>
-              <span className={cn(
+            <Icon className={cn(
+                "mr-3 h-5 w-5 shrink-0",
+                 isCurrent ? "text-primary-foreground" : "text-primary"
+            )}/>
+            <span className={cn(
                  "font-semibold",
                  isCurrent ? "text-primary-foreground" : "text-foreground"
-              )}>{step.name}</span>
-            </div>
+            )}>{step.name}</span>
           </button>
         );
       })}

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Edit, FileCheck, User, Users, Landmark, Gift, PieChart, UserCheck, Loader2, ChevronLeft, MapPin } from "lucide-react";
+import { CheckCircle, Edit, FileCheck, User, Users, Landmark, Gift, PieChart, UserCheck, Loader2, Save, MapPin } from "lucide-react";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { WillDocument } from "@/components/create-will/will-document";
@@ -80,8 +80,8 @@ export default function ReviewPage() {
     }
   };
   
-  const handleBack = () => {
-    router.push("/create-will/executor");
+  const handleSaveAndExit = () => {
+    router.push("/dashboard");
   }
 
   const getAssetName = (id: string) => {
@@ -112,16 +112,14 @@ export default function ReviewPage() {
       </div>
 
       <div className="max-w-4xl mx-auto">
-        <div className="bg-card p-6 sm:p-8 rounded-lg shadow-lg mt-8">
+        <div className="bg-card p-6 sm:p-8 rounded-lg shadow-lg">
           <div className="text-center mb-8">
               <FileCheck className="w-12 h-12 text-primary mx-auto mb-2" />
               <h1 className="text-3xl font-bold text-primary font-headline">Review & Finalize</h1>
-              {isEditing ? (
+              {isEditing && (
                  <p className="text-foreground/80 mt-2">
                     Editing Will Version {version} (created on {createdAt ? format(new Date(createdAt), "PPP") : 'N/A'})
                  </p>
-              ) : (
-                 <p className="text-foreground/80">Step 7 of 7</p>
               )}
           </div>
         
@@ -269,9 +267,9 @@ export default function ReviewPage() {
 
           </div>
           
-          <div className="mt-12 flex flex-col sm:flex-row justify-between gap-4">
-              <Button size="lg" variant="outline" onClick={handleBack} disabled={isFinalizing} className="w-full sm:w-auto">
-                <ChevronLeft className="mr-2 h-5 w-5" /> Back
+          <div className="mt-12 flex flex-col sm:flex-row justify-end gap-4">
+              <Button size="lg" variant="secondary" onClick={handleSaveAndExit} disabled={isFinalizing} className="w-full sm:w-auto">
+                <Save className="mr-2 h-5 w-5" /> Save & Exit
               </Button>
               <Button size="lg" onClick={handleFinalize} disabled={isFinalizing} className="w-full sm:w-auto">
               {isFinalizing ? (

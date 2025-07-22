@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ChevronRight, ChevronLeft, UserCheck, Edit, Save, Info, MapPin } from "lucide-react";
+import { ChevronRight, UserCheck, Edit, Save, Info, MapPin } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useWillForm } from "@/context/WillFormContext";
 import { useEffect } from "react";
@@ -86,10 +86,6 @@ export default function ExecutorPage() {
     saveAndGoTo(data, "/create-will/review"); 
   }
 
-  function handleBack() {
-    saveAndGoTo(form.getValues(), "/create-will/asset-allocation");
-  }
-
   function handleSaveAndExit(data: ExecutorFormValues) {
     saveAndGoTo(data, "/dashboard");
   }
@@ -97,16 +93,14 @@ export default function ExecutorPage() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="bg-card p-6 sm:p-8 rounded-lg shadow-lg mt-8">
+      <div className="bg-card p-6 sm:p-8 rounded-lg shadow-lg">
         <div className="text-center mb-8">
             <UserCheck className="w-12 h-12 text-primary mx-auto mb-2" />
             <h1 className="text-3xl font-bold text-primary font-headline">Executor & Instructions</h1>
-            {isEditing ? (
+            {isEditing && (
               <p className="text-foreground/80 mt-2">
                 Editing Will Version {version} (created on {createdAt ? format(new Date(createdAt), "PPP") : 'N/A'})
               </p>
-            ) : (
-              <p className="text-foreground/80">Step 6 of 7</p>
             )}
         </div>
         <Form {...form}>
@@ -216,15 +210,12 @@ export default function ExecutorPage() {
             </div>
 
 
-            <div className="flex flex-col sm:flex-row justify-between gap-4">
-              <Button type="button" size="lg" variant="outline" onClick={handleBack} className="w-full sm:w-auto">
-                <ChevronLeft className="mr-2 h-5 w-5" /> Previous Step
-              </Button>
+            <div className="flex flex-col sm:flex-row justify-end gap-4">
                <Button type="button" size="lg" variant="secondary" onClick={form.handleSubmit(handleSaveAndExit)} className="w-full sm:w-auto">
                   <Save className="mr-2 h-5 w-5" /> Save & Exit
               </Button>
               <Button type="submit" size="lg" className="w-full sm:w-auto">
-                Proceed to Review <ChevronRight className="ml-2 h-5 w-5" />
+                Save & Continue <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
           </form>
@@ -233,5 +224,3 @@ export default function ExecutorPage() {
     </div>
   );
 }
-
-    

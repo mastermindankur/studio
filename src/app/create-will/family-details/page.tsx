@@ -73,10 +73,6 @@ export default function FamilyDetailsPage() {
   function onSubmit(data: FamilyDetailsFormValues) {
     saveAndGoTo(data, "/create-will/assets");
   }
-  
-  function handleBack() {
-    saveAndGoTo(form.getValues(), "/create-will/personal-information");
-  }
 
   function handleSaveAndExit(data: FamilyDetailsFormValues) {
     saveAndGoTo(data, "/dashboard");
@@ -84,16 +80,14 @@ export default function FamilyDetailsPage() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="bg-card p-6 sm:p-8 rounded-lg shadow-lg mt-8">
+      <div className="bg-card p-6 sm:p-8 rounded-lg shadow-lg">
         <div className="text-center mb-8">
             <Users className="w-12 h-12 text-primary mx-auto mb-2" />
             <h1 className="text-3xl font-bold text-primary font-headline">Family Details</h1>
-            {isEditing ? (
+             {isEditing && (
               <p className="text-foreground/80 mt-2">
                 Editing Will Version {version} (created on {createdAt ? format(new Date(createdAt), "PPP") : 'N/A'})
               </p>
-            ) : (
-              <p className="text-foreground/80">Step 2 of 7</p>
             )}
         </div>
         <Form {...form}>
@@ -187,15 +181,12 @@ export default function FamilyDetailsPage() {
                 </Button>
             </div>
 
-            <div className="flex flex-col sm:flex-row justify-between gap-4">
-              <Button type="button" size="lg" variant="outline" onClick={handleBack} className="w-full sm:w-auto">
-                <ChevronLeft className="mr-2 h-5 w-5" /> Previous Step
-              </Button>
-               <Button type="button" size="lg" variant="secondary" onClick={form.handleSubmit(handleSaveAndExit)} className="w-full sm:w-auto">
+            <div className="flex flex-col sm:flex-row justify-end gap-4">
+              <Button type="button" size="lg" variant="secondary" onClick={form.handleSubmit(handleSaveAndExit)} className="w-full sm:w-auto">
                   <Save className="mr-2 h-5 w-5" /> Save & Exit
               </Button>
               <Button type="submit" size="lg" className="w-full sm:w-auto">
-                Next Step <ChevronRight className="ml-2 h-5 w-5" />
+                Save & Continue <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
           </form>
