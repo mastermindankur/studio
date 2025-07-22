@@ -90,7 +90,7 @@ export default function ExecutorPage() {
   }, [form, setDirty]);
 
   function onSubmit(data: ExecutorFormValues) {
-    saveAndGoTo(data, "/create-will/review"); 
+    saveAndGoTo('executor', data, "/create-will/review"); 
   }
 
   return (

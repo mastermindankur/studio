@@ -64,12 +64,12 @@ export default function AssetsPage() {
 
   const form = useForm<AssetsFormValues>({
     resolver: zodResolver(assetsFormSchema),
-    defaultValues: formData.assets,
+    defaultValues: { assets: formData.assets },
   });
 
   useEffect(() => {
     if (!loading && formData.assets) {
-        form.reset(formData.assets);
+        form.reset({ assets: formData.assets });
     }
   }, [loading, formData.assets, form]);
 
@@ -90,13 +90,11 @@ export default function AssetsPage() {
   }, [form, setDirty]);
 
   function onSubmit(data: AssetsFormValues) {
-    const assetsWithIds = {
-      assets: data.assets.map((asset, index) => ({
+    const assetsWithIds = data.assets.map((asset, index) => ({
         ...asset,
         id: asset.id || `asset-${Date.now()}-${index}`,
-      })),
-    };
-    saveAndGoTo(assetsWithIds, "/create-will/beneficiaries");
+    }));
+    saveAndGoTo('assets', assetsWithIds, "/create-will/beneficiaries");
   }
 
   return (

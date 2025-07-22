@@ -23,6 +23,7 @@ import { useEffect, useMemo } from "react";
 import { format } from "date-fns";
 
 const allocationSchema = z.object({
+  id: z.string().optional(),
   assetId: z.string({ required_error: "Please select an asset." }),
   beneficiaryId: z.string({ required_error: "Please select a beneficiary." }),
   percentage: z.coerce.number()
@@ -57,13 +58,13 @@ type AssetAllocationFormValues = z.infer<typeof assetAllocationFormSchema>;
 export default function AssetAllocationPage() {
   const { formData, saveAndGoTo, setDirty, loading } = useWillForm();
 
-  const MOCK_ASSETS = formData.assets?.assets || [];
+  const MOCK_ASSETS = formData.assets || [];
   
   const combinedBeneficiaries = useMemo(() => {
     const allBeneficiaries = new Map();
 
     // Add from beneficiaries step (they have explicit IDs)
-    formData.beneficiaries?.beneficiaries?.forEach(b => {
+    formData.beneficiaries?.forEach(b => {
       if (b.id && b.name) {
         allBeneficiaries.set(b.id, { id: b.id, name: b.name });
       }
@@ -93,12 +94,12 @@ export default function AssetAllocationPage() {
 
   const form = useForm<AssetAllocationFormValues>({
     resolver: zodResolver(assetAllocationFormSchema),
-    defaultValues: formData.assetAllocation || { allocations: [{ assetId: "", beneficiaryId: "", percentage: 100 }] },
+    defaultValues: { allocations: formData.assetAllocation || [{ assetId: "", beneficiaryId: "", percentage: 100 }] },
   });
 
   useEffect(() => {
     if (!loading && formData.assetAllocation) {
-        form.reset(formData.assetAllocation);
+        form.reset({ allocations: formData.assetAllocation });
     }
   }, [loading, formData.assetAllocation, form]);
 
@@ -117,7 +118,11 @@ export default function AssetAllocationPage() {
   }, [form, setDirty]);
 
   function onSubmit(data: AssetAllocationFormValues) {
-    saveAndGoTo(data, "/create-will/executor");
+    const allocationsWithIds = data.allocations.map((alloc, index) => ({
+        ...alloc,
+        id: alloc.id || `alloc-${Date.now()}-${index}`,
+    }));
+    saveAndGoTo('assetAllocation', allocationsWithIds, "/create-will/executor");
   }
 
   return (

@@ -2,79 +2,86 @@
 "use server";
 
 import { adminDb } from "@/lib/firebase/admin-config";
-import type { WillFormData } from "@/context/WillFormContext";
 
-const draftCollection = adminDb.collection("willDrafts");
-
-// A helper function to deeply merge two objects.
-const mergeDeep = (target: any, source: any) => {
-  const output = { ...target };
-  if (isObject(target) && isObject(source)) {
-    Object.keys(source).forEach(key => {
-      if (isObject(source[key])) {
-        if (!(key in target))
-          Object.assign(output, { [key]: source[key] });
-        else
-          output[key] = mergeDeep(target[key], source[key]);
-      } else {
-        Object.assign(output, { [key]: source[key] });
-      }
-    });
-  }
-  return output;
-}
-
-const isObject = (item: any) => {
-  return (item && typeof item === 'object' && !Array.isArray(item));
-}
-
-
-// Get a user's will draft
-export async function getWillDraft(userId: string): Promise<any> {
+// Get a section of a user's will draft
+export async function getWillSection(userId: string, section: string): Promise<any> {
     try {
-        const docRef = draftCollection.doc(userId);
+        const docRef = adminDb.collection(section).doc(userId);
         const docSnap = await docRef.get();
 
         if (docSnap.exists) {
-            const draftData = docSnap.data() as WillFormData;
-             // Convert Firestore Timestamps back to JS Dates
-            if (draftData.personalInfo?.dob?.toDate) {
-                draftData.personalInfo.dob = draftData.personalInfo.dob.toDate();
+            const data = docSnap.data();
+            // Convert Firestore Timestamps back to JS Dates if necessary
+            if (data && data.dob && data.dob.toDate) {
+                data.dob = data.dob.toDate();
             }
-            if (draftData.createdAt?.toDate) {
-                draftData.createdAt = draftData.createdAt.toDate();
+            if (data && data.createdAt && data.createdAt.toDate) {
+                data.createdAt = data.createdAt.toDate();
             }
-            return draftData;
+            return data;
         } else {
             return null;
         }
     } catch (error) {
-        console.error("Error getting will draft from Firestore: ", error);
-        throw new Error("Could not fetch will draft.");
+        console.error(`Error getting ${section} for user ${userId} from Firestore: `, error);
+        throw new Error(`Could not fetch ${section}.`);
     }
 }
 
 
-// Create or update a user's will draft
-export async function updateWillDraft(userId: string, data: WillFormData): Promise<{ success: boolean; message?: string }> {
+// Create or update a section of a user's will draft
+export async function updateWillSection(userId: string, section: string, data: any): Promise<{ success: boolean; message?: string }> {
     try {
-        const docRef = draftCollection.doc(userId);
+        const docRef = adminDb.collection(section).doc(userId);
         await docRef.set(data, { merge: true });
         return { success: true };
     } catch (error) {
-        console.error("Error updating will draft in Firestore: ", error);
-        return { success: false, message: "Could not update will draft." };
+        console.error(`Error updating ${section} for user ${userId} in Firestore: `, error);
+        return { success: false, message: `Could not update ${section}.` };
     }
 }
 
-// Delete a user's will draft (e.g., after finalization)
-export async function deleteWillDraft(userId: string): Promise<{ success: boolean; message?: string }> {
+// Get a list-based section of a user's will (e.g., assets, beneficiaries)
+export async function getWillListSection(userId: string, section: string): Promise<any[]> {
     try {
-        const docRef = draftCollection.doc(userId);
+        const collectionRef = adminDb.collection(section).where('userId', '==', userId);
+        const snapshot = await collectionRef.get();
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+        console.error(`Error getting list section ${section} for user ${userId} from Firestore: `, error);
+        throw new Error(`Could not fetch ${section}.`);
+    }
+}
+
+export async function addWillListItem(userId: string, section: string, itemData: any): Promise<{ success: boolean, id?: string, message?: string }> {
+    try {
+        const collectionRef = adminDb.collection(section);
+        const docRef = await collectionRef.add({ ...itemData, userId });
+        return { success: true, id: docRef.id };
+    } catch (error) {
+        console.error(`Error adding item to ${section} for user ${userId}:`, error);
+        return { success: false, message: `Could not add item to ${section}.` };
+    }
+}
+
+export async function updateWillListItem(section: string, itemId: string, itemData: any): Promise<{ success: boolean, message?: string }> {
+    try {
+        const docRef = adminDb.collection(section).doc(itemId);
+        await docRef.update(itemData);
+        return { success: true };
+    } catch (error) {
+        console.error(`Error updating item ${itemId} in ${section}:`, error);
+        return { success: false, message: `Could not update item in ${section}.` };
+    }
+}
+
+export async function removeWillListItem(section: string, itemId: string): Promise<{ success: boolean, message?: string }> {
+    try {
+        const docRef = adminDb.collection(section).doc(itemId);
         await docRef.delete();
         return { success: true };
     } catch (error) {
-        console.error("Error deleting will draft from Firestore: ", error);
-        return { success: false, message: "Could not delete will draft." };
+        console.error(`Error removing item ${itemId} from ${section}:`, error);
+        return { success: false, message: `Could not remove item from ${section}.` };
     }
 }

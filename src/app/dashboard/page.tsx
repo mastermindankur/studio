@@ -17,7 +17,7 @@ import { useWillForm, WillFormProvider, type WillFormData, initialData } from "@
 import { useRouter } from "next/navigation";
 import { generatePdf } from "@/lib/pdfGenerator";
 import { WillDocument } from "@/components/create-will/will-document";
-import { getWillDraft } from "../actions/will-draft";
+import { getWillSection, getWillListSection } from "../actions/will-draft";
 
 const checklistSteps = [
     { title: "Personal Information", path: "/create-will/personal-information", icon: User, key: 'personalInfo' },
@@ -33,19 +33,19 @@ function isStepComplete(stepKey: string, draftData: WillFormData | null): boolea
     
     const data = draftData[stepKey as keyof WillFormData] as any;
     if (!data) return false;
-
+    
+    // For list sections, check if array exists. For object sections, check a key property.
     switch (stepKey) {
         case 'personalInfo':
             return !!data.fullName && !!data.dob && !!data.aadhar;
         case 'familyDetails':
             return !!data.maritalStatus;
         case 'assets':
-            return data.assets?.length > 0 && !!data.assets[0].description;
+            return Array.isArray(data) && data.length > 0;
         case 'beneficiaries':
-            // Considered complete if user has gone through it, even if they add no extra beneficiaries
-            return 'beneficiaries' in draftData;
+             return Array.isArray(data); // Considered complete even if empty, as it's optional.
         case 'assetAllocation':
-            return data.allocations?.length > 0 && !!data.allocations[0].assetId;
+            return Array.isArray(data) && data.length > 0;
         case 'executor':
             return !!data.primaryExecutor?.fullName && !!data.city && !!data.state;
         default:
@@ -66,11 +66,28 @@ function DashboardPageContent() {
       const fetchDraft = async () => {
         setLoadingDraft(true);
         try {
-          const draftData = await getWillDraft(user.uid);
-          setDraft(draftData);
+            const [personalInfo, familyDetails, assets, beneficiaries, assetAllocation, executor] = await Promise.all([
+                getWillSection(user.uid, 'personalInfo'),
+                getWillSection(user.uid, 'familyDetails'),
+                getWillListSection(user.uid, 'assets'),
+                getWillListSection(user.uid, 'beneficiaries'),
+                getWillListSection(user.uid, 'assetAllocations'),
+                getWillSection(user.uid, 'executor')
+            ]);
+            
+            const draftData = {
+                personalInfo: personalInfo || initialData.personalInfo,
+                familyDetails: familyDetails || initialData.familyDetails,
+                assets: assets || initialData.assets,
+                beneficiaries: beneficiaries || initialData.beneficiaries,
+                assetAllocation: assetAllocation || initialData.assetAllocation,
+                executor: executor || initialData.executor
+            };
+            setDraft(draftData as WillFormData);
+
         } catch (error) {
           console.error("Error fetching will draft:", error);
-          setDraft(null); // Set to null on error
+          setDraft(initialData);
         } finally {
           setLoadingDraft(false);
         }

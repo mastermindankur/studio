@@ -29,9 +29,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { CalendarIcon, ChevronRight, Gavel, Info } from "lucide-react";
 import { format, subYears } from "date-fns";
-import { useRouter } from "next/navigation";
 import { useWillForm } from "@/context/WillFormContext";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 const personalInfoSchema = z.object({
   gender: z.enum(["male", "female", "other"], { required_error: "Please select a gender." }),
@@ -49,7 +48,6 @@ const personalInfoSchema = z.object({
 type PersonalInfoFormValues = z.infer<typeof personalInfoSchema>;
 
 export default function PersonalInformationPage() {
-  const router = useRouter();
   const { formData, saveAndGoTo, setDirty, loading } = useWillForm();
 
   const form = useForm<PersonalInfoFormValues>({
@@ -78,7 +76,7 @@ export default function PersonalInformationPage() {
   }, [form, setDirty]);
 
   function onSubmit(data: PersonalInfoFormValues) {
-    saveAndGoTo(data, "/create-will/family-details");
+    saveAndGoTo('personalInfo', data, "/create-will/family-details");
   }
 
   const today = new Date();
@@ -343,7 +341,7 @@ export default function PersonalInformationPage() {
             </div>
 
             <div className="flex flex-col sm:flex-row justify-end mt-8 gap-4">
-              <Button type="submit" size="lg" className="w-full sm:w-auto">
+              <Button type="submit" size="lg" className="w-full sm:w-auto" disabled={form.formState.isSubmitting}>
                 Save & Continue <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
             </div>

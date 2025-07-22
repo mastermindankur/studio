@@ -6,7 +6,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from './AuthContext';
 import { updateWill } from '@/app/actions/will';
 import { useToast } from '@/hooks/use-toast';
-import { getWillDraft, updateWillDraft } from '@/app/actions/will-draft';
+import { getWillSection, updateWillSection, getWillListSection, updateWillListItem, addWillListItem, removeWillListItem } from '@/app/actions/will-draft';
 
 
 // Define the shape of the entire form data
@@ -16,9 +16,9 @@ export interface WillFormData {
   createdAt?: Date;
   personalInfo: any;
   familyDetails: any;
-  assets: any;
-  beneficiaries: any;
-  assetAllocation: any;
+  assets: any[];
+  beneficiaries: any[];
+  assetAllocation: any[];
   executor: any;
 }
 
@@ -26,7 +26,7 @@ export interface WillFormData {
 interface WillFormContextType {
   formData: WillFormData;
   setFormData: React.Dispatch<React.SetStateAction<WillFormData>>;
-  saveAndGoTo: (currentData: any, path: string) => void;
+  saveAndGoTo: (section: keyof Omit<WillFormData, 'willId' | 'version' | 'createdAt'>, currentData: any, path: string) => void;
   setDirty: (isDirty: boolean) => void;
   clearForm: () => void;
   loadWill: (willData: any) => void;
@@ -46,15 +46,9 @@ export const initialData: WillFormData = {
   familyDetails: {
     children: [],
   },
-  assets: {
-    assets: [],
-  },
-  beneficiaries: {
-    beneficiaries: [],
-  },
-  assetAllocation: {
-    allocations: [],
-  },
+  assets: [],
+  beneficiaries: [],
+  assetAllocation: [],
   executor: {
     primaryExecutor: {
       fullName: "",
@@ -98,7 +92,6 @@ const isObject = (item: any) => {
 
 export const WillFormProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
-  const pathname = usePathname();
   const [isDirty, setDirty] = useState(false);
   const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
@@ -111,12 +104,31 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
       if (user) {
         setLoading(true);
         try {
-          const draftData = await getWillDraft(user.uid);
-          if (draftData) {
-            setFormData(draftData);
-          } else {
-            setFormData(initialData);
-          }
+            const [
+                personalInfo,
+                familyDetails,
+                assets,
+                beneficiaries,
+                assetAllocation,
+                executor
+            ] = await Promise.all([
+                getWillSection(user.uid, 'personalInfo'),
+                getWillSection(user.uid, 'familyDetails'),
+                getWillListSection(user.uid, 'assets'),
+                getWillListSection(user.uid, 'beneficiaries'),
+                getWillListSection(user.uid, 'assetAllocations'),
+                getWillSection(user.uid, 'executor'),
+            ]);
+
+            setFormData({
+                personalInfo: personalInfo || initialData.personalInfo,
+                familyDetails: familyDetails || initialData.familyDetails,
+                assets: assets || initialData.assets,
+                beneficiaries: beneficiaries || initialData.beneficiaries,
+                assetAllocation: assetAllocation || initialData.assetAllocation,
+                executor: executor || initialData.executor,
+            });
+
         } catch (error) {
           console.error("Failed to load draft data:", error);
           setFormData(initialData);
@@ -132,29 +144,28 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
   }, [user, authLoading]);
 
 
-  const getStepKey = (path: string): keyof Omit<WillFormData, 'willId' | 'version' | 'createdAt'> | null => {
-    if (path.includes('personal-information')) return 'personalInfo';
-    if (path.includes('family-details')) return 'familyDetails';
-    if (path.includes('assets')) return 'assets';
-    if (path.includes('beneficiaries')) return 'beneficiaries';
-    if (path.includes('asset-allocation')) return 'assetAllocation';
-    if (path.includes('executor')) return 'executor';
-    return null;
-  };
-
-  const saveAndGoTo = async (currentStepData: any, path: string) => {
-    const stepKey = getStepKey(pathname);
-    let updatedData = { ...formData };
-    if (stepKey) {
-      updatedData = { ...formData, [stepKey]: currentStepData };
-    }
+  const saveAndGoTo = async (section: keyof Omit<WillFormData, 'willId' | 'version' | 'createdAt'>, currentData: any, path: string) => {
     
-    setFormData(updatedData);
+    setFormData(prev => ({...prev, [section]: currentData}));
     setDirty(false);
 
     if (user) {
         try {
-             await updateWillDraft(user.uid, updatedData);
+            const listSections = ['assets', 'beneficiaries', 'assetAllocation'];
+            if (listSections.includes(section)) {
+                // This is a simplified approach. A real implementation would diff the arrays.
+                // For now, we clear and re-add. This is NOT ideal for production.
+                const existingItems = await getWillListSection(user.uid, section);
+                for(const item of existingItems) {
+                    await removeWillListItem(section, item.id);
+                }
+                for(const item of currentData) {
+                    const { id, ...data } = item;
+                    await addWillListItem(user.uid, section, data);
+                }
+            } else {
+                 await updateWillSection(user.uid, section, currentData);
+            }
         } catch (e) {
             console.error("Could not save draft to firestore", e);
              toast({ variant: "destructive", title: "Save Failed", description: "Could not save your progress." });
@@ -162,8 +173,8 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // If exiting to dashboard while editing an existing will, update it in Firestore.
-    if (path === '/dashboard' && updatedData.willId && user) {
-        const result = await updateWill(updatedData.willId, { ...updatedData, userId: user.uid });
+    if (path === '/dashboard' && formData.willId && user) {
+        const result = await updateWill(formData.willId, { ...formData, userId: user.uid });
         if (result.success) {
             toast({ title: "Will Updated", description: "Your changes have been saved." });
         } else {
@@ -193,9 +204,20 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
     setFormData(dataToLoad);
   };
 
-  const clearForm = () => {
+  const clearForm = async () => {
     if (user) {
-        updateWillDraft(user.uid, initialData);
+        const sections = ['personalInfo', 'familyDetails', 'executor'];
+        const listSections = ['assets', 'beneficiaries', 'assetAllocations'];
+
+        for(const section of sections) {
+            await updateWillSection(user.uid, section, initialData[section as keyof typeof initialData]);
+        }
+        for(const section of listSections) {
+            const items = await getWillListSection(user.uid, section);
+            for(const item of items) {
+                await removeWillListItem(section, item.id);
+            }
+        }
     }
     setFormData(initialData);
   };

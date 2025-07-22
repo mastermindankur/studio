@@ -16,8 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ChevronRight, ChevronLeft, PlusCircle, Trash2, Users } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { ChevronRight, PlusCircle, Trash2, Users } from "lucide-react";
 import { useWillForm } from "@/context/WillFormContext";
 import { useEffect } from "react";
 import { format } from "date-fns";
@@ -78,7 +77,7 @@ export default function FamilyDetailsPage() {
   }, [watchMaritalStatus, form]);
 
   function onSubmit(data: FamilyDetailsFormValues) {
-    saveAndGoTo(data, "/create-will/assets");
+    saveAndGoTo('familyDetails', data, "/create-will/assets");
   }
 
   return (

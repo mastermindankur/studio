@@ -40,12 +40,12 @@ export default function BeneficiariesPage() {
 
   const form = useForm<BeneficiariesFormValues>({
     resolver: zodResolver(beneficiariesFormSchema),
-    defaultValues: formData.beneficiaries,
+    defaultValues: { beneficiaries: formData.beneficiaries },
   });
 
   useEffect(() => {
     if (!loading && formData.beneficiaries) {
-        form.reset(formData.beneficiaries);
+        form.reset({ beneficiaries: formData.beneficiaries });
     }
   }, [loading, formData.beneficiaries, form]);
 
@@ -64,13 +64,11 @@ export default function BeneficiariesPage() {
   }, [form, setDirty]);
 
   function onSubmit(data: BeneficiariesFormValues) {
-    const beneficiariesWithIds = {
-      beneficiaries: data.beneficiaries.map((ben, index) => ({
+    const beneficiariesWithIds = data.beneficiaries.map((ben, index) => ({
         ...ben,
         id: ben.id || `ben-${Date.now()}-${index}`,
-      }))
-    };
-    saveAndGoTo(beneficiariesWithIds, "/create-will/asset-allocation");
+    }));
+    saveAndGoTo('beneficiaries', beneficiariesWithIds, "/create-will/asset-allocation");
   }
 
   return (
