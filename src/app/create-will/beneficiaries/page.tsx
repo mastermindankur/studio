@@ -173,7 +173,8 @@ export default function BeneficiariesPage() {
                 {fields.map((beneficiary, index) => (
                     <Card key={beneficiary.id} className="overflow-hidden flex flex-col">
                         <CardHeader className="flex flex-row items-center justify-between bg-muted/50 p-4">
-                            <CardTitle className="text-lg font-semibold text-primary truncate">
+                            <CardTitle className="text-lg font-semibold text-primary truncate flex items-center gap-2">
+                                <Gift className="h-5 w-5 flex-shrink-0" />
                                 {beneficiary.name}
                             </CardTitle>
                             <div className="flex gap-1">
