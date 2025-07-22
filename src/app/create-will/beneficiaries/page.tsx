@@ -135,7 +135,7 @@ export default function BeneficiariesPage() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-4">
-              These family members are from the 'Family Details' step and are automatically available for asset allocation. It is not mandatory to allocate assets to every family member.
+              These family members are from the 'Family Details' step. They are automatically available for asset allocation. It is not mandatory to allocate assets to every family member.
             </p>
             <div className="space-y-3">
               {familyDetails?.spouseName && (
@@ -173,7 +173,7 @@ export default function BeneficiariesPage() {
                 {fields.map((beneficiary, index) => (
                     <Card key={beneficiary.id} className="overflow-hidden flex flex-col">
                         <CardHeader className="flex flex-row items-center justify-between bg-muted/50 p-4">
-                            <CardTitle className="text-lg font-semibold text-primary truncate flex items-center gap-2">
+                            <CardTitle className="text-base font-semibold text-primary truncate flex items-center gap-2">
                                 <Gift className="h-5 w-5 flex-shrink-0" />
                                 {beneficiary.name}
                             </CardTitle>
