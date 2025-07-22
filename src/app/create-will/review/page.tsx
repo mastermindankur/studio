@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Edit, FileCheck, User, Users, Landmark, Gift, PieChart, UserCheck, Loader2, ChevronLeft } from "lucide-react";
+import { CheckCircle, Edit, FileCheck, User, Users, Landmark, Gift, PieChart, UserCheck, Loader2, ChevronLeft, MapPin } from "lucide-react";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { WillDocument } from "@/components/create-will/will-document";
@@ -84,8 +84,25 @@ export default function ReviewPage() {
     router.push("/create-will/executor");
   }
 
-  const getAssetName = (id: string) => assets?.assets.find((a: any) => a.id === id)?.description || 'N/A';
-  const getBeneficiaryName = (id: string) => beneficiaries?.beneficiaries.find((b: any) => b.id === id)?.name || 'N/A';
+  const getAssetName = (id: string) => {
+    const asset = assets?.assets.find((a: any) => a.id === id);
+    if (asset) return asset.description;
+    
+    return 'N/A';
+  };
+
+  const getBeneficiaryName = (id: string) => {
+    const beneficiary = beneficiaries?.beneficiaries.find((b: any) => b.id === id);
+    if (beneficiary) return beneficiary.name;
+    
+    const spouseId = `spouse-${familyDetails?.spouseName?.replace(/\s+/g, '-').toLowerCase()}`;
+    if (id === spouseId) return `${familyDetails.spouseName} (Spouse)`;
+
+    const child = familyDetails?.children?.find((c: any) => `child-${c.name?.replace(/\s+/g, '-').toLowerCase()}` === id);
+    if (child) return `${child.name} (Child)`;
+
+    return 'N/A';
+  };
 
   return (
     <>
@@ -213,7 +230,7 @@ export default function ReviewPage() {
               <CardHeader className="flex flex-row items-center justify-between">
                   <div className="flex items-center gap-3">
                   <UserCheck className="w-6 h-6 text-primary"/>
-                  <CardTitle className="text-xl">Executor Details</CardTitle>
+                  <CardTitle className="text-xl">Executor & Signing</CardTitle>
                   </div>
                   <Button variant="outline" size="sm" onClick={() => handleEdit("executor")}><Edit className="mr-2 h-4 w-4"/> Edit</Button>
               </CardHeader>
@@ -240,6 +257,13 @@ export default function ReviewPage() {
                           <p className="whitespace-pre-wrap">{executor.specialInstructions}</p>
                       </div>
                   )}
+                   {(executor?.city || executor?.state) && (
+                      <div>
+                          <Separator className="my-4"/>
+                          <h4 className="font-semibold mb-2 flex items-center gap-2"><MapPin className="h-4 w-4"/> Place of Signing</h4>
+                          <p><strong>Location:</strong> {executor.city}, {executor.state}</p>
+                      </div>
+                    )}
               </CardContent>
               </Card>
 
