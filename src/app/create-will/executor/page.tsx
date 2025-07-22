@@ -44,6 +44,7 @@ const formSchema = z.object({
   state: z.string().min(2, "State is required."),
 }).refine(data => {
     if (data.addSecondExecutor) {
+        // Only validate secondExecutor if the checkbox is checked.
         return executorSchema.safeParse(data.secondExecutor).success;
     }
     return true;
