@@ -45,7 +45,7 @@ const defaultValues: Asset = {
     accountType: "Savings",
     accountNumber: "",
     branchAddress: "",
-    propertyType: "Flat",
+    propertyType: "Flat/Apartment",
     propertyAddress: "",
     surveyNumber: "",
     area: "",
@@ -73,6 +73,8 @@ export function AddAssetModal({ isOpen, onClose, onSave, assetData }: AddAssetMo
     defaultValues: defaultValues
   });
 
+  const assetType = useWatch({ control: form.control, name: 'type' });
+
   useEffect(() => {
     if (assetData) {
       form.reset({ ...defaultValues, ...assetData });
@@ -80,6 +82,25 @@ export function AddAssetModal({ isOpen, onClose, onSave, assetData }: AddAssetMo
       form.reset(defaultValues);
     }
   }, [assetData, form, isOpen]);
+
+
+  useEffect(() => {
+    // When assetType changes, reset the form but preserve common fields
+    if (isOpen) {
+        const currentValues = form.getValues();
+        form.reset({
+            ...defaultValues, // Start with a clean slate for details
+            id: currentValues.id,
+            index: currentValues.index,
+            type: assetType, // Keep the new type
+            details: {
+                ...defaultValues.details, // Reset details
+                description: currentValues.details.description || "", // Keep description if it exists
+                value: currentValues.details.value || "", // Keep value if it exists
+            }
+        });
+    }
+  }, [assetType, form, isOpen]);
 
 
   const onSubmit = (data: Asset) => {
@@ -91,8 +112,6 @@ export function AddAssetModal({ isOpen, onClose, onSave, assetData }: AddAssetMo
     onSave(finalData);
   };
   
-  const assetType = useWatch({ control: form.control, name: 'type' });
-
   const renderAssetFields = () => {
     switch(assetType) {
         case 'Bank Account':
