@@ -50,12 +50,24 @@ type PersonalInfoFormValues = z.infer<typeof personalInfoSchema>;
 
 export default function PersonalInformationPage() {
   const router = useRouter();
-  const { formData, saveAndGoTo, setDirty } = useWillForm();
+  const { formData, saveAndGoTo, setDirty, loading } = useWillForm();
 
   const form = useForm<PersonalInfoFormValues>({
     resolver: zodResolver(personalInfoSchema),
     defaultValues: formData.personalInfo,
   });
+
+  useEffect(() => {
+    if (!loading && formData.personalInfo) {
+        // Ensure DOB is a Date object
+        const personalInfoWithDate = {
+            ...formData.personalInfo,
+            dob: formData.personalInfo.dob ? new Date(formData.personalInfo.dob) : undefined,
+        };
+        form.reset(personalInfoWithDate);
+    }
+  }, [loading, formData.personalInfo, form]);
+
 
   const { version, createdAt } = formData;
   const isEditing = !!version;

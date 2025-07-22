@@ -36,12 +36,19 @@ const beneficiariesFormSchema = z.object({
 type BeneficiariesFormValues = z.infer<typeof beneficiariesFormSchema>;
 
 export default function BeneficiariesPage() {
-  const { formData, saveAndGoTo, setDirty } = useWillForm();
+  const { formData, saveAndGoTo, setDirty, loading } = useWillForm();
 
   const form = useForm<BeneficiariesFormValues>({
     resolver: zodResolver(beneficiariesFormSchema),
     defaultValues: formData.beneficiaries,
   });
+
+  useEffect(() => {
+    if (!loading && formData.beneficiaries) {
+        form.reset(formData.beneficiaries);
+    }
+  }, [loading, formData.beneficiaries, form]);
+
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,

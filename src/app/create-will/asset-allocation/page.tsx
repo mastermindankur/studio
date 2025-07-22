@@ -55,7 +55,7 @@ const assetAllocationFormSchema = z.object({
 type AssetAllocationFormValues = z.infer<typeof assetAllocationFormSchema>;
 
 export default function AssetAllocationPage() {
-  const { formData, saveAndGoTo, setDirty } = useWillForm();
+  const { formData, saveAndGoTo, setDirty, loading } = useWillForm();
 
   const MOCK_ASSETS = formData.assets?.assets || [];
   
@@ -95,6 +95,13 @@ export default function AssetAllocationPage() {
     resolver: zodResolver(assetAllocationFormSchema),
     defaultValues: formData.assetAllocation || { allocations: [{ assetId: "", beneficiaryId: "", percentage: 100 }] },
   });
+
+  useEffect(() => {
+    if (!loading && formData.assetAllocation) {
+        form.reset(formData.assetAllocation);
+    }
+  }, [loading, formData.assetAllocation, form]);
+
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,

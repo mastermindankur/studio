@@ -60,12 +60,19 @@ const descriptionPlaceholders: { [key: string]: string } = {
 
 
 export default function AssetsPage() {
-  const { formData, saveAndGoTo, setDirty } = useWillForm();
+  const { formData, saveAndGoTo, setDirty, loading } = useWillForm();
 
   const form = useForm<AssetsFormValues>({
     resolver: zodResolver(assetsFormSchema),
     defaultValues: formData.assets,
   });
+
+  useEffect(() => {
+    if (!loading && formData.assets) {
+        form.reset(formData.assets);
+    }
+  }, [loading, formData.assets, form]);
+
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,

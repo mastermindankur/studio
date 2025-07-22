@@ -43,12 +43,19 @@ const familyDetailsSchema = z.object({
 type FamilyDetailsFormValues = z.infer<typeof familyDetailsSchema>;
 
 export default function FamilyDetailsPage() {
-  const { formData, saveAndGoTo, setDirty } = useWillForm();
+  const { formData, saveAndGoTo, setDirty, loading } = useWillForm();
 
   const form = useForm<FamilyDetailsFormValues>({
     resolver: zodResolver(familyDetailsSchema),
     defaultValues: formData.familyDetails,
   });
+
+  useEffect(() => {
+    if (!loading && formData.familyDetails) {
+        form.reset(formData.familyDetails);
+    }
+  }, [loading, formData.familyDetails, form]);
+
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,

@@ -54,7 +54,7 @@ const formSchema = z.object({
 type ExecutorFormValues = z.infer<typeof formSchema>;
 
 export default function ExecutorPage() {
-  const { formData, saveAndGoTo, setDirty } = useWillForm();
+  const { formData, saveAndGoTo, setDirty, loading } = useWillForm();
 
   const form = useForm<ExecutorFormValues>({
     resolver: zodResolver(formSchema),
@@ -72,6 +72,13 @@ export default function ExecutorPage() {
       state: "",
     },
   });
+
+  useEffect(() => {
+    if (!loading && formData.executor) {
+        form.reset(formData.executor);
+    }
+  }, [loading, formData.executor, form]);
+
 
   const watchAddSecondExecutor = form.watch("addSecondExecutor");
   const { version, createdAt } = formData;

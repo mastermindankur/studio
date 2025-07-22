@@ -6,7 +6,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from './AuthContext';
 import { updateWill } from '@/app/actions/will';
 import { useToast } from '@/hooks/use-toast';
-import { updateWillDraft } from '@/app/actions/will-draft';
+import { getWillDraft, updateWillDraft } from '@/app/actions/will-draft';
 
 
 // Define the shape of the entire form data
@@ -30,6 +30,7 @@ interface WillFormContextType {
   setDirty: (isDirty: boolean) => void;
   clearForm: () => void;
   loadWill: (willData: any) => void;
+  loading: boolean;
 }
 
 export const initialData: WillFormData = {
@@ -101,8 +102,35 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
   const [isDirty, setDirty] = useState(false);
   const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
+  const [loading, setLoading] = useState(true);
 
   const [formData, setFormData] = useState<WillFormData>(initialData);
+  
+  useEffect(() => {
+    const loadDraftData = async () => {
+      if (user) {
+        setLoading(true);
+        try {
+          const draftData = await getWillDraft(user.uid);
+          if (draftData) {
+            setFormData(draftData);
+          } else {
+            setFormData(initialData);
+          }
+        } catch (error) {
+          console.error("Failed to load draft data:", error);
+          setFormData(initialData);
+        } finally {
+          setLoading(false);
+        }
+      } else if (!authLoading) {
+        setLoading(false);
+        setFormData(initialData);
+      }
+    };
+    loadDraftData();
+  }, [user, authLoading]);
+
 
   const getStepKey = (path: string): keyof Omit<WillFormData, 'willId' | 'version' | 'createdAt'> | null => {
     if (path.includes('personal-information')) return 'personalInfo';
@@ -166,11 +194,14 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const clearForm = () => {
+    if (user) {
+        updateWillDraft(user.uid, initialData);
+    }
     setFormData(initialData);
   };
 
   return (
-    <WillFormContext.Provider value={{ formData, setFormData, saveAndGoTo, setDirty, clearForm, loadWill }}>
+    <WillFormContext.Provider value={{ formData, setFormData, saveAndGoTo, setDirty, clearForm, loadWill, loading }}>
       {children}
     </WillFormContext.Provider>
   );
