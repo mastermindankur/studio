@@ -43,12 +43,12 @@ const formSchema = z.object({
   city: z.string().min(2, "City is required."),
   state: z.string().min(2, "State is required."),
 }).refine(data => {
-    if (data.addSecondExecutor && !data.secondExecutor) {
-        return false;
+    if (data.addSecondExecutor) {
+        return executorSchema.safeParse(data.secondExecutor).success;
     }
     return true;
 }, {
-    message: "Second executor details are required when the box is checked.",
+    message: "Second executor details are incomplete or invalid.",
     path: ["secondExecutor"],
 });
 
@@ -99,20 +99,26 @@ export default function ExecutorPage() {
   }, [form, setDirty]);
   
   useEffect(() => {
-    if (watchAddSecondExecutor && !form.getValues().secondExecutor?.fullName) {
-      form.setValue('secondExecutor', {
-        fullName: "",
-        fatherName: "",
-        aadhar: "",
-        address: "",
-        email: "",
-        mobile: "",
-      });
+    if (!watchAddSecondExecutor) {
+        // Clear the second executor fields when the checkbox is unchecked
+        form.setValue('secondExecutor', {
+            fullName: "",
+            fatherName: "",
+            aadhar: "",
+            address: "",
+            email: "",
+            mobile: "",
+        });
+        // Remove errors associated with the second executor
+        form.clearErrors("secondExecutor");
     }
   }, [watchAddSecondExecutor, form]);
 
 
   function onSubmit(data: ExecutorFormValues) {
+    if (!data.addSecondExecutor) {
+        data.secondExecutor = undefined;
+    }
     saveAndGoTo('executor', data, "/dashboard"); 
   }
 
@@ -239,6 +245,7 @@ export default function ExecutorPage() {
                         <FormField control={form.control} name="secondExecutor.mobile" render={({ field }) => ( <FormItem><FormLabel>Mobile Number</FormLabel><FormControl><Input type="tel" maxLength={10} {...field} /></FormControl><FormMessage /></FormItem>)} />
                         </div>
                     </div>
+                     <FormMessage>{form.formState.errors.secondExecutor?.message}</FormMessage>
                 </div>
             )}
             
