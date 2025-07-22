@@ -2,10 +2,10 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useAuth } from './AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { getWillSection, updateWillSection, getWillListSection, updateWillListItem, addWillListItem, removeWillListItem } from '@/app/actions/will-draft';
+import { getWillSection, updateWillSection, getWillListSection, addWillListItem, updateWillListItem, removeWillListItem } from '@/app/actions/will-draft';
 import { type Asset } from '@/lib/schemas/asset-schema';
 
 
@@ -160,29 +160,10 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
     setFormData(prev => ({...prev, [section]: currentData}));
     setDirty(false);
 
-    if (user && section !== 'assets') { // Asset saving is handled separately now
+    if (user) {
         try {
-            const listSections: { [key: string]: string } = {
-                'beneficiaries': 'beneficiaries',
-                'assetAllocation': 'allocations'
-            };
-            
-            const listSectionKey = listSections[section];
             const collectionName = section === 'assetAllocation' ? 'assetAllocations' : section;
-
-            if (listSectionKey && currentData[listSectionKey]) {
-                const items = currentData[listSectionKey];
-                const existingItems = await getWillListSection(user.uid, collectionName);
-                
-                await Promise.all(existingItems.map(item => removeWillListItem(collectionName, item.id)));
-                await Promise.all(items.map((item: any) => {
-                    const { id, ...data } = item;
-                    return addWillListItem(user.uid, collectionName, data);
-                }));
-
-            } else {
-                 await updateWillSection(user.uid, collectionName, currentData);
-            }
+            await updateWillSection(user.uid, collectionName, currentData);
         } catch (e) {
             console.error("Could not save draft to firestore", e);
              toast({ variant: "destructive", title: "Save Failed", description: "Could not save your progress." });
@@ -228,7 +209,7 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
     setFormData(initialData);
   };
 
-  const addAsset = async (asset: Asset) => {
+  const addAsset = async (asset: Asset): Promise<string | undefined> => {
     if (!user) {
       toast({ variant: "destructive", title: "Not Authenticated", description: "You must be logged in to add an asset." });
       return;
@@ -237,13 +218,19 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
     const result = await addWillListItem(user.uid, 'assets', assetData);
     if (result.success && result.id) {
       toast({ title: "Asset Added", description: "Your asset has been saved successfully." });
+      setFormData(prev => ({
+          ...prev,
+          assets: {
+              assets: [...prev.assets.assets, { ...asset, id: result.id! }]
+          }
+      }));
       return result.id;
     } else {
       toast({ variant: "destructive", title: "Save Failed", description: result.message || "Could not save the asset." });
     }
   };
 
-  const updateAsset = async (asset: Asset) => {
+  const updateAsset = async (asset: Asset): Promise<void> => {
     if (!user || !asset.id) {
       toast({ variant: "destructive", title: "Error", description: "Cannot update asset without an ID." });
       return;
@@ -252,12 +239,18 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
     const result = await updateWillListItem('assets', id, assetData);
     if (result.success) {
       toast({ title: "Asset Updated", description: "Your asset has been updated successfully." });
+      setFormData(prev => ({
+          ...prev,
+          assets: {
+              assets: prev.assets.assets.map(a => a.id === id ? { ...a, ...assetData } : a)
+          }
+      }));
     } else {
       toast({ variant: "destructive", title: "Update Failed", description: result.message || "Could not update the asset." });
     }
   };
 
-  const removeAsset = async (assetId: string) => {
+  const removeAsset = async (assetId: string): Promise<void> => {
     if (!user) {
       toast({ variant: "destructive", title: "Not Authenticated", description: "You must be logged in to remove an asset." });
       return;
@@ -265,6 +258,12 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
     const result = await removeWillListItem('assets', assetId);
     if (result.success) {
       toast({ title: "Asset Removed", description: "The asset has been removed." });
+       setFormData(prev => ({
+          ...prev,
+          assets: {
+              assets: prev.assets.assets.filter(a => a.id !== assetId)
+          }
+      }));
     } else {
       toast({ variant: "destructive", title: "Removal Failed", description: result.message || "Could not remove the asset." });
     }

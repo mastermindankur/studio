@@ -37,7 +37,7 @@ const assetIcons: { [key: string]: React.ElementType } = {
 };
 
 export default function AssetsPage() {
-  const { formData, saveAndGoTo, setDirty, loading, addAsset, updateAsset, removeAsset } = useWillForm();
+  const { formData, setDirty, loading, addAsset, updateAsset, removeAsset } = useWillForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAsset, setEditingAsset] = useState<Asset | null>(null);
   const router = useRouter();
@@ -49,6 +49,7 @@ export default function AssetsPage() {
   const { fields, append, remove, update } = useFieldArray({
     control: form.control,
     name: "assets",
+    keyName: "formId",
   });
 
   useEffect(() => {
@@ -61,13 +62,8 @@ export default function AssetsPage() {
   const { version, createdAt } = formData;
   const isEditingWill = !!version;
 
-  useEffect(() => {
-    const subscription = form.watch(() => setDirty(true));
-    return () => subscription.unsubscribe();
-  }, [form, setDirty]);
-
   function onSubmit(data: AssetsFormValues) {
-    // This navigation is now just a simple "go to next page"
+    // This navigation is now just a simple "go to next page" as saves are instant
     router.push("/create-will/beneficiaries");
   }
 
@@ -77,19 +73,20 @@ export default function AssetsPage() {
   };
   
   const handleEditAsset = (index: number) => {
-    setEditingAsset({ ...form.getValues().assets[index], index });
+    const assetToEdit = form.getValues().assets[index];
+    setEditingAsset({ ...assetToEdit, index });
     setIsModalOpen(true);
   };
 
   const handleSaveAsset = async (asset: Asset) => {
-    if (asset.index !== undefined) {
+    if (asset.index !== undefined && asset.id) {
       // This is an update
-      await updateAsset(asset);
+      await updateAsset(asset); // This now saves to DB
       const { index, ...assetData } = asset;
       update(index, assetData);
     } else {
       // This is a new asset
-      const newId = await addAsset(asset);
+      const newId = await addAsset(asset); // This now saves to DB and returns an ID
       if (newId) {
         append({ ...asset, id: newId });
       }
@@ -101,7 +98,7 @@ export default function AssetsPage() {
   const handleRemoveAsset = async (index: number) => {
     const assetId = form.getValues().assets[index].id;
     if (assetId) {
-      await removeAsset(assetId);
+      await removeAsset(assetId); // This now deletes from DB
       remove(index);
     }
   }
@@ -154,7 +151,7 @@ export default function AssetsPage() {
             <Info className="h-4 w-4" />
             <AlertTitle>List Your Assets</AlertTitle>
             <AlertDesc>
-              Clearly listing all your assets ensures there is no ambiguity. This makes it easier for your executor to distribute your property as you intended. Click "Add Asset" to get started.
+              Clearly listing all your assets ensures there is no ambiguity. This makes it easier for your executor to distribute your property as you intended. Click "Add Asset" to get started. Your changes are saved automatically.
             </AlertDesc>
           </Alert>
         <Form {...form}>
@@ -163,7 +160,7 @@ export default function AssetsPage() {
               {fields.map((asset, index) => {
                 const Icon = assetIcons[asset.type] || PlusCircle;
                 return (
-                <Card key={asset.id} className="overflow-hidden flex flex-col">
+                <Card key={asset.formId} className="overflow-hidden flex flex-col">
                    <CardHeader className="flex flex-row items-center justify-between bg-muted/50 p-4">
                      <div className="flex items-center gap-3 truncate">
                         <Icon className="h-5 w-5 text-primary flex-shrink-0" />
@@ -204,7 +201,7 @@ export default function AssetsPage() {
             
             <div className="flex flex-col sm:flex-row justify-end gap-4 mt-8">
               <Button type="submit" size="lg" className="w-full sm:w-auto">
-                Save & Continue
+                Continue to Beneficiaries
                 <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
