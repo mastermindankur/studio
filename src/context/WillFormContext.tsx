@@ -6,7 +6,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from './AuthContext';
 import { updateWill } from '@/app/actions/will';
 import { useToast } from '@/hooks/use-toast';
-import { updateWillDraft, initialData as defaultInitialData } from '@/app/actions/will-draft';
+import { updateWillDraft } from '@/app/actions/will-draft';
 
 
 // Define the shape of the entire form data
@@ -32,9 +32,45 @@ interface WillFormContextType {
   loadWill: (willData: any) => void;
 }
 
-const WillFormContext = createContext<WillFormContextType | undefined>(undefined);
+export const initialData: WillFormData = {
+  personalInfo: {
+    fullName: "",
+    fatherHusbandName: "",
+    aadhar: "",
+    occupation: "",
+    address: "",
+    email: "",
+    mobile: "",
+  },
+  familyDetails: {
+    children: [],
+  },
+  assets: {
+    assets: [],
+  },
+  beneficiaries: {
+    beneficiaries: [],
+  },
+  assetAllocation: {
+    allocations: [],
+  },
+  executor: {
+    primaryExecutor: {
+      fullName: "",
+      fatherName: "",
+      aadhar: "",
+      address: "",
+      email: "",
+      mobile: "",
+    },
+    addSecondExecutor: false,
+    city: "",
+    state: "",
+  },
+};
 
-const WILL_FORM_STORAGE_KEY_PREFIX = 'willFormData_';
+
+const WillFormContext = createContext<WillFormContextType | undefined>(undefined);
 
 // A helper function to deeply merge two objects.
 const mergeDeep = (target: any, source: any) => {
@@ -66,7 +102,7 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
   const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
 
-  const [formData, setFormData] = useState<WillFormData>(defaultInitialData);
+  const [formData, setFormData] = useState<WillFormData>(initialData);
 
   const getStepKey = (path: string): keyof Omit<WillFormData, 'willId' | 'version' | 'createdAt'> | null => {
     if (path.includes('personal-information')) return 'personalInfo';
@@ -125,12 +161,12 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
 
   const loadWill = (willData: any) => {
     // Deep merge existing will data with the initial structure to ensure all keys are present
-    const dataToLoad = mergeDeep(defaultInitialData, willData);
+    const dataToLoad = mergeDeep(initialData, willData);
     setFormData(dataToLoad);
   };
 
   const clearForm = () => {
-    setFormData(defaultInitialData);
+    setFormData(initialData);
   };
 
   return (

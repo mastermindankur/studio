@@ -4,44 +4,6 @@
 import { adminDb } from "@/lib/firebase/admin-config";
 import type { WillFormData } from "@/context/WillFormContext";
 
-export const initialData: WillFormData = {
-  personalInfo: {
-    fullName: "",
-    fatherHusbandName: "",
-    aadhar: "",
-    occupation: "",
-    address: "",
-    email: "",
-    mobile: "",
-  },
-  familyDetails: {
-    children: [],
-  },
-  assets: {
-    assets: [],
-  },
-  beneficiaries: {
-    beneficiaries: [],
-  },
-  assetAllocation: {
-    allocations: [],
-  },
-  executor: {
-    primaryExecutor: {
-      fullName: "",
-      fatherName: "",
-      aadhar: "",
-      address: "",
-      email: "",
-      mobile: "",
-    },
-    addSecondExecutor: false,
-    city: "",
-    state: "",
-  },
-};
-
-
 const draftCollection = adminDb.collection("willDrafts");
 
 // A helper function to deeply merge two objects.
@@ -68,7 +30,7 @@ const isObject = (item: any) => {
 
 
 // Get a user's will draft
-export async function getWillDraft(userId: string): Promise<WillFormData> {
+export async function getWillDraft(userId: string): Promise<any> {
     try {
         const docRef = draftCollection.doc(userId);
         const docSnap = await docRef.get();
@@ -82,11 +44,9 @@ export async function getWillDraft(userId: string): Promise<WillFormData> {
             if (draftData.createdAt?.toDate) {
                 draftData.createdAt = draftData.createdAt.toDate();
             }
-            // Deep merge with initialData to ensure all keys are present
-            return mergeDeep(initialData, draftData);
+            return draftData;
         } else {
-            // No draft exists, return the initial empty structure with the userId
-            return { ...initialData, willId: undefined, version: undefined, createdAt: undefined };
+            return null;
         }
     } catch (error) {
         console.error("Error getting will draft from Firestore: ", error);
@@ -118,5 +78,3 @@ export async function deleteWillDraft(userId: string): Promise<{ success: boolea
         return { success: false, message: "Could not delete will draft." };
     }
 }
-
-    

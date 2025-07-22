@@ -13,12 +13,11 @@ import { collection, query, where, getDocs, orderBy, Timestamp } from "firebase/
 import { db } from "@/lib/firebase/config";
 import { format } from "date-fns";
 import { PlusCircle, FileText, Download, Edit, Loader2, PlayCircle, CheckCircle, ArrowRight, User, Users, Landmark, Gift, PieChart, UserCheck } from "lucide-react";
-import { useWillForm, WillFormProvider, type WillFormData } from "@/context/WillFormContext";
+import { useWillForm, WillFormProvider, type WillFormData, initialData } from "@/context/WillFormContext";
 import { useRouter } from "next/navigation";
 import { generatePdf } from "@/lib/pdfGenerator";
 import { WillDocument } from "@/components/create-will/will-document";
 import { getWillDraft } from "../actions/will-draft";
-import { initialData } from "../actions/will-draft";
 
 const checklistSteps = [
     { title: "Personal Information", path: "/create-will/personal-information", icon: User, key: 'personalInfo' },
@@ -205,5 +204,3 @@ export default function DashboardPage() {
         </WillFormProvider>
     )
 }
-
-    
