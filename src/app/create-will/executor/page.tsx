@@ -43,14 +43,18 @@ const formSchema = z.object({
   specialInstructions: z.string().optional(),
   city: z.string().min(2, "City is required."),
   state: z.string().min(2, "State is required."),
-}).refine(data => {
-    if (data.addSecondExecutor && !executorSchema.safeParse(data.secondExecutor).success) {
-      return false;
+}).superRefine((data, ctx) => {
+    if (data.addSecondExecutor) {
+      const result = executorSchema.safeParse(data.secondExecutor);
+      if (!result.success) {
+        result.error.issues.forEach((issue) => {
+          ctx.addIssue({
+            ...issue,
+            path: ["secondExecutor", ...issue.path],
+          });
+        });
+      }
     }
-    return true;
-}, {
-    message: "Second executor details are incomplete or invalid.",
-    path: ["secondExecutor"],
 });
 
 type ExecutorFormValues = z.infer<typeof formSchema>;
@@ -238,7 +242,6 @@ export default function ExecutorPage() {
                         <FormField control={form.control} name="secondExecutor.mobile" render={({ field }) => ( <FormItem><FormLabel>Mobile Number</FormLabel><FormControl><Input type="tel" maxLength={10} {...field} /></FormControl><FormMessage /></FormItem>)} />
                         </div>
                     </div>
-                     <FormMessage>{form.formState.errors.secondExecutor?.root?.message}</FormMessage>
                 </div>
             )}
             
@@ -291,5 +294,7 @@ export default function ExecutorPage() {
     </div>
   );
 }
+
+    
 
     
