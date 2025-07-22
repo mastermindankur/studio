@@ -182,12 +182,11 @@ export default function PersonalInformationPage() {
                             mode="single"
                             selected={field.value}
                             onSelect={field.onChange}
-                            month={field.value || subYears(new Date(), 30)}
-                            onMonthChange={field.onChange}
+                            defaultMonth={field.value || subYears(new Date(), 30)}
                             disabled={(date) =>
                                 date > eighteenYearsAgo || date < new Date("1920-01-01")
                             }
-                            captionLayout="dropdown-buttons"
+                            captionLayout="dropdown"
                             fromYear={1920}
                             toYear={eighteenYearsAgo.getFullYear()}
                             initialFocus
@@ -350,3 +349,5 @@ export default function PersonalInformationPage() {
     </div>
   );
 }
+
+    
