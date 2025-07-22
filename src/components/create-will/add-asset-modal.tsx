@@ -85,22 +85,24 @@ export function AddAssetModal({ isOpen, onClose, onSave, assetData }: AddAssetMo
 
 
   useEffect(() => {
-    // When assetType changes, reset the form but preserve common fields
+    // When assetType changes, reset the form completely, only preserving the new type
     if (isOpen) {
-        const currentValues = form.getValues();
-        form.reset({
-            ...defaultValues, // Start with a clean slate for details
-            id: currentValues.id,
-            index: currentValues.index,
-            type: assetType, // Keep the new type
-            details: {
-                ...defaultValues.details, // Reset details
-                description: currentValues.details.description || "", // Keep description if it exists
-                value: currentValues.details.value || "", // Keep value if it exists
-            }
-        });
+        const currentId = form.getValues('id');
+        const currentIndex = form.getValues('index');
+
+        // Check if we are editing an existing unsaved asset vs creating a new one
+        const isNewUnsavedAsset = !assetData;
+
+        if (isNewUnsavedAsset) {
+             form.reset({
+                ...defaultValues, // Start with a clean slate for all details
+                id: currentId,
+                index: currentIndex,
+                type: assetType, // Keep the new type
+            });
+        }
     }
-  }, [assetType, form, isOpen]);
+  }, [assetType, form, isOpen, assetData]);
 
 
   const onSubmit = (data: Asset) => {
