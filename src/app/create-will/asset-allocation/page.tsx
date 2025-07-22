@@ -33,6 +33,7 @@ type AssetAllocationFormValues = z.infer<typeof assetAllocationFormSchema>;
 export default function AssetAllocationPage() {
   const { formData, saveAndGoTo, setDirty, loading } = useWillForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingAllocations, setEditingAllocations] = useState<{ assetId: string, allocations: any[] } | null>(null);
   const router = useRouter();
 
   const form = useForm<AssetAllocationFormValues>({
@@ -89,6 +90,8 @@ export default function AssetAllocationPage() {
     // Add the new allocations
     const updatedAllocations = [...otherAllocations, ...newAllocations];
     form.setValue('allocations', updatedAllocations, { shouldDirty: true });
+    setIsModalOpen(false);
+    setEditingAllocations(null);
   };
 
   const handleRemoveAssetAllocation = (assetId: string) => {
@@ -96,6 +99,17 @@ export default function AssetAllocationPage() {
     const remainingAllocations = currentAllocations.filter(a => a.assetId !== assetId);
     form.setValue('allocations', remainingAllocations, { shouldDirty: true });
   }
+
+  const handleEditAllocation = (assetId: string) => {
+    const allocations = allocatedAssets[assetId] || [];
+    setEditingAllocations({ assetId, allocations });
+    setIsModalOpen(true);
+  };
+  
+  const handleAddAllocation = () => {
+    setEditingAllocations(null); // Explicitly set to null for new allocation
+    setIsModalOpen(true);
+  };
 
   function onSubmit(data: AssetAllocationFormValues) {
     saveAndGoTo('assetAllocation', data, "/create-will/executor");
@@ -119,14 +133,18 @@ export default function AssetAllocationPage() {
 
   return (
     <div className="max-w-6xl mx-auto">
-      <AddAllocationModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSave={handleSaveAllocations}
-        unallocatedAssets={unallocatedAssets}
-        allBeneficiaries={formData.beneficiaries?.beneficiaries || []}
-        familyDetails={formData.familyDetails}
-      />
+      {isModalOpen && (
+          <AddAllocationModal
+            key={editingAllocations ? editingAllocations.assetId : 'new'}
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onSave={handleSaveAllocations}
+            unallocatedAssets={unallocatedAssets}
+            allBeneficiaries={formData.beneficiaries?.beneficiaries || []}
+            familyDetails={formData.familyDetails}
+            initialData={editingAllocations}
+          />
+      )}
       <div className="bg-card p-6 sm:p-8 rounded-lg shadow-lg">
         <div className="text-center mb-8">
           <PieChart className="w-12 h-12 text-primary mx-auto mb-2" />
@@ -148,8 +166,8 @@ export default function AssetAllocationPage() {
                     key={assetId}
                     asset={assetDetails}
                     allocations={allocations}
-                    onUpdate={handleSaveAllocations}
-                    onRemove={handleRemoveAssetAllocation}
+                    onEdit={() => handleEditAllocation(assetId)}
+                    onRemove={() => handleRemoveAssetAllocation(assetId)}
                     allBeneficiaries={formData.beneficiaries?.beneficiaries || []}
                     familyDetails={formData.familyDetails}
                   />
@@ -160,7 +178,7 @@ export default function AssetAllocationPage() {
                   type="button"
                   variant="ghost"
                   className="w-full h-full text-lg"
-                  onClick={() => setIsModalOpen(true)}
+                  onClick={handleAddAllocation}
                   disabled={unallocatedAssets.length === 0}
                 >
                   <PlusCircle className="mr-2 h-6 w-6" />

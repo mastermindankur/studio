@@ -37,8 +37,7 @@ interface AddAllocationModalProps {
   unallocatedAssets: any[];
   allBeneficiaries: any[];
   familyDetails: any;
-  initialAssetId?: string;
-  initialAllocations?: any[];
+  initialData: { assetId: string, allocations: any[] } | null;
 }
 
 const allocationSchema = z.object({
@@ -68,8 +67,7 @@ export function AddAllocationModal({
   unallocatedAssets,
   allBeneficiaries,
   familyDetails,
-  initialAssetId,
-  initialAllocations = []
+  initialData
 }: AddAllocationModalProps) {
 
   const combinedBeneficiaries = useMemo(() => {
@@ -91,8 +89,8 @@ export function AddAllocationModal({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      assetId: initialAssetId || "",
-      allocations: initialAllocations.length > 0 ? initialAllocations : [{ beneficiaryId: "", percentage: 100 }],
+      assetId: initialData?.assetId || "",
+      allocations: initialData?.allocations.length ? initialData.allocations : [{ beneficiaryId: "", percentage: 100 }],
     }
   });
 
@@ -106,16 +104,6 @@ export function AddAllocationModal({
     return watchAllocations.reduce((sum, alloc) => sum + (alloc.percentage || 0), 0);
   }, [watchAllocations]);
 
-
-  useEffect(() => {
-    if (isOpen) {
-      form.reset({
-        assetId: initialAssetId || "",
-        allocations: initialAllocations.length > 0 ? initialAllocations : [{ beneficiaryId: "", percentage: 100 }],
-      });
-    }
-  }, [isOpen, initialAssetId, initialAllocations, form]);
-
   const onSubmit = (data: z.infer<typeof formSchema>) => {
     const allocationsWithIds = data.allocations.map((alloc, index) => ({
       ...alloc,
@@ -123,12 +111,7 @@ export function AddAllocationModal({
       id: alloc.id || `alloc-${Date.now()}-${index}`,
     }));
     onSave(data.assetId, allocationsWithIds);
-    onClose();
   };
-
-  const availableAssets = initialAssetId 
-    ? [...unallocatedAssets, ...unallocatedAssets.find(a => a.id === initialAssetId) ? [] : [{id: initialAssetId, details: {description: 'Existing Asset'}}]]
-    : unallocatedAssets;
   
   const assetName = form.watch("assetId") ? allBeneficiaries.find(a => a.id === form.watch("assetId"))?.details?.description : 'New Allocation';
 
@@ -138,7 +121,7 @@ export function AddAllocationModal({
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>
-            {initialAssetId ? 'Edit Allocation' : 'Add New Allocation'}
+            {initialData ? 'Edit Allocation' : 'Add New Allocation'}
           </DialogTitle>
           <DialogDescription>
             Select an asset and assign shares to beneficiaries. The total shares cannot exceed 100%.
@@ -154,14 +137,14 @@ export function AddAllocationModal({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Asset to Allocate</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!!initialAssetId}>
+                      <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!!initialData?.assetId}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select an asset" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {initialAssetId && <SelectItem value={initialAssetId}>Edit Current Asset</SelectItem>}
+                          {initialData?.assetId && <SelectItem value={initialData.assetId}>Edit Current Asset</SelectItem>}
                           {unallocatedAssets.map((asset) => (
                             <SelectItem key={asset.id} value={asset.id}>
                               {asset.details.description || asset.type}

@@ -13,14 +13,13 @@ import { useWillForm } from "@/context/WillFormContext";
 interface AssetAllocationCardProps {
   asset: any;
   allocations: any[];
-  onUpdate: (assetId: string, newAllocations: any[]) => void;
+  onEdit: (assetId: string) => void;
   onRemove: (assetId: string) => void;
   allBeneficiaries: any[];
   familyDetails: any;
 }
 
-export function AssetAllocationCard({ asset, allocations, onUpdate, onRemove, allBeneficiaries, familyDetails }: AssetAllocationCardProps) {
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+export function AssetAllocationCard({ asset, allocations, onEdit, onRemove, allBeneficiaries, familyDetails }: AssetAllocationCardProps) {
   
   const totalPercentage = allocations.reduce((sum, alloc) => sum + (alloc.percentage || 0), 0);
   
@@ -39,24 +38,9 @@ export function AssetAllocationCard({ asset, allocations, onUpdate, onRemove, al
     });
     return beneficiariesMap.get(beneficiaryId)?.name || "Unknown";
   };
-  
-  const handleSave = (assetId: string, newAllocations: any[]) => {
-    onUpdate(assetId, newAllocations);
-    setIsEditModalOpen(false);
-  }
 
   return (
     <>
-      <AddAllocationModal
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        onSave={handleSave}
-        initialAssetId={asset.id}
-        initialAllocations={allocations}
-        unallocatedAssets={[]} 
-        allBeneficiaries={allBeneficiaries}
-        familyDetails={familyDetails}
-      />
       <Card className="flex flex-col">
         <CardHeader>
           <div className="flex justify-between items-start">
@@ -65,7 +49,7 @@ export function AssetAllocationCard({ asset, allocations, onUpdate, onRemove, al
               <CardDescription>Value: ₹{new Intl.NumberFormat('en-IN').format(asset.details.value || 0)}</CardDescription>
             </div>
             <div className="flex gap-2">
-              <Button variant="ghost" size="icon" onClick={() => setIsEditModalOpen(true)}><Edit className="h-4 w-4" /></Button>
+              <Button variant="ghost" size="icon" onClick={() => onEdit(asset.id)}><Edit className="h-4 w-4" /></Button>
               <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => onRemove(asset.id)}><Trash2 className="h-4 w-4" /></Button>
             </div>
           </div>
