@@ -94,7 +94,7 @@ export default function AssetsPage() {
         ...asset,
         id: asset.id || `asset-${Date.now()}-${index}`,
     }));
-    saveAndGoTo('assets', assetsWithIds, "/create-will/beneficiaries");
+    saveAndGoTo('assets', assetsWithIds, "/dashboard");
   }
 
   return (
@@ -214,7 +214,7 @@ export default function AssetsPage() {
             
             <div className="flex flex-col sm:flex-row justify-end gap-4">
               <Button type="submit" size="lg" className="w-full sm:w-auto">
-                Save & Continue <ChevronRight className="ml-2 h-5 w-5" />
+                Save &amp; Go to Dashboard <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
           </form>

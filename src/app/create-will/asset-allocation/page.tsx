@@ -122,7 +122,7 @@ export default function AssetAllocationPage() {
         ...alloc,
         id: alloc.id || `alloc-${Date.now()}-${index}`,
     }));
-    saveAndGoTo('assetAllocation', allocationsWithIds, "/create-will/executor");
+    saveAndGoTo('assetAllocation', allocationsWithIds, "/dashboard");
   }
 
   return (
@@ -244,7 +244,7 @@ export default function AssetAllocationPage() {
 
             <div className="flex flex-col sm:flex-row justify-end gap-4">
               <Button type="submit" size="lg" className="w-full sm:w-auto">
-                Save & Continue <ChevronRight className="ml-2 h-5 w-5" />
+                Save &amp; Go to Dashboard <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
           </form>

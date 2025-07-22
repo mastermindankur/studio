@@ -76,7 +76,7 @@ export default function PersonalInformationPage() {
   }, [form, setDirty]);
 
   function onSubmit(data: PersonalInfoFormValues) {
-    saveAndGoTo('personalInfo', data, "/create-will/personal-information/review");
+    saveAndGoTo('personalInfo', data, "/dashboard");
   }
 
   const today = new Date();
@@ -342,7 +342,7 @@ export default function PersonalInformationPage() {
 
             <div className="flex flex-col sm:flex-row justify-end mt-8 gap-4">
               <Button type="submit" size="lg" className="w-full sm:w-auto" disabled={form.formState.isSubmitting}>
-                Save & Continue <ChevronRight className="ml-2 h-5 w-5" />
+                Save &amp; Go to Dashboard <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
           </form>

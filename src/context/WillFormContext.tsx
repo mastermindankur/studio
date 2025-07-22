@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
@@ -44,9 +45,9 @@ export const initialData: WillFormData = {
   familyDetails: {
     children: [],
   },
-  assets: { assets: [] },
-  beneficiaries: { beneficiaries: [] },
-  assetAllocation: { allocations: [] },
+  assets: [],
+  beneficiaries: [],
+  assetAllocation: [],
   executor: {
     primaryExecutor: {
       fullName: "",
@@ -112,18 +113,18 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
             ] = await Promise.all([
                 getWillSection(user.uid, 'personalInfo'),
                 getWillSection(user.uid, 'familyDetails'),
-                getWillListSection(user.uid, 'assets').then(data => ({ assets: data })),
-                getWillListSection(user.uid, 'beneficiaries').then(data => ({ beneficiaries: data })),
-                getWillListSection(user.uid, 'assetAllocations').then(data => ({ allocations: data })),
+                getWillListSection(user.uid, 'assets'),
+                getWillListSection(user.uid, 'beneficiaries'),
+                getWillListSection(user.uid, 'assetAllocations'),
                 getWillSection(user.uid, 'executor'),
             ]);
 
             const loadedData = {
                 personalInfo: personalInfo || initialData.personalInfo,
                 familyDetails: familyDetails || initialData.familyDetails,
-                assets: assets.assets.length > 0 ? assets : initialData.assets,
-                beneficiaries: beneficiaries.beneficiaries.length > 0 ? beneficiaries : initialData.beneficiaries,
-                assetAllocation: assetAllocation.allocations.length > 0 ? assetAllocation : initialData.assetAllocation,
+                assets: assets.length > 0 ? assets : initialData.assets,
+                beneficiaries: beneficiaries.length > 0 ? beneficiaries : initialData.beneficiaries,
+                assetAllocation: assetAllocation.length > 0 ? assetAllocation : initialData.assetAllocation,
                 executor: executor || initialData.executor,
             };
             setFormData(loadedData);
@@ -159,7 +160,7 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
             const collectionName = section === 'assetAllocation' ? 'assetAllocations' : section;
 
             if (Object.keys(listSections).includes(section)) {
-                const items = currentData[listSections[section]];
+                const items = currentData;
                 const existingItems = await getWillListSection(user.uid, collectionName);
                 
                 // Simplified approach: clear and re-add.

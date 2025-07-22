@@ -18,9 +18,8 @@ export default function ReviewPersonalInformationPage() {
   };
 
   const handleConfirm = () => {
-    // In a real app, you might have an additional save call here if needed,
-    // but saveAndGoTo already saved it. So we just navigate.
-    router.push("/create-will/family-details");
+    // Navigate to the dashboard as requested
+    router.push("/dashboard");
   };
   
   const DetailItem = ({ label, value }: { label: string, value: string | undefined }) => (
@@ -66,7 +65,7 @@ export default function ReviewPersonalInformationPage() {
             <div className="mt-8 flex justify-end gap-4">
               <Button size="lg" onClick={handleConfirm}>
                 <CheckCircle className="mr-2 h-5 w-5" />
-                Confirm & Continue
+                Confirm &amp; Go to Dashboard
               </Button>
             </div>
         </CardContent>

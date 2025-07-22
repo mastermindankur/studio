@@ -68,7 +68,7 @@ export default function BeneficiariesPage() {
         ...ben,
         id: ben.id || `ben-${Date.now()}-${index}`,
     }));
-    saveAndGoTo('beneficiaries', beneficiariesWithIds, "/create-will/asset-allocation");
+    saveAndGoTo('beneficiaries', beneficiariesWithIds, "/dashboard");
   }
 
   return (
@@ -192,7 +192,7 @@ export default function BeneficiariesPage() {
 
             <div className="flex flex-col sm:flex-row justify-end gap-4">
               <Button type="submit" size="lg" className="w-full sm:w-auto">
-                Save & Continue <ChevronRight className="ml-2 h-5 w-5" />
+                Save &amp; Go to Dashboard <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
           </form>

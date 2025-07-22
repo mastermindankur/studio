@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -89,7 +90,7 @@ export default function ExecutorPage() {
   }, [form, setDirty]);
 
   function onSubmit(data: ExecutorFormValues) {
-    saveAndGoTo('executor', data, "/create-will/review"); 
+    saveAndGoTo('executor', data, "/dashboard"); 
   }
 
   return (
@@ -213,7 +214,7 @@ export default function ExecutorPage() {
 
             <div className="flex flex-col sm:flex-row justify-end gap-4">
               <Button type="submit" size="lg" className="w-full sm:w-auto">
-                Save & Continue <ChevronRight className="ml-2 h-5 w-5" />
+                Save &amp; Go to Dashboard <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
           </form>
