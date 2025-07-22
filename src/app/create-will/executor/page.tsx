@@ -68,6 +68,14 @@ export default function ExecutorPage() {
         mobile: "",
       },
       addSecondExecutor: false,
+      secondExecutor: {
+        fullName: "",
+        fatherName: "",
+        aadhar: "",
+        address: "",
+        email: "",
+        mobile: "",
+      },
       city: "",
       state: "",
     },
@@ -88,6 +96,20 @@ export default function ExecutorPage() {
     const subscription = form.watch(() => setDirty(true));
     return () => subscription.unsubscribe();
   }, [form, setDirty]);
+  
+  useEffect(() => {
+    if (watchAddSecondExecutor && !form.getValues().secondExecutor) {
+      form.setValue('secondExecutor', {
+        fullName: "",
+        fatherName: "",
+        aadhar: "",
+        address: "",
+        email: "",
+        mobile: "",
+      });
+    }
+  }, [watchAddSecondExecutor, form]);
+
 
   function onSubmit(data: ExecutorFormValues) {
     saveAndGoTo('executor', data, "/dashboard"); 
