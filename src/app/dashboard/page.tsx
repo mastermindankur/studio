@@ -176,6 +176,17 @@ function DashboardPageContent() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {checklistSteps.map(step => {
                 const isComplete = isStepComplete(step.key, draft);
+                const assetCount = draft?.assets?.assets?.length || 0;
+                
+                let cardDescription = "Click to start this section.";
+                if (isComplete) {
+                    if (step.key === 'assets') {
+                        cardDescription = `${assetCount} asset${assetCount > 1 ? 's' : ''} added. Click to review.`;
+                    } else {
+                        cardDescription = "Section completed. Click to review.";
+                    }
+                }
+
                 return (
                     <Card 
                         key={step.path} 
@@ -193,7 +204,7 @@ function DashboardPageContent() {
                         </CardHeader>
                         <CardContent className="flex-grow flex items-end">
                              <p className="text-sm text-muted-foreground">
-                                {isComplete ? "Section completed. Click to review." : "Click to start this section."}
+                                {cardDescription}
                             </p>
                         </CardContent>
                     </Card>
