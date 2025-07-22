@@ -42,11 +42,16 @@ function isStepComplete(stepKey: string, draftData: WillFormData | null): boolea
             if (data.maritalStatus === 'married' && !data.spouseName) return false;
             return true;
         case 'assets':
-            return Array.isArray(data.assets) && data.assets.length > 0;
+            return Array.isArray(data.assets?.assets) && data.assets.assets.length > 0;
         case 'beneficiaries':
-             return Array.isArray(data.beneficiaries); // Considered complete even if empty, as it's optional.
+             // Beneficiaries step is complete if family members are defined OR other beneficiaries are added.
+             const hasFamily = !!data.familyDetails?.spouseName || (Array.isArray(data.familyDetails?.children) && data.familyDetails.children.some((c: any) => c.name));
+             const hasOthers = Array.isArray(data.beneficiaries?.beneficiaries) && data.beneficiaries.beneficiaries.length > 0;
+             // For this to be true, the family details must be complete first.
+             const familyStepComplete = isStepComplete('familyDetails', draftData);
+             return familyStepComplete && (hasFamily || hasOthers);
         case 'assetAllocation':
-            return Array.isArray(data.allocations) && data.allocations.length > 0;
+            return Array.isArray(data.assetAllocation?.allocations) && data.assetAllocation.allocations.length > 0;
         case 'executor':
             return !!data.primaryExecutor?.fullName && !!data.city && !!data.state;
         default:
@@ -175,13 +180,14 @@ function DashboardPageContent() {
         
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {checklistSteps.map(step => {
-                const isComplete = isStepComplete(step.key, draft);
+                // Pass the whole draft to isStepComplete for cross-step dependencies
+                const isComplete = isStepComplete(step.key, { ...draft, familyDetails: draft?.familyDetails, beneficiaries: draft?.beneficiaries } as WillFormData);
                 const assetCount = draft?.assets?.assets?.length || 0;
                 
                 let cardDescription = "Click to start this section.";
                 if (isComplete) {
-                    if (step.key === 'assets') {
-                        cardDescription = `${assetCount} asset${assetCount > 1 ? 's' : ''} added. Click to review.`;
+                    if (step.key === 'assets' && assetCount > 0) {
+                        cardDescription = `${assetCount} asset${assetCount !== 1 ? 's' : ''} added. Click to review.`;
                     } else {
                         cardDescription = "Section completed. Click to review.";
                     }

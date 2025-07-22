@@ -15,7 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { ChevronRight, PlusCircle, Trash2, Gift, Users, Info } from "lucide-react";
+import { ChevronRight, PlusCircle, Trash2, Gift, Users, Info, Edit } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useWillForm } from "@/context/WillFormContext";
 import { useEffect } from "react";
@@ -40,17 +40,17 @@ export default function BeneficiariesPage() {
 
   const form = useForm<BeneficiariesFormValues>({
     resolver: zodResolver(beneficiariesFormSchema),
-    defaultValues: { beneficiaries: formData.beneficiaries },
+    defaultValues: { beneficiaries: formData.beneficiaries?.beneficiaries || [] },
   });
 
   useEffect(() => {
-    if (!loading && formData.beneficiaries) {
-        form.reset({ beneficiaries: formData.beneficiaries });
+    if (!loading && formData.beneficiaries?.beneficiaries) {
+        form.reset({ beneficiaries: formData.beneficiaries.beneficiaries });
     }
   }, [loading, formData.beneficiaries, form]);
 
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, update } = useFieldArray({
     control: form.control,
     name: "beneficiaries",
   });
@@ -68,7 +68,7 @@ export default function BeneficiariesPage() {
         ...ben,
         id: ben.id || `ben-${Date.now()}-${index}`,
     }));
-    saveAndGoTo('beneficiaries', beneficiariesWithIds, "/dashboard");
+    saveAndGoTo('beneficiaries', { beneficiaries: beneficiariesWithIds }, "/dashboard");
   }
 
   return (
@@ -84,13 +84,13 @@ export default function BeneficiariesPage() {
             )}
         </div>
 
-        <Card className="mb-8">
+        <Card className="mb-8 bg-muted/30">
           <CardHeader>
             <CardTitle className="text-xl font-semibold text-primary flex items-center gap-2"><Users /> Primary Family Members</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-4">
-              These family members are automatically included from the 'Family Details' step. You can allocate assets to them in the next step.
+              These family members are automatically included from the 'Family Details' step. You can allocate assets to them in the next step. They are not editable here.
             </p>
             <div className="space-y-3">
               {familyDetails?.spouseName && (
@@ -108,7 +108,7 @@ export default function BeneficiariesPage() {
                 )
               ))}
               {(!familyDetails?.spouseName || familyDetails.spouseName.trim() === '') && (!familyDetails?.children || familyDetails.children.every(c => !c.name || c.name.trim() === '')) && (
-                 <p className="text-sm text-center text-muted-foreground py-4">No primary family members were listed in the previous step.</p>
+                 <p className="text-sm text-center text-muted-foreground py-4">No primary family members were listed. You can add them in the 'Family Details' section.</p>
               )}
             </div>
           </CardContent>
@@ -118,7 +118,7 @@ export default function BeneficiariesPage() {
           <Info className="h-4 w-4" />
           <AlertTitle>Add Other Beneficiaries (Optional)</AlertTitle>
           <AlertDescription>
-            You can add anyone else you wish to include (like friends, other relatives, or charities) below. It is not mandatory to give an asset to every beneficiary you list.
+            You can add anyone else you wish to include (like friends, other relatives, or charities) below.
           </AlertDescription>
         </Alert>
 
@@ -127,72 +127,67 @@ export default function BeneficiariesPage() {
           
             <div className="space-y-6">
               {fields.map((field, index) => (
-                <div key={field.id} className="p-6 border rounded-lg relative">
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <FormField
-                      control={form.control}
-                      name={`beneficiaries.${index}.name`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Beneficiary Full Name</FormLabel>
-                           <FormDescription>
-                              The full legal name of the person or entity.
-                            </FormDescription>
-                          <FormControl>
-                            <Input placeholder="e.g., Jane Doe" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name={`beneficiaries.${index}.relationship`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Relationship to You</FormLabel>
-                          <FormDescription>
-                              Your relationship (e.g., Friend, Nephew, Charity).
-                            </FormDescription>
-                          <FormControl>
-                            <Input placeholder="e.g., Friend, Charity" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  {fields.length > 0 && (
-                    <Button
+                <Card key={field.id} className="p-6 relative overflow-visible">
+                  <CardHeader className="p-0 mb-4">
+                    <CardTitle className="text-lg">Beneficiary #{index + 1}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-0">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <FormField
+                        control={form.control}
+                        name={`beneficiaries.${index}.name`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Full Name or Entity</FormLabel>
+                            <FormControl>
+                              <Input placeholder="e.g., Jane Doe or 'Hope Foundation'" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name={`beneficiaries.${index}.relationship`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Relationship</FormLabel>
+                            <FormControl>
+                              <Input placeholder="e.g., Friend, Nephew, Charity" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </CardContent>
+                   <Button
                       type="button"
-                      variant="destructive"
+                      variant="ghost"
                       size="icon"
-                      className="absolute top-4 right-4"
+                      className="absolute top-4 right-4 text-destructive hover:bg-destructive/10"
                       onClick={() => remove(index)}
                     >
                       <Trash2 className="h-4 w-4" />
                       <span className="sr-only">Remove beneficiary</span>
                     </Button>
-                  )}
-                </div>
+                </Card>
               ))}
             </div>
             
-            <div className="flex items-center justify-between">
-                <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => append({ name: "", relationship: "" })}
-                >
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Add Another Beneficiary
-                </Button>
-            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => append({ name: "", relationship: "" })}
+            >
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Add Beneficiary
+            </Button>
 
-            <div className="flex flex-col sm:flex-row justify-end gap-4">
+            <div className="flex flex-col sm:flex-row justify-end gap-4 border-t pt-6 mt-6">
               <Button type="submit" size="lg" className="w-full sm:w-auto">
-                Save &amp; Go to Dashboard <ChevronRight className="ml-2 h-5 w-5" />
+                Save & Continue <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
           </form>
