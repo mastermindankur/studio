@@ -36,6 +36,7 @@ const assetAllocationFormSchema = z.object({
 }).refine(data => {
     const assetTotals: { [key: string]: number } = {};
     for (const alloc of data.allocations) {
+        if (!alloc.assetId) continue;
         if (!assetTotals[alloc.assetId]) {
             assetTotals[alloc.assetId] = 0;
         }
@@ -48,7 +49,7 @@ const assetAllocationFormSchema = z.object({
     }
     return true;
 }, {
-    message: "Total allocation for an asset cannot exceed 100%.",
+    message: "Total allocation for an asset cannot exceed 100%. Please check your percentages.",
     path: ["allocations"],
 });
 
@@ -58,13 +59,13 @@ type AssetAllocationFormValues = z.infer<typeof assetAllocationFormSchema>;
 export default function AssetAllocationPage() {
   const { formData, saveAndGoTo, setDirty, loading } = useWillForm();
 
-  const MOCK_ASSETS = formData.assets || [];
+  const MOCK_ASSETS = formData.assets?.assets || [];
   
   const combinedBeneficiaries = useMemo(() => {
     const allBeneficiaries = new Map();
 
     // Add from beneficiaries step (they have explicit IDs)
-    formData.beneficiaries?.forEach(b => {
+    formData.beneficiaries?.beneficiaries?.forEach((b: any) => {
       if (b.id && b.name) {
         allBeneficiaries.set(b.id, { id: b.id, name: b.name });
       }
@@ -79,7 +80,7 @@ export default function AssetAllocationPage() {
     }
 
     // Add children from family details
-    formData.familyDetails?.children?.forEach(c => {
+    formData.familyDetails?.children?.forEach((c: any) => {
         if (c.name) {
             const childId = `child-${c.name.replace(/\s+/g, '-').toLowerCase()}`;
             if (!allBeneficiaries.has(childId)) {
@@ -94,12 +95,14 @@ export default function AssetAllocationPage() {
 
   const form = useForm<AssetAllocationFormValues>({
     resolver: zodResolver(assetAllocationFormSchema),
-    defaultValues: { allocations: formData.assetAllocation || [{ assetId: "", beneficiaryId: "", percentage: 100 }] },
+    defaultValues: formData.assetAllocation || { allocations: [{ assetId: "", beneficiaryId: "", percentage: 100 }] },
   });
 
   useEffect(() => {
-    if (!loading && formData.assetAllocation) {
-        form.reset({ allocations: formData.assetAllocation });
+    if (!loading && formData.assetAllocation?.allocations?.length) {
+        form.reset(formData.assetAllocation);
+    } else if (!loading && !formData.assetAllocation?.allocations?.length) {
+        form.reset({ allocations: [{ assetId: "", beneficiaryId: "", percentage: 100 }] });
     }
   }, [loading, formData.assetAllocation, form]);
 
@@ -122,7 +125,7 @@ export default function AssetAllocationPage() {
         ...alloc,
         id: alloc.id || `alloc-${Date.now()}-${index}`,
     }));
-    saveAndGoTo('assetAllocation', allocationsWithIds, "/dashboard");
+    saveAndGoTo('assetAllocation', { allocations: allocationsWithIds }, "/create-will/executor");
   }
 
   return (
@@ -150,7 +153,7 @@ export default function AssetAllocationPage() {
 
             <div className="space-y-6">
               {fields.map((field, index) => (
-                <div key={field.id} className="p-6 border rounded-lg relative">
+                <div key={field.id} className="p-6 border rounded-lg relative bg-muted/20">
                   <div className="grid md:grid-cols-3 gap-6">
                     <FormField
                       control={form.control}
@@ -166,7 +169,7 @@ export default function AssetAllocationPage() {
                             </FormControl>
                             <SelectContent>
                               {MOCK_ASSETS.map((asset: any) => (
-                                <SelectItem key={asset.id} value={asset.id!}>{asset.description}</SelectItem>
+                                <SelectItem key={asset.id} value={asset.id!}>{asset.details?.description || asset.type}</SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
@@ -213,9 +216,9 @@ export default function AssetAllocationPage() {
                   {fields.length > 1 && (
                     <Button
                       type="button"
-                      variant="destructive"
+                      variant="ghost"
                       size="icon"
-                      className="absolute top-4 right-4"
+                      className="absolute top-2 right-2 text-destructive hover:bg-destructive/10"
                       onClick={() => remove(index)}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -242,9 +245,9 @@ export default function AssetAllocationPage() {
               Add Another Allocation
             </Button>
 
-            <div className="flex flex-col sm:flex-row justify-end gap-4">
+            <div className="flex flex-col sm:flex-row justify-end gap-4 border-t pt-6">
               <Button type="submit" size="lg" className="w-full sm:w-auto">
-                Save &amp; Go to Dashboard <ChevronRight className="ml-2 h-5 w-5" />
+                Save & Continue <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
           </form>
