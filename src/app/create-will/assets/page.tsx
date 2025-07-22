@@ -16,6 +16,7 @@ import { format } from "date-fns";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { AddAssetModal } from "@/components/create-will/add-asset-modal";
 import { assetSchema, type Asset } from "@/lib/schemas/asset-schema";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const assetsFormSchema = z.object({
   assets: z.array(assetSchema),
@@ -86,6 +87,29 @@ export default function AssetsPage() {
   const handleRemoveAsset = (index: number) => {
     remove(index);
     setDirty(true);
+  }
+
+  if (loading) {
+    return (
+      <div className="max-w-6xl mx-auto">
+        <div className="bg-card p-6 sm:p-8 rounded-lg shadow-lg">
+          <div className="text-center mb-8">
+            <Skeleton className="w-12 h-12 rounded-full mx-auto mb-2" />
+            <Skeleton className="h-9 w-1/2 mx-auto" />
+            <Skeleton className="h-5 w-1/3 mx-auto mt-2" />
+          </div>
+          <Skeleton className="h-20 w-full mb-8" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(3)].map((_, i) => (
+              <Skeleton key={i} className="h-64 w-full" />
+            ))}
+          </div>
+          <div className="flex justify-end mt-8">
+            <Skeleton className="h-11 w-44" />
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
