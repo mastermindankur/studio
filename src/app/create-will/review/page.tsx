@@ -15,12 +15,13 @@ import { useState } from "react";
 import { saveWill } from "@/app/actions/will";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ReviewPage() {
   const router = useRouter();
   const { user } = useAuth();
   const { toast } = useToast();
-  const { formData, clearForm } = useWillForm();
+  const { formData, clearForm, loading } = useWillForm();
   const [isFinalizing, setIsFinalizing] = useState(false);
 
   const {
@@ -104,6 +105,51 @@ export default function ReviewPage() {
     return 'N/A';
   };
 
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-card p-6 sm:p-8 rounded-lg shadow-lg space-y-8">
+          <div className="text-center mb-8">
+            <Skeleton className="w-12 h-12 rounded-full mx-auto mb-2" />
+            <Skeleton className="h-9 w-3/4 mx-auto" />
+            <Skeleton className="h-5 w-1/2 mx-auto mt-2" />
+          </div>
+          
+          <div className="space-y-8">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                  <div className="flex items-center gap-3 w-full">
+                    <Skeleton className="h-6 w-6 rounded-full" />
+                    <Skeleton className="h-6 w-1/3" />
+                  </div>
+                  <Skeleton className="h-9 w-24" />
+              </CardHeader>
+              <CardContent className="space-y-4">
+                  <Skeleton className="h-5 w-full" />
+                  <Skeleton className="h-5 w-full" />
+                  <Skeleton className="h-5 w-2/3" />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                  <div className="flex items-center gap-3 w-full">
+                    <Skeleton className="h-6 w-6 rounded-full" />
+                    <Skeleton className="h-6 w-1/3" />
+                  </div>
+                  <Skeleton className="h-9 w-24" />
+              </CardHeader>
+              <CardContent className="space-y-4">
+                  <Skeleton className="h-5 w-full" />
+                  <Skeleton className="h-5 w-2/3" />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       {/* Hidden component for PDF generation */}
@@ -159,9 +205,9 @@ export default function ReviewPage() {
                   {familyDetails?.maritalStatus === 'married' && <p><strong>Spouse Name:</strong> {familyDetails?.spouseName}</p>}
                   <div>
                   <strong>Children:</strong>
-                  {familyDetails?.children && familyDetails.children.length > 0 && familyDetails.children[0].name ? (
+                  {familyDetails?.children && familyDetails.children.length > 0 && familyDetails.children.some(c => c.name) ? (
                       <ul className="list-disc pl-5 mt-1">
-                      {familyDetails.children.map((child: any, index: number) => <li key={index}>{child.name}</li>)}
+                      {familyDetails.children.map((child: any, index: number) => child.name && <li key={index}>{child.name}</li>)}
                       </ul>
                   ) : " No children listed."}
                   </div>
@@ -285,3 +331,5 @@ export default function ReviewPage() {
     </>
   );
 }
+
+    
