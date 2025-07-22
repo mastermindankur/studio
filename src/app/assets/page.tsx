@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,6 +23,7 @@ import { useEffect } from "react";
 import { Alert, AlertTitle, AlertDescription as AlertDesc } from "@/components/ui/alert";
 import { Info } from "lucide-react";
 import { format } from "date-fns";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 
 const assetSchema = z.object({
@@ -123,82 +125,81 @@ export default function AssetsPage() {
                 const descriptionText = selectedType ? descriptionPlaceholders[selectedType] : "Provide specific details to identify the asset.";
 
                 return (
-                <div key={field.id} className="p-6 border rounded-lg relative">
-                   <div className="grid md:grid-cols-2 gap-6">
-                     <FormField
-                        control={form.control}
-                        name={`assets.${index}.type`}
-                        render={({ field }) => (
-                            <FormItem>
-                            <FormLabel>Asset Type</FormLabel>
-                             <p className="text-[0.8rem] text-muted-foreground">
-                                Select the category of the asset.
-                              </p>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select an asset type" />
-                                </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    {assetTypes.map(type => (
-                                        <SelectItem key={type} value={type}>{type}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <FormMessage />
-                            </FormItem>
-                        )}
-                        />
-                     <FormField
-                        control={form.control}
-                        name={`assets.${index}.value`}
-                        render={({ field }) => (
-                            <FormItem>
-                            <FormLabel>Estimated Value (in ₹)</FormLabel>
-                             <p className="text-[0.8rem] text-muted-foreground">
-                                An approximate current market value.
-                              </p>
-                            <FormControl>
-                                <Input type="text" inputMode="numeric" placeholder="e.g., 500000" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                            </FormItem>
-                        )}
-                        />
-                   </div>
-                  <FormField
-                    control={form.control}
-                    name={`assets.${index}.description`}
-                    render={({ field }) => (
-                      <FormItem className="mt-6">
-                        <FormLabel>Asset Description</FormLabel>
-                        <FormDescription>
-                          {descriptionText}
-                        </FormDescription>
-                        <FormControl>
-                          <Textarea
-                            placeholder={descriptionText}
-                            {...field}
+                <Card key={field.id} className="overflow-hidden">
+                   <CardHeader className="flex flex-row items-center justify-between bg-muted/50 p-4">
+                     <CardTitle className="text-lg font-semibold text-primary">
+                       Asset #{index + 1}: {selectedType || "New Asset"}
+                     </CardTitle>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                        onClick={() => remove(index)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        <span className="sr-only">Remove asset</span>
+                      </Button>
+                   </CardHeader>
+                   <CardContent className="p-6 space-y-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <FormField
+                          control={form.control}
+                          name={`assets.${index}.type`}
+                          render={({ field }) => (
+                              <FormItem>
+                              <FormLabel>Asset Type</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <FormControl>
+                                  <SelectTrigger>
+                                      <SelectValue placeholder="Select an asset type" />
+                                  </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                      {assetTypes.map(type => (
+                                          <SelectItem key={type} value={type}>{type}</SelectItem>
+                                      ))}
+                                  </SelectContent>
+                              </Select>
+                              <FormMessage />
+                              </FormItem>
+                          )}
                           />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                   {fields.length > 1 && (
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="icon"
-                      className="absolute top-4 right-4"
-                      onClick={() => remove(index)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      <span className="sr-only">Remove asset</span>
-                    </Button>
-                  )}
-                </div>
+                      <FormField
+                          control={form.control}
+                          name={`assets.${index}.value`}
+                          render={({ field }) => (
+                              <FormItem>
+                              <FormLabel>Estimated Value (in ₹)</FormLabel>
+                              <FormControl>
+                                  <Input type="text" inputMode="numeric" placeholder="e.g., 500000" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                              </FormItem>
+                          )}
+                          />
+                    </div>
+                    <FormField
+                      control={form.control}
+                      name={`assets.${index}.description`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Asset Description</FormLabel>
+                          <FormDescription>
+                            {descriptionText}
+                          </FormDescription>
+                          <FormControl>
+                            <Textarea
+                              placeholder={descriptionText}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                   </CardContent>
+                </Card>
               )})}
             </div>
             <Button
