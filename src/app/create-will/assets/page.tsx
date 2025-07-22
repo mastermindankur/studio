@@ -23,6 +23,7 @@ import { useEffect } from "react";
 import { Alert, AlertTitle, AlertDescription as AlertDesc } from "@/components/ui/alert";
 import { Info } from "lucide-react";
 import { format } from "date-fns";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 
 const assetSchema = z.object({
@@ -98,7 +99,7 @@ export default function AssetsPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-6xl mx-auto">
       <div className="bg-card p-6 sm:p-8 rounded-lg shadow-lg">
         <div className="text-center mb-8">
             <Landmark className="w-12 h-12 text-primary mx-auto mb-2" />
@@ -118,101 +119,103 @@ export default function AssetsPage() {
           </Alert>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {fields.map((field, index) => {
                 const selectedType = watchedAssets?.[index]?.type;
                 const descriptionText = selectedType ? descriptionPlaceholders[selectedType] : "Provide specific details to identify the asset.";
 
                 return (
-                <div key={field.id} className="p-6 border rounded-lg relative">
-                   <div className="grid md:grid-cols-2 gap-6">
-                     <FormField
-                        control={form.control}
-                        name={`assets.${index}.type`}
-                        render={({ field }) => (
-                            <FormItem>
-                            <FormLabel>Asset Type</FormLabel>
-                             <p className="text-[0.8rem] text-muted-foreground">
-                                Select the category of the asset.
-                              </p>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select an asset type" />
-                                </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    {assetTypes.map(type => (
-                                        <SelectItem key={type} value={type}>{type}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <FormMessage />
-                            </FormItem>
-                        )}
-                        />
-                     <FormField
-                        control={form.control}
-                        name={`assets.${index}.value`}
-                        render={({ field }) => (
-                            <FormItem>
-                            <FormLabel>Estimated Value (in ₹)</FormLabel>
-                             <p className="text-[0.8rem] text-muted-foreground">
-                                An approximate current market value.
-                              </p>
-                            <FormControl>
-                                <Input type="text" inputMode="numeric" placeholder="e.g., 500000" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                            </FormItem>
-                        )}
-                        />
-                   </div>
-                  <FormField
-                    control={form.control}
-                    name={`assets.${index}.description`}
-                    render={({ field }) => (
-                      <FormItem className="mt-6">
-                        <FormLabel>Asset Description</FormLabel>
-                        <FormDescription>
-                          {descriptionText}
-                        </FormDescription>
-                        <FormControl>
-                          <Textarea
-                            placeholder={descriptionText}
-                            {...field}
+                <Card key={field.id} className="overflow-hidden flex flex-col">
+                   <CardHeader className="flex flex-row items-center justify-between bg-muted/50 p-4">
+                     <CardTitle className="text-lg font-semibold text-primary truncate">
+                       {selectedType || `Asset #${index + 1}`}
+                     </CardTitle>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="text-destructive hover:bg-destructive/10 hover:text-destructive flex-shrink-0"
+                        onClick={() => remove(index)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        <span className="sr-only">Remove asset</span>
+                      </Button>
+                   </CardHeader>
+                   <CardContent className="p-6 space-y-6 flex-grow">
+                    <div className="grid grid-cols-1 gap-6">
+                      <FormField
+                          control={form.control}
+                          name={`assets.${index}.type`}
+                          render={({ field }) => (
+                              <FormItem>
+                              <FormLabel>Asset Type</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <FormControl>
+                                  <SelectTrigger>
+                                      <SelectValue placeholder="Select an asset type" />
+                                  </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                      {assetTypes.map(type => (
+                                          <SelectItem key={type} value={type}>{type}</SelectItem>
+                                      ))}
+                                  </SelectContent>
+                              </Select>
+                              <FormMessage />
+                              </FormItem>
+                          )}
                           />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                   {fields.length > 1 && (
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="icon"
-                      className="absolute top-4 right-4"
-                      onClick={() => remove(index)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      <span className="sr-only">Remove asset</span>
-                    </Button>
-                  )}
-                </div>
+                      <FormField
+                          control={form.control}
+                          name={`assets.${index}.value`}
+                          render={({ field }) => (
+                              <FormItem>
+                              <FormLabel>Estimated Value (in ₹)</FormLabel>
+                              <FormControl>
+                                  <Input type="text" inputMode="numeric" placeholder="e.g., 500000" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                              </FormItem>
+                          )}
+                          />
+                    </div>
+                    <FormField
+                      control={form.control}
+                      name={`assets.${index}.description`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Asset Description</FormLabel>
+                          <FormDescription className="text-xs">
+                            {descriptionText}
+                          </FormDescription>
+                          <FormControl>
+                            <Textarea
+                              placeholder="Provide identifying details..."
+                              {...field}
+                              className="min-h-[100px]"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                   </CardContent>
+                </Card>
               )})}
+               <Card className="border-dashed border-2 hover:border-primary hover:text-primary transition-colors duration-200 flex items-center justify-center min-h-[300px]">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="w-full h-full text-lg"
+                  onClick={() => append({ type: "", description: "", value: "" })}
+                >
+                  <PlusCircle className="mr-2 h-6 w-6" />
+                  Add Another Asset
+                </Button>
+              </Card>
             </div>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => append({ type: "", description: "", value: "" })}
-            >
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Add Another Asset
-            </Button>
             
-            <div className="flex flex-col sm:flex-row justify-end gap-4">
+            <div className="flex flex-col sm:flex-row justify-end gap-4 mt-8">
               <Button type="submit" size="lg" className="w-full sm:w-auto">
                 Save & Continue <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
