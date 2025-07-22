@@ -18,7 +18,7 @@ export function WillDocument({ formData, id = "will-document-render" }: WillDocu
 
   const getAssetName = (assetId: string) => {
     const asset = assets?.assets?.find((a: any) => a.id === assetId);
-    return asset ? asset.description : 'Unknown Asset';
+    return asset ? asset.details.description : 'Unknown Asset';
   };
   
   const getBeneficiaryName = (beneficiaryId: string) => {
@@ -145,5 +145,3 @@ export function WillDocument({ formData, id = "will-document-render" }: WillDocu
     </div>
   );
 }
-
-    
