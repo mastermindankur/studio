@@ -13,6 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
 import { AddAllocationModal } from "@/components/create-will/add-allocation-modal";
 import { AssetAllocationCard } from "@/components/create-will/asset-allocation-card";
+import { Card } from "@/components/ui/card";
 
 const allocationSchema = z.object({
   id: z.string().optional(),
