@@ -5,7 +5,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { useRouter } from 'next/navigation';
 import { useAuth } from './AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { getWillSection, updateWillSection, getWillListSection, addWillListItem, updateWillListItem, removeWillListItem } from '@/app/actions/will-draft';
+import { getWillSection, updateWillSection as updateWillSectionAction, getWillListSection, addWillListItem, updateWillListItem, removeWillListItem } from '@/app/actions/will-draft';
 import { type Asset } from '@/lib/schemas/asset-schema';
 import { type Beneficiary } from '@/lib/schemas/beneficiary-schema';
 
@@ -27,7 +27,6 @@ export interface WillFormData {
 interface WillFormContextType {
   formData: WillFormData;
   setFormData: React.Dispatch<React.SetStateAction<WillFormData>>;
-  saveAndGoTo: (section: keyof Omit<WillFormData, 'willId' | 'version' | 'createdAt'>, currentData: any, path: string) => void;
   setDirty: (isDirty: boolean) => void;
   clearForm: () => void;
   loadWill: (willData: any) => void;
@@ -39,6 +38,7 @@ interface WillFormContextType {
   updateBeneficiary: (beneficiary: Beneficiary) => Promise<void>;
   removeBeneficiary: (beneficiaryId: string) => Promise<void>;
   updateAllocations: (allocations: any[]) => Promise<void>;
+  updateWillSection: (section: keyof Omit<WillFormData, 'willId' | 'version' | 'createdAt' | 'assets' | 'beneficiaries'>, data: any) => Promise<void>;
 }
 
 export const initialData: WillFormData = {
@@ -167,28 +167,25 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
     loadDraftData();
   }, [user, authLoading]);
 
-
-  const saveAndGoTo = async (section: keyof Omit<WillFormData, 'willId' | 'version' | 'createdAt'>, currentData: any, path: string) => {
-    
-    setFormData(prev => ({...prev, [section]: currentData}));
-    setDirty(false);
-
-    if (user) {
-        try {
-            await updateWillSection(user.uid, section, currentData);
-            toast({
-                title: "Progress Saved",
-                description: "Your information has been successfully saved.",
-            });
-        } catch (e) {
-            console.error("Could not save draft to firestore", e);
-             toast({ variant: "destructive", title: "Save Failed", description: "Could not save your progress." });
-        }
+  const updateWillSection = async (section: keyof Omit<WillFormData, 'willId' | 'version' | 'createdAt' | 'assets' | 'beneficiaries'>, data: any): Promise<void> => {
+    if (!user) {
+      toast({ variant: "destructive", title: "Not Authenticated", description: "You must be logged in to save." });
+      return;
     }
-
-    router.push(path);
+    try {
+      await updateWillSectionAction(user.uid, section, data);
+      setFormData(prev => ({ ...prev, [section]: data }));
+      toast({
+        title: "Progress Saved",
+        description: `Your ${section} information has been successfully saved.`,
+      });
+    } catch (e) {
+      console.error(`Could not save ${section} to firestore`, e);
+      toast({ variant: "destructive", title: "Save Failed", description: `Could not save your ${section} progress.` });
+    }
   };
-  
+
+
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (isDirty) {
@@ -212,14 +209,18 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
         const sections = ['personalInfo', 'familyDetails', 'executor', 'assetAllocation'];
         const listSections = ['assets', 'beneficiaries'];
 
-        for(const section of sections) {
-            await updateWillSection(user.uid, section, initialData[section as keyof typeof initialData]);
-        }
-        for(const section of listSections) {
-            const items = await getWillListSection(user.uid, section);
-            for(const item of items) {
-                await removeWillListItem(section, item.id);
+        try {
+            for(const section of sections) {
+                await updateWillSectionAction(user.uid, section, initialData[section as keyof typeof initialData]);
             }
+            const allItems = await Promise.all(listSections.map(s => getWillListSection(user.uid, s)));
+            for(let i = 0; i < listSections.length; i++) {
+                for(const item of allItems[i]) {
+                    await removeWillListItem(listSections[i], item.id);
+                }
+            }
+        } catch(e) {
+            console.error("Error clearing form data from DB", e);
         }
     }
     setFormData(initialData);
@@ -351,7 +352,7 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
     const allocationData = { allocations };
-    const result = await updateWillSection(user.uid, 'assetAllocation', allocationData);
+    const result = await updateWillSectionAction(user.uid, 'assetAllocation', allocationData);
     if (result.success) {
       toast({ title: "Allocations Saved", description: "Your allocations have been saved successfully." });
       setFormData(prev => ({
@@ -365,7 +366,7 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
 
 
   return (
-    <WillFormContext.Provider value={{ formData, setFormData, saveAndGoTo, setDirty, clearForm, loadWill, loading, addAsset, updateAsset, removeAsset, addBeneficiary, updateBeneficiary, removeBeneficiary, updateAllocations }}>
+    <WillFormContext.Provider value={{ formData, setFormData, setDirty, clearForm, loadWill, loading, addAsset, updateAsset, removeAsset, addBeneficiary, updateBeneficiary, removeBeneficiary, updateAllocations, updateWillSection }}>
       {children}
     </WillFormContext.Provider>
   );
@@ -378,3 +379,5 @@ export const useWillForm = () => {
   }
   return context;
 };
+
+    

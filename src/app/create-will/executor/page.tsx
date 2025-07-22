@@ -24,6 +24,7 @@ import { useEffect } from "react";
 import { Alert, AlertTitle, AlertDescription as AlertDesc } from "@/components/ui/alert";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useRouter } from "next/navigation";
 
 
 const executorSchema = z.object({
@@ -43,9 +44,8 @@ const formSchema = z.object({
   city: z.string().min(2, "City is required."),
   state: z.string().min(2, "State is required."),
 }).refine(data => {
-    if (data.addSecondExecutor) {
-        // Only validate secondExecutor if the checkbox is checked.
-        return executorSchema.safeParse(data.secondExecutor).success;
+    if (data.addSecondExecutor && !executorSchema.safeParse(data.secondExecutor).success) {
+      return false;
     }
     return true;
 }, {
@@ -56,7 +56,8 @@ const formSchema = z.object({
 type ExecutorFormValues = z.infer<typeof formSchema>;
 
 export default function ExecutorPage() {
-  const { formData, saveAndGoTo, setDirty, loading } = useWillForm();
+  const { formData, updateWillSection, loading } = useWillForm();
+  const router = useRouter();
 
   const form = useForm<ExecutorFormValues>({
     resolver: zodResolver(formSchema),
@@ -93,34 +94,25 @@ export default function ExecutorPage() {
   const watchAddSecondExecutor = form.watch("addSecondExecutor");
   const { version, createdAt } = formData;
   const isEditing = !!version;
-
-  useEffect(() => {
-    const subscription = form.watch(() => setDirty(true));
-    return () => subscription.unsubscribe();
-  }, [form, setDirty]);
   
   useEffect(() => {
     if (!watchAddSecondExecutor) {
-        // Clear the second executor fields when the checkbox is unchecked
+        // Clear the second executor fields and errors when the checkbox is unchecked
         form.setValue('secondExecutor', {
-            fullName: "",
-            fatherName: "",
-            aadhar: "",
-            address: "",
-            email: "",
-            mobile: "",
+            fullName: "", fatherName: "", aadhar: "",
+            address: "", email: "", mobile: "",
         });
-        // Remove errors associated with the second executor
         form.clearErrors("secondExecutor");
     }
   }, [watchAddSecondExecutor, form]);
 
 
-  function onSubmit(data: ExecutorFormValues) {
+  async function onSubmit(data: ExecutorFormValues) {
     if (!data.addSecondExecutor) {
         data.secondExecutor = undefined;
     }
-    saveAndGoTo('executor', data, "/dashboard"); 
+    await updateWillSection('executor', data);
+    router.push("/dashboard"); 
   }
 
   if (loading) {
@@ -246,7 +238,7 @@ export default function ExecutorPage() {
                         <FormField control={form.control} name="secondExecutor.mobile" render={({ field }) => ( <FormItem><FormLabel>Mobile Number</FormLabel><FormControl><Input type="tel" maxLength={10} {...field} /></FormControl><FormMessage /></FormItem>)} />
                         </div>
                     </div>
-                     <FormMessage>{form.formState.errors.secondExecutor?.message}</FormMessage>
+                     <FormMessage>{form.formState.errors.secondExecutor?.root?.message}</FormMessage>
                 </div>
             )}
             
@@ -299,3 +291,5 @@ export default function ExecutorPage() {
     </div>
   );
 }
+
+    
