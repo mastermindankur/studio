@@ -43,6 +43,8 @@ export function WillDocument({ formData, id = "will-document-render" }: WillDocu
 
   const today = new Date();
 
+  const placeOfSigning = executor?.city && executor?.state ? `${executor.city}, ${executor.state}` : '[City, State]';
+
   return (
     <div id={id} className="p-12 bg-white text-black font-serif">
       <div className="text-center mb-12">
@@ -110,7 +112,7 @@ export function WillDocument({ formData, id = "will-document-render" }: WillDocu
 
 
       <p className="text-lg leading-relaxed mt-12">
-        IN WITNESS WHEREOF, I have hereunto set my hand to this, my Last Will and Testament, at [City, State] on this {format(today, "do")} day of {format(today, "MMMM, yyyy")}.
+        IN WITNESS WHEREOF, I have hereunto set my hand to this, my Last Will and Testament, at {placeOfSigning} on this {format(today, "do")} day of {format(today, "MMMM, yyyy")}.
       </p>
 
       <div className="mt-24">
@@ -144,3 +146,5 @@ export function WillDocument({ formData, id = "will-document-render" }: WillDocu
     </div>
   );
 }
+
+    

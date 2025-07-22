@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ChevronRight, ChevronLeft, UserCheck, Edit, Save, Info } from "lucide-react";
+import { ChevronRight, ChevronLeft, UserCheck, Edit, Save, Info, MapPin } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useWillForm } from "@/context/WillFormContext";
 import { useEffect } from "react";
@@ -39,6 +39,8 @@ const formSchema = z.object({
   addSecondExecutor: z.boolean().default(false).optional(),
   secondExecutor: executorSchema.optional(),
   specialInstructions: z.string().optional(),
+  city: z.string().min(2, "City is required."),
+  state: z.string().min(2, "State is required."),
 }).refine(data => {
     if (data.addSecondExecutor && !data.secondExecutor) {
         return false;
@@ -66,6 +68,8 @@ export default function ExecutorPage() {
         mobile: "",
       },
       addSecondExecutor: false,
+      city: "",
+      state: "",
     },
   });
 
@@ -199,6 +203,18 @@ export default function ExecutorPage() {
                 )}
               />
             </div>
+            
+            <Separator />
+
+             <div>
+              <h2 className="text-2xl font-semibold text-primary mb-4 font-headline flex items-center"><MapPin className="mr-2 h-6 w-6"/> Place of Signing</h2>
+                <FormDescription>This is the location where you will sign your will.</FormDescription>
+                <div className="grid md:grid-cols-2 gap-6 mt-4 p-6 border rounded-lg">
+                    <FormField control={form.control} name="city" render={({ field }) => ( <FormItem><FormLabel>City</FormLabel><FormControl><Input placeholder="e.g., Hyderabad" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="state" render={({ field }) => ( <FormItem><FormLabel>State</FormLabel><FormControl><Input placeholder="e.g., Telangana" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                </div>
+            </div>
+
 
             <div className="flex flex-col sm:flex-row justify-between gap-4">
               <Button type="button" size="lg" variant="outline" onClick={handleBack} className="w-full sm:w-auto">
@@ -217,3 +233,5 @@ export default function ExecutorPage() {
     </div>
   );
 }
+
+    

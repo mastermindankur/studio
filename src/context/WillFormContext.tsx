@@ -62,6 +62,8 @@ const initialData: WillFormData = {
       mobile: "",
     },
     addSecondExecutor: false,
+    city: "",
+    state: "",
   },
 };
 
@@ -218,3 +220,5 @@ export const useWillForm = () => {
   }
   return context;
 };
+
+    
