@@ -20,7 +20,7 @@ import { WillDocument } from "@/components/create-will/will-document";
 import { getWillSection, getWillListSection } from "../actions/will-draft";
 
 const checklistSteps = [
-    { title: "Personal Information", path: "/create-will/personal-information", icon: User, key: 'personalInfo' },
+    { title: "Personal Information", path: "/create-will/personal-information", reviewPath: "/create-will/personal-information/review", icon: User, key: 'personalInfo' },
     { title: "Family Details", path: "/create-will/family-details", icon: Users, key: 'familyDetails' },
     { title: "Your Assets", path: "/create-will/assets", icon: Landmark, key: 'assets' },
     { title: "Your Beneficiaries", path: "/create-will/beneficiaries", icon: Gift, key: 'beneficiaries' },
@@ -41,11 +41,11 @@ function isStepComplete(stepKey: string, draftData: WillFormData | null): boolea
         case 'familyDetails':
             return !!data.maritalStatus;
         case 'assets':
-            return Array.isArray(data) && data.length > 0;
+            return Array.isArray(data.assets) && data.assets.length > 0;
         case 'beneficiaries':
-             return Array.isArray(data); // Considered complete even if empty, as it's optional.
+             return Array.isArray(data.beneficiaries); // Considered complete even if empty, as it's optional.
         case 'assetAllocation':
-            return Array.isArray(data) && data.length > 0;
+            return Array.isArray(data.allocations) && data.allocations.length > 0;
         case 'executor':
             return !!data.primaryExecutor?.fullName && !!data.city && !!data.state;
         default:
@@ -75,15 +75,15 @@ function DashboardPageContent() {
                 getWillSection(user.uid, 'executor')
             ]);
             
-            const draftData = {
+            const draftData: WillFormData = {
                 personalInfo: personalInfo || initialData.personalInfo,
                 familyDetails: familyDetails || initialData.familyDetails,
-                assets: assets || initialData.assets,
-                beneficiaries: beneficiaries || initialData.beneficiaries,
-                assetAllocation: assetAllocation || initialData.assetAllocation,
+                assets: { assets: assets || initialData.assets.assets },
+                beneficiaries: { beneficiaries: beneficiaries || initialData.beneficiaries.beneficiaries },
+                assetAllocation: { allocations: assetAllocation || initialData.assetAllocation.allocations },
                 executor: executor || initialData.executor
             };
-            setDraft(draftData as WillFormData);
+            setDraft(draftData);
 
         } catch (error) {
           console.error("Error fetching will draft:", error);
@@ -98,13 +98,20 @@ function DashboardPageContent() {
     }
   }, [user, authLoading]);
   
-  const handleStepClick = (path: string) => {
+  const handleStepClick = (step: typeof checklistSteps[0]) => {
     if (draft) {
       loadWill(draft);
     } else {
       loadWill(initialData); // Load initial data if no draft exists
     }
-    router.push(path);
+
+    const isComplete = isStepComplete(step.key, draft);
+
+    if(isComplete && step.reviewPath) {
+      router.push(step.reviewPath);
+    } else {
+      router.push(step.path);
+    }
   };
   
   const handleReview = () => {
@@ -171,7 +178,7 @@ function DashboardPageContent() {
                 return (
                     <Card 
                         key={step.path} 
-                        onClick={() => handleStepClick(step.path)}
+                        onClick={() => handleStepClick(step)}
                         className="hover:shadow-xl hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col"
                     >
                         <CardHeader className="flex flex-row items-center justify-between">
@@ -185,7 +192,7 @@ function DashboardPageContent() {
                         </CardHeader>
                         <CardContent className="flex-grow flex items-end">
                              <p className="text-sm text-muted-foreground">
-                                {isComplete ? "Section completed." : "Click to start this section."}
+                                {isComplete ? "Section completed. Click to review." : "Click to start this section."}
                             </p>
                         </CardContent>
                     </Card>
@@ -221,3 +228,5 @@ export default function DashboardPage() {
         </WillFormProvider>
     )
 }
+
+    
