@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,7 +33,10 @@ export default function AssetsPage() {
     defaultValues: { assets: [] },
   });
   
-  const { fields, append, remove, update } = form.control;
+  const { fields, append, remove, update } = useFieldArray({
+    control: form.control,
+    name: "assets",
+  });
 
   useEffect(() => {
     if (!loading && formData.assets?.assets) {
@@ -55,7 +58,7 @@ export default function AssetsPage() {
         ...asset,
         id: asset.id || `asset-${Date.now()}-${index}`,
     }));
-    saveAndGoTo('assets', { assets: assetsWithIds }, "/create-will/beneficiaries");
+    saveAndGoTo('assets', { assets: assetsWithIds }, "/create-will/assets/review");
   }
 
   const handleAddNewAsset = () => {
@@ -116,11 +119,11 @@ export default function AssetsPage() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {form.watch("assets").map((asset, index) => (
-                <Card key={asset.id || index} className="overflow-hidden flex flex-col">
+              {fields.map((asset, index) => (
+                <Card key={asset.id} className="overflow-hidden flex flex-col">
                    <CardHeader className="flex flex-row items-center justify-between bg-muted/50 p-4">
                      <CardTitle className="text-lg font-semibold text-primary truncate">
-                       {asset.type}
+                       {asset.details.description || asset.type}
                      </CardTitle>
                         <div className="flex gap-2">
                             <Button type="button" variant="ghost" size="icon" className="text-primary hover:bg-primary/10" onClick={() => handleEditAsset(index)}><Edit className="h-4 w-4" /><span className="sr-only">Edit</span></Button>
@@ -129,12 +132,12 @@ export default function AssetsPage() {
                    </CardHeader>
                    <CardContent className="p-6 space-y-4 flex-grow">
                         <div>
-                            <p className="text-sm text-muted-foreground">Description</p>
-                            <p className="font-semibold truncate">{asset.details.description || "No description"}</p>
+                            <p className="text-sm text-muted-foreground">Type</p>
+                            <p className="font-semibold">{asset.type}</p>
                         </div>
                          <div>
                             <p className="text-sm text-muted-foreground">Estimated Value</p>
-                            <p className="font-semibold">₹{asset.details.value || "N/A"}</p>
+                            <p className="font-semibold">{asset.details.value ? `₹${new Intl.NumberFormat('en-IN').format(Number(asset.details.value))}` : "N/A"}</p>
                         </div>
                    </CardContent>
                 </Card>
