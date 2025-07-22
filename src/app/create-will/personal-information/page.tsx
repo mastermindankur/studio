@@ -76,7 +76,7 @@ export default function PersonalInformationPage() {
   }, [form, setDirty]);
 
   function onSubmit(data: PersonalInfoFormValues) {
-    saveAndGoTo('personalInfo', data, "/create-will/family-details");
+    saveAndGoTo('personalInfo', data, "/create-will/personal-information/review");
   }
 
   const today = new Date();

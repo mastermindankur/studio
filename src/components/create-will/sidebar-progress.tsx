@@ -1,8 +1,8 @@
+
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { useWillForm } from "@/context/WillFormContext";
 import {
   User,
   Users,
@@ -39,7 +39,7 @@ export function SidebarProgress() {
             <LayoutDashboard className="mr-2 h-4 w-4"/> Back to Dashboard
         </Button>
       {steps.map((step) => {
-        const isCurrent = pathname === step.path;
+        const isCurrent = pathname.startsWith(step.path);
         const Icon = step.icon;
 
         return (
