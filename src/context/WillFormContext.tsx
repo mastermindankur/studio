@@ -72,6 +72,14 @@ export const initialData: WillFormData = {
       mobile: "",
     },
     addSecondExecutor: false,
+    secondExecutor: {
+        fullName: "",
+        fatherName: "",
+        aadhar: "",
+        address: "",
+        email: "",
+        mobile: "",
+    },
     city: "",
     state: "",
   },
@@ -129,7 +137,7 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
                 getWillSection(user.uid, 'familyDetails'),
                 getWillListSection(user.uid, 'assets'),
                 getWillListSection(user.uid, 'beneficiaries'),
-                getWillListSection(user.uid, 'assetAllocations'),
+                getWillSection(user.uid, 'assetAllocation'), // assetAllocation is not a list
                 getWillSection(user.uid, 'executor'),
             ]);
 
@@ -139,7 +147,7 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
                 familyDetails: familyDetails || initialData.familyDetails,
                 assets: { assets: assets.length > 0 ? assets : initialData.assets.assets },
                 beneficiaries: { beneficiaries: beneficiaries.length > 0 ? beneficiaries : initialData.beneficiaries.beneficiaries },
-                assetAllocation: { allocations: assetAllocation.length > 0 ? assetAllocation : initialData.assetAllocation.allocations },
+                assetAllocation: assetAllocation || initialData.assetAllocation,
                 executor: executor || initialData.executor,
             };
             setFormData(loadedData);
@@ -166,8 +174,7 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
 
     if (user) {
         try {
-            const collectionName = section === 'assetAllocation' ? 'assetAllocations' : section;
-            await updateWillSection(user.uid, collectionName, currentData);
+            await updateWillSection(user.uid, section, currentData);
             toast({
                 title: "Progress Saved",
                 description: "Your information has been successfully saved.",
@@ -201,8 +208,8 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
 
   const clearForm = async () => {
     if (user) {
-        const sections = ['personalInfo', 'familyDetails', 'executor'];
-        const listSections = ['assets', 'beneficiaries', 'assetAllocations'];
+        const sections = ['personalInfo', 'familyDetails', 'executor', 'assetAllocation'];
+        const listSections = ['assets', 'beneficiaries'];
 
         for(const section of sections) {
             await updateWillSection(user.uid, section, initialData[section as keyof typeof initialData]);
