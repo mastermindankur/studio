@@ -30,6 +30,8 @@ export function SidebarProgress() {
   const router = useRouter();
 
   const handleStepClick = (path: string) => {
+    // This logic should be handled by the dashboard now.
+    // The sidebar just navigates.
     router.push(path);
   };
   
@@ -39,6 +41,8 @@ export function SidebarProgress() {
             <LayoutDashboard className="mr-2 h-4 w-4"/> Back to Dashboard
         </Button>
       {steps.map((step) => {
+        // A step is active if the current path starts with the step's path.
+        // This handles review pages as well, e.g., /create-will/personal-information/review
         const isCurrent = pathname.startsWith(step.path);
         const Icon = step.icon;
 

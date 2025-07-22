@@ -77,7 +77,7 @@ export default function FamilyDetailsPage() {
   }, [watchMaritalStatus, form]);
 
   function onSubmit(data: FamilyDetailsFormValues) {
-    saveAndGoTo('familyDetails', data, "/dashboard");
+    saveAndGoTo('familyDetails', data, "/create-will/family-details/review");
   }
 
   return (
@@ -106,7 +106,7 @@ export default function FamilyDetailsPage() {
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
                       className="grid grid-cols-2 md:grid-cols-4 gap-4"
                     >
                       {["Married", "Unmarried", "Divorced", "Widowed"].map((status) => (
@@ -185,7 +185,7 @@ export default function FamilyDetailsPage() {
 
             <div className="flex flex-col sm:flex-row justify-end gap-4">
               <Button type="submit" size="lg" className="w-full sm:w-auto">
-                Save &amp; Go to Dashboard <ChevronRight className="ml-2 h-5 w-5" />
+                Save & Continue <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
           </form>

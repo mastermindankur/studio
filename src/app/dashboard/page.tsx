@@ -21,7 +21,7 @@ import { getWillSection, getWillListSection } from "../actions/will-draft";
 
 const checklistSteps = [
     { title: "Personal Information", path: "/create-will/personal-information", reviewPath: "/create-will/personal-information/review", icon: User, key: 'personalInfo' },
-    { title: "Family Details", path: "/create-will/family-details", icon: Users, key: 'familyDetails' },
+    { title: "Family Details", path: "/create-will/family-details", reviewPath: "/create-will/family-details/review", icon: Users, key: 'familyDetails' },
     { title: "Your Assets", path: "/create-will/assets", icon: Landmark, key: 'assets' },
     { title: "Your Beneficiaries", path: "/create-will/beneficiaries", icon: Gift, key: 'beneficiaries' },
     { title: "Asset Allocation", path: "/create-will/asset-allocation", icon: PieChart, key: 'assetAllocation' },
@@ -38,7 +38,9 @@ function isStepComplete(stepKey: string, draftData: WillFormData | null): boolea
         case 'personalInfo':
             return !!data.fullName && !!data.dob && !!data.aadhar && !!data.gender && !!data.fatherHusbandName && !!data.religion && !!data.occupation && !!data.address && !!data.email && !!data.mobile;
         case 'familyDetails':
-            return !!data.maritalStatus;
+            if (!data.maritalStatus) return false;
+            if (data.maritalStatus === 'married' && !data.spouseName) return false;
+            return true;
         case 'assets':
             return Array.isArray(data.assets) && data.assets.length > 0;
         case 'beneficiaries':
