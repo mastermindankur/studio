@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
 } from "@/components/ui/form";
-import { ChevronRight, PlusCircle, Trash2, Landmark, Edit } from "lucide-react";
+import { ChevronRight, PlusCircle, Trash2, Edit, Landmark, Home, Car, AreaChart, ShieldCheck, Gem } from "lucide-react";
 import { useWillForm } from "@/context/WillFormContext";
 import { useEffect, useState } from "react";
 import { Alert, AlertTitle, AlertDescription as AlertDesc } from "@/components/ui/alert";
@@ -15,8 +15,9 @@ import { Info } from "lucide-react";
 import { format } from "date-fns";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { AddAssetModal } from "@/components/create-will/add-asset-modal";
-import { assetSchema, type Asset } from "@/lib/schemas/asset-schema";
+import { assetFormSchema as assetSchema, type Asset } from "@/lib/schemas/asset-schema";
 import { Skeleton } from "@/components/ui/skeleton";
+import React from "react";
 
 const assetsFormSchema = z.object({
   assets: z.array(assetSchema),
@@ -24,6 +25,15 @@ const assetsFormSchema = z.object({
 
 type AssetsFormValues = z.infer<typeof assetsFormSchema>;
 
+const assetIcons: { [key: string]: React.ElementType } = {
+  "Bank Account": Landmark,
+  "Real Estate": Home,
+  "Vehicle": Car,
+  "Stocks/Investments": AreaChart,
+  "Insurance Policy": ShieldCheck,
+  "Jewelry/Valuables": Gem,
+  "Other": PlusCircle,
+};
 
 export default function AssetsPage() {
   const { formData, saveAndGoTo, setDirty, loading } = useWillForm();
@@ -143,15 +153,20 @@ export default function AssetsPage() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {fields.map((asset, index) => (
+              {fields.map((asset, index) => {
+                const Icon = assetIcons[asset.type] || PlusCircle;
+                return (
                 <Card key={asset.id} className="overflow-hidden flex flex-col">
                    <CardHeader className="flex flex-row items-center justify-between bg-muted/50 p-4">
-                     <CardTitle className="text-lg font-semibold text-primary truncate">
-                       {asset.details?.description || asset.type}
-                     </CardTitle>
-                        <div className="flex gap-2">
-                            <Button type="button" variant="ghost" size="icon" className="text-primary hover:bg-primary/10" onClick={() => handleEditAsset(index)}><Edit className="h-4 w-4" /><span className="sr-only">Edit</span></Button>
-                            <Button type="button" variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" onClick={() => handleRemoveAsset(index)}><Trash2 className="h-4 w-4" /><span className="sr-only">Remove</span></Button>
+                     <div className="flex items-center gap-3 truncate">
+                        <Icon className="h-5 w-5 text-primary flex-shrink-0" />
+                        <CardTitle className="text-lg font-semibold text-primary truncate">
+                            {asset.details?.description || asset.type}
+                        </CardTitle>
+                     </div>
+                        <div className="flex gap-1">
+                            <Button type="button" variant="ghost" size="icon" className="text-primary hover:bg-primary/10 h-8 w-8" onClick={() => handleEditAsset(index)}><Edit className="h-4 w-4" /><span className="sr-only">Edit</span></Button>
+                            <Button type="button" variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 h-8 w-8" onClick={() => handleRemoveAsset(index)}><Trash2 className="h-4 w-4" /><span className="sr-only">Remove</span></Button>
                         </div>
                    </CardHeader>
                    <CardContent className="p-6 space-y-4 flex-grow">
@@ -165,7 +180,8 @@ export default function AssetsPage() {
                         </div>
                    </CardContent>
                 </Card>
-              ))}
+                )
+              })}
                <Card className="border-dashed border-2 hover:border-primary hover:text-primary transition-colors duration-200 flex items-center justify-center min-h-[250px]">
                 <Button
                   type="button"
