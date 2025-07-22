@@ -132,6 +132,7 @@ export function AddAssetModal({ isOpen, onClose, onSave, assetData }: AddAssetMo
       } else {
         form.reset(defaultValues);
       }
+      // Set isMounted to true only after the initial reset when the modal opens.
       isMounted.current = true;
     } else {
       isMounted.current = false;
@@ -139,29 +140,35 @@ export function AddAssetModal({ isOpen, onClose, onSave, assetData }: AddAssetMo
   }, [assetData, isOpen, form]);
   
   useEffect(() => {
-    if (!isMounted.current || !isOpen) return;
+    // This effect should ONLY run for user-initiated type changes, not on initial load.
+    if (!isMounted.current) return;
 
-    const subscription = form.watch((value, { name }) => {
-      if (name === 'type') {
+    const subscription = form.watch((value, { name, type }) => {
+       // Only react to changes in the 'type' field
+      if (name === 'type' && type === 'change') {
         const currentDetails = form.getValues('details');
-        const newDetails = {
-            ...defaultValues.details,
+        
+        // Start with a clean slate for details, only preserving common fields
+        const newDetails: any = {
+            ...defaultValues.details, // Ensures all fields are present to avoid form errors
             description: currentDetails?.description || "",
             value: currentDetails?.value || "",
         };
 
+        // Set new defaults based on the selected type
         switch(value.type) {
             case "Bank Account": newDetails.accountType = 'Savings'; break;
             case "Real Estate": newDetails.propertyType = 'Flat/Apartment'; break;
             case "Vehicle": newDetails.vehicleType = 'Car'; break;
         }
         
+        // Reset the entire details object to the new clean state
         form.setValue('details', newDetails, { shouldValidate: true, shouldDirty: true });
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [isOpen, form]);
+  }, [form]);
 
 
   const onSubmit = (data: Asset) => {
@@ -385,4 +392,3 @@ export function AddAssetModal({ isOpen, onClose, onSave, assetData }: AddAssetMo
     </Dialog>
   );
 }
-
