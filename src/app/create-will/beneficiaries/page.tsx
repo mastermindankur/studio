@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { AddBeneficiaryModal } from "@/components/create-will/add-beneficiary-modal";
 import { beneficiaryFormSchema as beneficiarySchema, type Beneficiary } from "@/lib/schemas/beneficiary-schema";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useRouter } from "next/navigation";
 
 const beneficiariesFormSchema = z.object({
   beneficiaries: z.array(beneficiarySchema),
@@ -23,9 +24,10 @@ const beneficiariesFormSchema = z.object({
 type BeneficiariesFormValues = z.infer<typeof beneficiariesFormSchema>;
 
 export default function BeneficiariesPage() {
-  const { formData, saveAndGoTo, setDirty, loading } = useWillForm();
+  const { formData, loading, addBeneficiary, updateBeneficiary, removeBeneficiary } = useWillForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBeneficiary, setEditingBeneficiary] = useState<Beneficiary | null>(null);
+  const router = useRouter();
 
   const form = useForm<BeneficiariesFormValues>({
     defaultValues: { beneficiaries: [] },
@@ -34,6 +36,7 @@ export default function BeneficiariesPage() {
   const { fields, append, remove, update } = useFieldArray({
     control: form.control,
     name: "beneficiaries",
+    keyName: "formId"
   });
 
   useEffect(() => {
@@ -45,17 +48,9 @@ export default function BeneficiariesPage() {
   const { version, createdAt, familyDetails } = formData;
   const isEditing = !!version;
 
-  useEffect(() => {
-    const subscription = form.watch(() => setDirty(true));
-    return () => subscription.unsubscribe();
-  }, [form, setDirty]);
-
   function onSubmit(data: BeneficiariesFormValues) {
-    const beneficiariesWithIds = data.beneficiaries.map((ben, index) => ({
-      ...ben,
-      id: ben.id || `ben-${Date.now()}-${index}`,
-    }));
-    saveAndGoTo('beneficiaries', { beneficiaries: beneficiariesWithIds }, "/dashboard");
+    // This is now purely for navigation
+    router.push("/create-will/asset-allocation");
   }
 
   const handleAddNewBeneficiary = () => {
@@ -64,25 +59,34 @@ export default function BeneficiariesPage() {
   };
 
   const handleEditBeneficiary = (index: number) => {
-    setEditingBeneficiary({ ...form.getValues().beneficiaries[index], index });
+    const beneficiaryToEdit = form.getValues().beneficiaries[index];
+    setEditingBeneficiary({ ...beneficiaryToEdit, index });
     setIsModalOpen(true);
   };
 
-  const handleSaveBeneficiary = (beneficiary: Beneficiary) => {
-    if (beneficiary.index !== undefined) {
+  const handleSaveBeneficiary = async (beneficiary: Beneficiary) => {
+    if (beneficiary.index !== undefined && beneficiary.id) {
+      // This is an update
+      await updateBeneficiary(beneficiary); // This now saves to DB
       const { index, ...beneficiaryData } = beneficiary;
       update(index, beneficiaryData);
     } else {
-      append(beneficiary);
+      // This is a new beneficiary
+      const newId = await addBeneficiary(beneficiary); // This now saves to DB and returns an ID
+      if (newId) {
+        append({ ...beneficiary, id: newId });
+      }
     }
-    setDirty(true);
     setIsModalOpen(false);
     setEditingBeneficiary(null);
   };
 
-  const handleRemoveBeneficiary = (index: number) => {
-    remove(index);
-    setDirty(true);
+  const handleRemoveBeneficiary = async (index: number) => {
+    const beneficiaryId = form.getValues().beneficiaries[index].id;
+    if (beneficiaryId) {
+      await removeBeneficiary(beneficiaryId); // This now deletes from DB
+      remove(index);
+    }
   };
 
   if (loading) {
@@ -163,7 +167,7 @@ export default function BeneficiariesPage() {
           <Info className="h-4 w-4" />
           <AlertTitle>Add Other Beneficiaries</AlertTitle>
           <AlertDescription>
-            You can add anyone else you wish to include (like friends, other relatives, or charities) below.
+            You can add anyone else you wish to include (like friends, other relatives, or charities) below. Your changes are saved automatically.
           </AlertDescription>
         </Alert>
 
@@ -171,7 +175,7 @@ export default function BeneficiariesPage() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {fields.map((beneficiary, index) => (
-                    <Card key={beneficiary.id} className="overflow-hidden flex flex-col">
+                    <Card key={beneficiary.formId} className="overflow-hidden flex flex-col">
                         <CardHeader className="flex flex-row items-center justify-between bg-muted/50 p-4">
                             <CardTitle className="text-base font-semibold text-primary truncate flex items-center gap-2">
                                 <Gift className="h-5 w-5 flex-shrink-0" />
@@ -205,7 +209,7 @@ export default function BeneficiariesPage() {
 
             <div className="flex flex-col sm:flex-row justify-end gap-4 border-t pt-6 mt-6">
               <Button type="submit" size="lg" className="w-full sm:w-auto">
-                Save & Continue <ChevronRight className="ml-2 h-5 w-5" />
+                Continue to Asset Allocation <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
           </form>

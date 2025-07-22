@@ -7,6 +7,7 @@ import { useAuth } from './AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { getWillSection, updateWillSection, getWillListSection, addWillListItem, updateWillListItem, removeWillListItem } from '@/app/actions/will-draft';
 import { type Asset } from '@/lib/schemas/asset-schema';
+import { type Beneficiary } from '@/lib/schemas/beneficiary-schema';
 
 
 // Define the shape of the entire form data
@@ -17,7 +18,7 @@ export interface WillFormData {
   personalInfo: any;
   familyDetails: any;
   assets: { assets: Asset[] };
-  beneficiaries: any;
+  beneficiaries: { beneficiaries: Beneficiary[] };
   assetAllocation: any;
   executor: any;
 }
@@ -34,6 +35,9 @@ interface WillFormContextType {
   addAsset: (asset: Asset) => Promise<string | undefined>;
   updateAsset: (asset: Asset) => Promise<void>;
   removeAsset: (assetId: string) => Promise<void>;
+  addBeneficiary: (beneficiary: Beneficiary) => Promise<string | undefined>;
+  updateBeneficiary: (beneficiary: Beneficiary) => Promise<void>;
+  removeBeneficiary: (beneficiaryId: string) => Promise<void>;
 }
 
 export const initialData: WillFormData = {
@@ -269,9 +273,69 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const addBeneficiary = async (beneficiary: Beneficiary): Promise<string | undefined> => {
+    if (!user) {
+      toast({ variant: "destructive", title: "Not Authenticated", description: "You must be logged in to add a beneficiary." });
+      return;
+    }
+    const { id, index, ...beneficiaryData } = beneficiary;
+    const result = await addWillListItem(user.uid, 'beneficiaries', beneficiaryData);
+    if (result.success && result.id) {
+      toast({ title: "Beneficiary Added", description: "The beneficiary has been saved." });
+      setFormData(prev => ({
+        ...prev,
+        beneficiaries: {
+          beneficiaries: [...prev.beneficiaries.beneficiaries, { ...beneficiary, id: result.id! }]
+        }
+      }));
+      return result.id;
+    } else {
+      toast({ variant: "destructive", title: "Save Failed", description: result.message || "Could not save the beneficiary." });
+    }
+  };
+  
+  const updateBeneficiary = async (beneficiary: Beneficiary): Promise<void> => {
+    if (!user || !beneficiary.id) {
+      toast({ variant: "destructive", title: "Error", description: "Cannot update beneficiary without an ID." });
+      return;
+    }
+    const { id, index, ...beneficiaryData } = beneficiary;
+    const result = await updateWillListItem('beneficiaries', id, beneficiaryData);
+    if (result.success) {
+      toast({ title: "Beneficiary Updated", description: "The beneficiary has been updated." });
+      setFormData(prev => ({
+        ...prev,
+        beneficiaries: {
+          beneficiaries: prev.beneficiaries.beneficiaries.map(b => b.id === id ? { ...b, ...beneficiaryData } : b)
+        }
+      }));
+    } else {
+      toast({ variant: "destructive", title: "Update Failed", description: result.message || "Could not update beneficiary." });
+    }
+  };
+  
+  const removeBeneficiary = async (beneficiaryId: string): Promise<void> => {
+    if (!user) {
+      toast({ variant: "destructive", title: "Not Authenticated", description: "You must be logged in to remove a beneficiary." });
+      return;
+    }
+    const result = await removeWillListItem('beneficiaries', beneficiaryId);
+    if (result.success) {
+      toast({ title: "Beneficiary Removed", description: "The beneficiary has been removed." });
+      setFormData(prev => ({
+        ...prev,
+        beneficiaries: {
+          beneficiaries: prev.beneficiaries.beneficiaries.filter(b => b.id !== beneficiaryId)
+        }
+      }));
+    } else {
+      toast({ variant: "destructive", title: "Removal Failed", description: result.message || "Could not remove beneficiary." });
+    }
+  };
+
 
   return (
-    <WillFormContext.Provider value={{ formData, setFormData, saveAndGoTo, setDirty, clearForm, loadWill, loading, addAsset, updateAsset, removeAsset }}>
+    <WillFormContext.Provider value={{ formData, setFormData, saveAndGoTo, setDirty, clearForm, loadWill, loading, addAsset, updateAsset, removeAsset, addBeneficiary, updateBeneficiary, removeBeneficiary }}>
       {children}
     </WillFormContext.Provider>
   );
