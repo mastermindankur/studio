@@ -67,6 +67,17 @@ const defaultValues: Asset = {
   },
 };
 
+const descriptionPlaceholders: { [key: string]: string } = {
+  "Bank Account": "e.g., HDFC Savings A/C, Kondapur",
+  "Real Estate": "e.g., 2BHK Flat at My Home Bhooja",
+  "Vehicle": "e.g., Honda City, TS09AB1234",
+  "Stocks/Investments": "e.g., Zerodha Demat Account",
+  "Insurance Policy": "e.g., LIC Jeevan Anand Policy",
+  "Jewelry/Valuables": "e.g., Gold necklace in locker",
+  "Other": "e.g., Loan to John Doe"
+};
+
+
 export function AddAssetModal({ isOpen, onClose, onSave, assetData }: AddAssetModalProps) {
   const form = useForm<Asset>({
     resolver: zodResolver(assetSchema),
@@ -85,22 +96,15 @@ export function AddAssetModal({ isOpen, onClose, onSave, assetData }: AddAssetMo
 
 
   useEffect(() => {
-    // When assetType changes, reset the form completely, only preserving the new type
-    if (isOpen) {
+    if (isOpen && !assetData) {
         const currentId = form.getValues('id');
         const currentIndex = form.getValues('index');
-
-        // Check if we are editing an existing unsaved asset vs creating a new one
-        const isNewUnsavedAsset = !assetData;
-
-        if (isNewUnsavedAsset) {
-             form.reset({
-                ...defaultValues, // Start with a clean slate for all details
-                id: currentId,
-                index: currentIndex,
-                type: assetType, // Keep the new type
-            });
-        }
+        form.reset({
+            ...defaultValues,
+            id: currentId,
+            index: currentIndex,
+            type: assetType,
+        });
     }
   }, [assetType, form, isOpen, assetData]);
 
@@ -114,6 +118,8 @@ export function AddAssetModal({ isOpen, onClose, onSave, assetData }: AddAssetMo
     onSave(finalData);
   };
   
+  const briefDescriptionPlaceholder = descriptionPlaceholders[assetType] || "A short summary to identify this asset";
+
   const renderAssetFields = () => {
     switch(assetType) {
         case 'Bank Account':
@@ -279,8 +285,8 @@ export function AddAssetModal({ isOpen, onClose, onSave, assetData }: AddAssetMo
                         render={({ field }) => (
                             <FormItem>
                             <FormLabel>Brief Description</FormLabel>
-                            <FormDescription>A short summary to identify this asset on the dashboard.</FormDescription>
-                            <FormControl><Input placeholder="e.g., HDFC Savings Account, Kondapur" {...field} /></FormControl>
+                            <FormDescription>A short, recognizable summary for this asset.</FormDescription>
+                            <FormControl><Input placeholder={briefDescriptionPlaceholder} {...field} /></FormControl>
                             <FormMessage />
                             </FormItem>
                         )}
