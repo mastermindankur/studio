@@ -1,33 +1,20 @@
 
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFieldArray } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { ChevronRight, PlusCircle, Trash2, Gift, Users, Info } from "lucide-react";
+import { Form } from "@/components/ui/form";
+import { ChevronRight, PlusCircle, Trash2, Edit, Gift, Users, Info } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useWillForm } from "@/context/WillFormContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
-const beneficiarySchema = z.object({
-  id: z.string().optional(),
-  name: z.string().min(2, "Beneficiary's name must be at least 2 characters."),
-  relationship: z.string().min(2, "Relationship must be at least 2 characters."),
-});
+import { AddBeneficiaryModal } from "@/components/create-will/add-beneficiary-modal";
+import { beneficiaryFormSchema as beneficiarySchema, type Beneficiary } from "@/lib/schemas/beneficiary-schema";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const beneficiariesFormSchema = z.object({
   beneficiaries: z.array(beneficiarySchema),
@@ -37,24 +24,24 @@ type BeneficiariesFormValues = z.infer<typeof beneficiariesFormSchema>;
 
 export default function BeneficiariesPage() {
   const { formData, saveAndGoTo, setDirty, loading } = useWillForm();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingBeneficiary, setEditingBeneficiary] = useState<Beneficiary | null>(null);
 
   const form = useForm<BeneficiariesFormValues>({
-    resolver: zodResolver(beneficiariesFormSchema),
-    defaultValues: { beneficiaries: formData.beneficiaries?.beneficiaries || [] },
+    defaultValues: { beneficiaries: [] },
+  });
+
+  const { fields, append, remove, update } = useFieldArray({
+    control: form.control,
+    name: "beneficiaries",
   });
 
   useEffect(() => {
     if (!loading && formData.beneficiaries?.beneficiaries) {
-        form.reset({ beneficiaries: formData.beneficiaries.beneficiaries });
+      form.reset({ beneficiaries: formData.beneficiaries.beneficiaries });
     }
   }, [loading, formData.beneficiaries, form]);
 
-
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-    name: "beneficiaries",
-  });
-  
   const { version, createdAt, familyDetails } = formData;
   const isEditing = !!version;
 
@@ -65,23 +52,81 @@ export default function BeneficiariesPage() {
 
   function onSubmit(data: BeneficiariesFormValues) {
     const beneficiariesWithIds = data.beneficiaries.map((ben, index) => ({
-        ...ben,
-        id: ben.id || `ben-${Date.now()}-${index}`,
+      ...ben,
+      id: ben.id || `ben-${Date.now()}-${index}`,
     }));
     saveAndGoTo('beneficiaries', { beneficiaries: beneficiariesWithIds }, "/dashboard");
   }
 
+  const handleAddNewBeneficiary = () => {
+    setEditingBeneficiary(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEditBeneficiary = (index: number) => {
+    setEditingBeneficiary({ ...form.getValues().beneficiaries[index], index });
+    setIsModalOpen(true);
+  };
+
+  const handleSaveBeneficiary = (beneficiary: Beneficiary) => {
+    if (beneficiary.index !== undefined) {
+      const { index, ...beneficiaryData } = beneficiary;
+      update(index, beneficiaryData);
+    } else {
+      append(beneficiary);
+    }
+    setDirty(true);
+    setIsModalOpen(false);
+    setEditingBeneficiary(null);
+  };
+
+  const handleRemoveBeneficiary = (index: number) => {
+    remove(index);
+    setDirty(true);
+  };
+
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto">
+         <div className="bg-card p-6 sm:p-8 rounded-lg shadow-lg">
+           <Skeleton className="h-12 w-12 mx-auto mb-2" />
+           <Skeleton className="h-9 w-1/2 mx-auto mb-8" />
+           <Skeleton className="h-40 w-full mb-8" />
+           <Skeleton className="h-20 w-full mb-8" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[...Array(2)].map((_, i) => (
+                <Skeleton key={i} className="h-48 w-full" />
+                ))}
+                <Skeleton className="h-48 w-full border-dashed border-2" />
+            </div>
+           <div className="flex justify-end mt-8">
+            <Skeleton className="h-11 w-44" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-6xl mx-auto">
+       <AddBeneficiaryModal
+        isOpen={isModalOpen}
+        onClose={() => {
+            setIsModalOpen(false);
+            setEditingBeneficiary(null);
+        }}
+        onSave={handleSaveBeneficiary}
+        beneficiaryData={editingBeneficiary}
+      />
       <div className="bg-card p-6 sm:p-8 rounded-lg shadow-lg">
         <div className="text-center mb-8">
-            <Gift className="w-12 h-12 text-primary mx-auto mb-2" />
-            <h1 className="text-3xl font-bold text-primary font-headline">Your Beneficiaries</h1>
-            {isEditing && (
-              <p className="text-foreground/80 mt-2">
-                Editing Will Version {version} (created on {createdAt ? format(new Date(createdAt), "PPP") : 'N/A'})
-              </p>
-            )}
+          <Gift className="w-12 h-12 text-primary mx-auto mb-2" />
+          <h1 className="text-3xl font-bold text-primary font-headline">Your Beneficiaries</h1>
+          {isEditing && (
+            <p className="text-foreground/80 mt-2">
+              Editing Will Version {version} (created on {createdAt ? format(new Date(createdAt), "PPP") : 'N/A'})
+            </p>
+          )}
         </div>
 
         <Card className="mb-8 bg-muted/30">
@@ -90,7 +135,7 @@ export default function BeneficiariesPage() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-4">
-              These family members are automatically included from the 'Family Details' step. You can allocate assets to them in the next step. They are not editable here.
+              These family members are from the 'Family Details' step. They are automatically available for asset allocation.
             </p>
             <div className="space-y-3">
               {familyDetails?.spouseName && (
@@ -108,7 +153,7 @@ export default function BeneficiariesPage() {
                 )
               ))}
               {(!familyDetails?.spouseName || familyDetails.spouseName.trim() === '') && (!familyDetails?.children || familyDetails.children.every(c => !c.name || c.name.trim() === '')) && (
-                 <p className="text-sm text-center text-muted-foreground py-4">No primary family members were listed. You can add them in the 'Family Details' section.</p>
+                 <p className="text-sm text-center text-muted-foreground py-4">No primary family members listed. Add them in 'Family Details'.</p>
               )}
             </div>
           </CardContent>
@@ -116,7 +161,7 @@ export default function BeneficiariesPage() {
         
         <Alert className="mb-8">
           <Info className="h-4 w-4" />
-          <AlertTitle>Add Other Beneficiaries (Optional)</AlertTitle>
+          <AlertTitle>Add Other Beneficiaries</AlertTitle>
           <AlertDescription>
             You can add anyone else you wish to include (like friends, other relatives, or charities) below.
           </AlertDescription>
@@ -124,66 +169,38 @@ export default function BeneficiariesPage() {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          
-            <div className="space-y-6">
-              {fields.map((field, index) => (
-                <Card key={field.id} className="p-6 relative overflow-visible">
-                  <CardHeader className="p-0 mb-4">
-                    <CardTitle className="text-lg">Beneficiary #{index + 1}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-0">
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <FormField
-                        control={form.control}
-                        name={`beneficiaries.${index}.name`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Full Name or Entity</FormLabel>
-                            <FormControl>
-                              <Input placeholder="e.g., Jane Doe or 'Hope Foundation'" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name={`beneficiaries.${index}.relationship`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Relationship</FormLabel>
-                            <FormControl>
-                              <Input placeholder="e.g., Friend, Nephew, Charity" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </CardContent>
-                   <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="absolute top-4 right-4 text-destructive hover:bg-destructive/10"
-                      onClick={() => remove(index)}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {fields.map((beneficiary, index) => (
+                    <Card key={beneficiary.id} className="overflow-hidden flex flex-col">
+                        <CardHeader className="flex flex-row items-center justify-between bg-muted/50 p-4">
+                            <CardTitle className="text-lg font-semibold text-primary truncate">
+                                {beneficiary.name}
+                            </CardTitle>
+                            <div className="flex gap-1">
+                                <Button type="button" variant="ghost" size="icon" className="text-primary hover:bg-primary/10 h-8 w-8" onClick={() => handleEditBeneficiary(index)}><Edit className="h-4 w-4" /><span className="sr-only">Edit</span></Button>
+                                <Button type="button" variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 h-8 w-8" onClick={() => handleRemoveBeneficiary(index)}><Trash2 className="h-4 w-4" /><span className="sr-only">Remove</span></Button>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="p-6 flex-grow">
+                             <div>
+                                <p className="text-sm text-muted-foreground">Relationship</p>
+                                <p className="font-semibold">{beneficiary.relationship}</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
+                 <Card className="border-dashed border-2 hover:border-primary hover:text-primary transition-colors duration-200 flex items-center justify-center min-h-[170px]">
+                    <Button
+                    type="button"
+                    variant="ghost"
+                    className="w-full h-full text-lg"
+                    onClick={handleAddNewBeneficiary}
                     >
-                      <Trash2 className="h-4 w-4" />
-                      <span className="sr-only">Remove beneficiary</span>
+                    <PlusCircle className="mr-2 h-6 w-6" />
+                    Add Beneficiary
                     </Button>
                 </Card>
-              ))}
             </div>
-            
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => append({ name: "", relationship: "" })}
-            >
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Add Beneficiary
-            </Button>
 
             <div className="flex flex-col sm:flex-row justify-end gap-4 border-t pt-6 mt-6">
               <Button type="submit" size="lg" className="w-full sm:w-auto">
