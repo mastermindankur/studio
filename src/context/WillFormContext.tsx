@@ -6,6 +6,8 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from './AuthContext';
 import { updateWill } from '@/app/actions/will';
 import { useToast } from '@/hooks/use-toast';
+import { updateWillDraft } from '@/app/actions/will-draft';
+
 
 // Define the shape of the entire form data
 export interface WillFormData {
@@ -30,7 +32,7 @@ interface WillFormContextType {
   loadWill: (willData: any) => void;
 }
 
-const initialData: WillFormData = {
+export const initialData: WillFormData = {
   personalInfo: {
     fullName: "",
     fatherHusbandName: "",
@@ -41,16 +43,16 @@ const initialData: WillFormData = {
     mobile: "",
   },
   familyDetails: {
-    children: [{ name: "" }],
+    children: [],
   },
   assets: {
-    assets: [{ type: "", description: "", value: "" }],
+    assets: [],
   },
   beneficiaries: {
-    beneficiaries: [{ name: "", relationship: "" }],
+    beneficiaries: [],
   },
   assetAllocation: {
-    allocations: [{ assetId: "", beneficiaryId: "", percentage: 100 }],
+    allocations: [],
   },
   executor: {
     primaryExecutor: {
@@ -99,41 +101,9 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname();
   const [isDirty, setDirty] = useState(false);
   const { user, loading: authLoading } = useAuth();
-  const [storageKey, setStorageKey] = useState<string | null>(null);
   const { toast } = useToast();
 
-  useEffect(() => {
-    if (user) {
-      setStorageKey(`${WILL_FORM_STORAGE_KEY_PREFIX}${user.uid}`);
-    } else {
-      setStorageKey(null);
-    }
-  }, [user]);
-
   const [formData, setFormData] = useState<WillFormData>(initialData);
-
-  useEffect(() => {
-    if (storageKey) {
-        if (typeof window === 'undefined') {
-          return;
-        }
-        try {
-          const savedData = window.localStorage.getItem(storageKey);
-          setFormData(savedData ? JSON.parse(savedData, (key, value) => {
-            if ((key === 'dob' || key === 'createdAt') && typeof value === 'string') {
-              return new Date(value);
-            }
-            return value;
-          }) : initialData);
-        } catch (error) {
-          console.error("Error reading from localStorage", error);
-          setFormData(initialData);
-        }
-    } else {
-        setFormData(initialData);
-    }
-  }, [storageKey]);
-
 
   const getStepKey = (path: string): keyof Omit<WillFormData, 'willId' | 'version' | 'createdAt'> | null => {
     if (path.includes('personal-information')) return 'personalInfo';
@@ -145,16 +115,6 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
     return null;
   };
 
-  const saveToLocalStorage = (data: WillFormData) => {
-     if (storageKey) {
-        try {
-            window.localStorage.setItem(storageKey, JSON.stringify(data));
-        } catch (error) {
-            console.error("Error writing to localStorage", error);
-        }
-     }
-  }
-
   const saveAndGoTo = async (currentStepData: any, path: string) => {
     const stepKey = getStepKey(pathname);
     let updatedData = { ...formData };
@@ -163,8 +123,16 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
     }
     
     setFormData(updatedData);
-    saveToLocalStorage(updatedData);
     setDirty(false);
+
+    if (user) {
+        try {
+             await updateWillDraft(user.uid, updatedData);
+        } catch (e) {
+            console.error("Could not save draft to firestore", e);
+             toast({ variant: "destructive", title: "Save Failed", description: "Could not save your progress." });
+        }
+    }
 
     // If exiting to dashboard while editing an existing will, update it in Firestore.
     if (path === '/dashboard' && updatedData.willId && user) {
@@ -196,14 +164,10 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
     // Deep merge existing will data with the initial structure to ensure all keys are present
     const dataToLoad = mergeDeep(initialData, willData);
     setFormData(dataToLoad);
-    saveToLocalStorage(dataToLoad);
   };
 
   const clearForm = () => {
     setFormData(initialData);
-    if (storageKey && typeof window !== 'undefined') {
-      window.localStorage.removeItem(storageKey);
-    }
   };
 
   return (
