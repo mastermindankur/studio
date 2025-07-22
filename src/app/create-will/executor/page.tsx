@@ -23,6 +23,7 @@ import { useWillForm } from "@/context/WillFormContext";
 import { useEffect } from "react";
 import { Alert, AlertTitle, AlertDescription as AlertDesc } from "@/components/ui/alert";
 import { format } from "date-fns";
+import { Skeleton } from "@/components/ui/skeleton";
 
 
 const executorSchema = z.object({
@@ -98,7 +99,7 @@ export default function ExecutorPage() {
   }, [form, setDirty]);
   
   useEffect(() => {
-    if (watchAddSecondExecutor && !form.getValues().secondExecutor) {
+    if (watchAddSecondExecutor && !form.getValues().secondExecutor?.fullName) {
       form.setValue('secondExecutor', {
         fullName: "",
         fatherName: "",
@@ -113,6 +114,51 @@ export default function ExecutorPage() {
 
   function onSubmit(data: ExecutorFormValues) {
     saveAndGoTo('executor', data, "/dashboard"); 
+  }
+
+  if (loading) {
+    return (
+        <div className="max-w-4xl mx-auto">
+            <div className="bg-card p-6 sm:p-8 rounded-lg shadow-lg space-y-8">
+                <div className="text-center mb-8">
+                    <Skeleton className="w-12 h-12 rounded-full mx-auto mb-2" />
+                    <Skeleton className="h-9 w-1/2 mx-auto" />
+                </div>
+                <Skeleton className="h-20 w-full" />
+                
+                <div>
+                  <Skeleton className="h-8 w-1/3 mb-4" />
+                  <div className="space-y-6 p-6 border rounded-lg">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <Skeleton className="h-10 w-full" />
+                      <Skeleton className="h-10 w-full" />
+                    </div>
+                    <Skeleton className="h-10 w-full" />
+                    <Skeleton className="h-20 w-full" />
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <Skeleton className="h-10 w-full" />
+                      <Skeleton className="h-10 w-full" />
+                    </div>
+                  </div>
+                </div>
+
+                <Skeleton className="h-px w-full" />
+
+                <Skeleton className="h-16 w-full" />
+
+                <Skeleton className="h-px w-full" />
+                
+                <div>
+                   <Skeleton className="h-8 w-1/3 mb-4" />
+                   <Skeleton className="h-40 w-full" />
+                </div>
+
+                <div className="flex justify-end mt-8">
+                    <Skeleton className="h-12 w-48" />
+                </div>
+            </div>
+        </div>
+    );
   }
 
   return (
