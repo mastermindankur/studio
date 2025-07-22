@@ -31,29 +31,33 @@ const checklistSteps = [
 function isStepComplete(stepKey: string, draftData: WillFormData | null): boolean {
     if (!draftData) return false;
     
-    const data = draftData[stepKey as keyof WillFormData] as any;
-    if (!data) return false;
+    // Use a direct reference to the section data
+    const sectionData = draftData[stepKey as keyof WillFormData] as any;
+
+    if (!sectionData) return false;
     
     switch (stepKey) {
         case 'personalInfo':
-            return !!data.fullName && !!data.dob && !!data.aadhar && !!data.gender && !!data.fatherHusbandName && !!data.religion && !!data.occupation && !!data.address && !!data.email && !!data.mobile;
+            return !!sectionData.fullName && !!sectionData.dob && !!sectionData.aadhar && !!sectionData.gender && !!sectionData.fatherHusbandName && !!sectionData.religion && !!sectionData.occupation && !!sectionData.address && !!sectionData.email && !!sectionData.mobile;
         case 'familyDetails':
-            if (!data.maritalStatus) return false;
-            if (data.maritalStatus === 'married' && !data.spouseName) return false;
+            if (!sectionData.maritalStatus) return false;
+            if (sectionData.maritalStatus === 'married' && (!sectionData.spouseName || sectionData.spouseName.trim() === '')) return false;
             return true;
         case 'assets':
-            return Array.isArray(data.assets?.assets) && data.assets.assets.length > 0;
+             // Check if 'assets' object and its nested 'assets' array exist and have length
+            return Array.isArray(sectionData.assets) && sectionData.assets.length > 0;
         case 'beneficiaries':
-             // Beneficiaries step is complete if family members are defined OR other beneficiaries are added.
-             const hasFamily = !!data.familyDetails?.spouseName || (Array.isArray(data.familyDetails?.children) && data.familyDetails.children.some((c: any) => c.name));
-             const hasOthers = Array.isArray(data.beneficiaries?.beneficiaries) && data.beneficiaries.beneficiaries.length > 0;
-             // For this to be true, the family details must be complete first.
-             const familyStepComplete = isStepComplete('familyDetails', draftData);
-             return familyStepComplete && (hasFamily || hasOthers);
+             // Beneficiaries step is complete if family details are filled, OR other beneficiaries are added.
+             const familyDetailsComplete = isStepComplete('familyDetails', draftData);
+             if (!familyDetailsComplete) return false;
+
+             const hasFamily = !!draftData.familyDetails?.spouseName || (Array.isArray(draftData.familyDetails?.children) && draftData.familyDetails.children.some((c: any) => c.name && c.name.trim() !== ''));
+             const hasOthers = Array.isArray(sectionData.beneficiaries) && sectionData.beneficiaries.length > 0;
+             return hasFamily || hasOthers;
         case 'assetAllocation':
-            return Array.isArray(data.assetAllocation?.allocations) && data.assetAllocation.allocations.length > 0;
+            return Array.isArray(sectionData.allocations) && sectionData.allocations.length > 0;
         case 'executor':
-            return !!data.primaryExecutor?.fullName && !!data.city && !!data.state;
+            return !!sectionData.primaryExecutor?.fullName && !!sectionData.city && !!sectionData.state;
         default:
             return false;
     }
@@ -82,12 +86,13 @@ function DashboardPageContent() {
             ]);
             
             const draftData: WillFormData = {
+                ...initialData,
                 personalInfo: personalInfo || initialData.personalInfo,
                 familyDetails: familyDetails || initialData.familyDetails,
-                assets: { assets: assets || initialData.assets.assets },
-                beneficiaries: { beneficiaries: beneficiaries || initialData.beneficiaries.beneficiaries },
-                assetAllocation: { allocations: assetAllocation || initialData.assetAllocation.allocations },
-                executor: executor || initialData.executor
+                assets: { assets: assets || [] },
+                beneficiaries: { beneficiaries: beneficiaries || [] },
+                assetAllocation: { allocations: assetAllocation || [] },
+                executor: executor || initialData.executor,
             };
             setDraft(draftData);
 
@@ -180,19 +185,25 @@ function DashboardPageContent() {
         
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {checklistSteps.map(step => {
-                // Pass the whole draft to isStepComplete for cross-step dependencies
-                const isComplete = isStepComplete(step.key, { ...draft, familyDetails: draft?.familyDetails, beneficiaries: draft?.beneficiaries } as WillFormData);
+                const isComplete = isStepComplete(step.key, draft);
+
                 const assetCount = draft?.assets?.assets?.length || 0;
-                
+                const otherBeneficiaryCount = draft?.beneficiaries?.beneficiaries?.length || 0;
+                const spouseCount = (draft?.familyDetails?.spouseName && draft.familyDetails.spouseName.trim() !== '') ? 1 : 0;
+                const childCount = draft?.familyDetails?.children?.filter((c:any) => c.name && c.name.trim() !== '').length || 0;
+                const totalBeneficiaryCount = otherBeneficiaryCount + spouseCount + childCount;
+
                 let cardDescription = "Click to start this section.";
                 if (isComplete) {
                     if (step.key === 'assets' && assetCount > 0) {
                         cardDescription = `${assetCount} asset${assetCount !== 1 ? 's' : ''} added. Click to review.`;
+                    } else if (step.key === 'beneficiaries' && totalBeneficiaryCount > 0) {
+                        cardDescription = `${totalBeneficiaryCount} beneficiar${totalBeneficiaryCount !== 1 ? 'ies' : 'y'} listed. Click to review.`;
                     } else {
                         cardDescription = "Section completed. Click to review.";
                     }
                 }
-
+                
                 return (
                     <Card 
                         key={step.path} 
