@@ -147,7 +147,7 @@ export function Header() {
                   <SheetClose asChild key={item.href}>
                     <Link
                       href={item.href}
-                      className="font-headline text-lg text-foreground hover:text-primary transition-colors duration-300 py-3 text-center flex items-center justify-center"
+                      className="font-headline text-base text-foreground hover:text-primary transition-colors duration-300 py-3 text-center flex items-center justify-center"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       <item.icon className="mr-2 h-5 w-5" />
@@ -168,7 +168,7 @@ export function Header() {
     return (
        <div className="mt-auto pt-6 border-t border-border space-y-4">
           <SheetClose asChild>
-            <Link href="/login" className="font-headline text-lg text-foreground hover:text-primary transition-colors duration-300 py-2 text-center flex items-center justify-center">
+            <Link href="/login" className="font-headline text-base text-foreground hover:text-primary transition-colors duration-300 py-2 text-center flex items-center justify-center">
                 <LogIn className="mr-2 h-5 w-5" /> Login
             </Link>
           </SheetClose>
@@ -229,9 +229,9 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-full max-w-xs bg-background p-0 flex flex-col">
-              <SheetHeader className="sr-only">
-                  <SheetTitle>Mobile Menu</SheetTitle>
-                  <SheetDescription>Main navigation and account links for mobile devices.</SheetDescription>
+              <SheetHeader className="p-6">
+                  <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
+                  <SheetDescription className="sr-only">Main navigation and account links for mobile devices.</SheetDescription>
               </SheetHeader>
                 {user ? (
                    <MobileAuthLinks />
@@ -257,14 +257,14 @@ export function Header() {
                                                 openChat();
                                                 setIsMobileMenuOpen(false);
                                             }}
-                                            className="font-headline text-lg text-foreground hover:text-primary transition-colors duration-300 py-2 text-center flex items-center justify-center"
+                                            className="font-headline text-base text-foreground hover:text-primary transition-colors duration-300 py-2 text-center flex items-center justify-center"
                                         >
                                             {item.label}
                                         </button>
                                     ) : (
                                         <Link
                                             href={item.href!}
-                                            className="font-headline text-lg text-foreground hover:text-primary transition-colors duration-300 py-2 text-center flex items-center justify-center"
+                                            className="font-headline text-base text-foreground hover:text-primary transition-colors duration-300 py-2 text-center flex items-center justify-center"
                                             onClick={() => setIsMobileMenuOpen(false)}
                                         >
                                             {item.label}
