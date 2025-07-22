@@ -190,6 +190,7 @@ export default function PersonalInformationPage() {
                             fromYear={1920}
                             toYear={eighteenYearsAgo.getFullYear()}
                             initialFocus
+                            fixedWeeks
                         />
                         </PopoverContent>
                     </Popover>
