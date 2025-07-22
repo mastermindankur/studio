@@ -123,7 +123,7 @@ export default function AssetsPage() {
                 <Card key={asset.id} className="overflow-hidden flex flex-col">
                    <CardHeader className="flex flex-row items-center justify-between bg-muted/50 p-4">
                      <CardTitle className="text-lg font-semibold text-primary truncate">
-                       {asset.details.description || asset.type}
+                       {asset.details?.description || asset.type}
                      </CardTitle>
                         <div className="flex gap-2">
                             <Button type="button" variant="ghost" size="icon" className="text-primary hover:bg-primary/10" onClick={() => handleEditAsset(index)}><Edit className="h-4 w-4" /><span className="sr-only">Edit</span></Button>
@@ -137,7 +137,7 @@ export default function AssetsPage() {
                         </div>
                          <div>
                             <p className="text-sm text-muted-foreground">Estimated Value</p>
-                            <p className="font-semibold">{asset.details.value ? `₹${new Intl.NumberFormat('en-IN').format(Number(asset.details.value))}` : "N/A"}</p>
+                            <p className="font-semibold">{asset.details?.value ? `₹${new Intl.NumberFormat('en-IN').format(Number(asset.details.value))}` : "N/A"}</p>
                         </div>
                    </CardContent>
                 </Card>
