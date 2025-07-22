@@ -15,7 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { ChevronRight, PlusCircle, Trash2, Gift, Users, Info, Edit } from "lucide-react";
+import { ChevronRight, PlusCircle, Trash2, Gift, Users, Info } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useWillForm } from "@/context/WillFormContext";
 import { useEffect } from "react";
@@ -50,7 +50,7 @@ export default function BeneficiariesPage() {
   }, [loading, formData.beneficiaries, form]);
 
 
-  const { fields, append, remove, update } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "beneficiaries",
   });
