@@ -13,7 +13,7 @@ export function Footer() {
   return (
     <footer className="bg-background text-foreground py-12 mt-auto">
       <div className="container max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+        <div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
           {!user && (
             <>
               <div className="md:col-span-1">
