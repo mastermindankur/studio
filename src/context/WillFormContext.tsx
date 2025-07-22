@@ -1,10 +1,8 @@
-
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from './AuthContext';
-import { updateWill } from '@/app/actions/will';
 import { useToast } from '@/hooks/use-toast';
 import { getWillSection, updateWillSection, getWillListSection, updateWillListItem, addWillListItem, removeWillListItem } from '@/app/actions/will-draft';
 
@@ -16,9 +14,9 @@ export interface WillFormData {
   createdAt?: Date;
   personalInfo: any;
   familyDetails: any;
-  assets: any[];
-  beneficiaries: any[];
-  assetAllocation: any[];
+  assets: any;
+  beneficiaries: any;
+  assetAllocation: any;
   executor: any;
 }
 
@@ -46,9 +44,9 @@ export const initialData: WillFormData = {
   familyDetails: {
     children: [],
   },
-  assets: [],
-  beneficiaries: [],
-  assetAllocation: [],
+  assets: { assets: [] },
+  beneficiaries: { beneficiaries: [] },
+  assetAllocation: { allocations: [] },
   executor: {
     primaryExecutor: {
       fullName: "",
@@ -114,20 +112,21 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
             ] = await Promise.all([
                 getWillSection(user.uid, 'personalInfo'),
                 getWillSection(user.uid, 'familyDetails'),
-                getWillListSection(user.uid, 'assets'),
-                getWillListSection(user.uid, 'beneficiaries'),
-                getWillListSection(user.uid, 'assetAllocations'),
+                getWillListSection(user.uid, 'assets').then(data => ({ assets: data })),
+                getWillListSection(user.uid, 'beneficiaries').then(data => ({ beneficiaries: data })),
+                getWillListSection(user.uid, 'assetAllocations').then(data => ({ allocations: data })),
                 getWillSection(user.uid, 'executor'),
             ]);
 
-            setFormData({
+            const loadedData = {
                 personalInfo: personalInfo || initialData.personalInfo,
                 familyDetails: familyDetails || initialData.familyDetails,
-                assets: assets || initialData.assets,
-                beneficiaries: beneficiaries || initialData.beneficiaries,
-                assetAllocation: assetAllocation || initialData.assetAllocation,
+                assets: assets.assets.length > 0 ? assets : initialData.assets,
+                beneficiaries: beneficiaries.beneficiaries.length > 0 ? beneficiaries : initialData.beneficiaries,
+                assetAllocation: assetAllocation.allocations.length > 0 ? assetAllocation : initialData.assetAllocation,
                 executor: executor || initialData.executor,
-            });
+            };
+            setFormData(loadedData);
 
         } catch (error) {
           console.error("Failed to load draft data:", error);
@@ -151,34 +150,31 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
 
     if (user) {
         try {
-            const listSections = ['assets', 'beneficiaries', 'assetAllocation'];
-            if (listSections.includes(section)) {
-                // This is a simplified approach. A real implementation would diff the arrays.
-                // For now, we clear and re-add. This is NOT ideal for production.
-                const existingItems = await getWillListSection(user.uid, section);
-                for(const item of existingItems) {
-                    await removeWillListItem(section, item.id);
-                }
-                for(const item of currentData) {
+            const listSections: { [key: string]: string } = {
+                'assets': 'assets',
+                'beneficiaries': 'beneficiaries',
+                'assetAllocation': 'allocations'
+            };
+            
+            const collectionName = section === 'assetAllocation' ? 'assetAllocations' : section;
+
+            if (Object.keys(listSections).includes(section)) {
+                const items = currentData[listSections[section]];
+                const existingItems = await getWillListSection(user.uid, collectionName);
+                
+                // Simplified approach: clear and re-add.
+                await Promise.all(existingItems.map(item => removeWillListItem(collectionName, item.id)));
+                await Promise.all(items.map((item: any) => {
                     const { id, ...data } = item;
-                    await addWillListItem(user.uid, section, data);
-                }
+                    return addWillListItem(user.uid, collectionName, data);
+                }));
+
             } else {
-                 await updateWillSection(user.uid, section, currentData);
+                 await updateWillSection(user.uid, collectionName, currentData);
             }
         } catch (e) {
             console.error("Could not save draft to firestore", e);
              toast({ variant: "destructive", title: "Save Failed", description: "Could not save your progress." });
-        }
-    }
-
-    // If exiting to dashboard while editing an existing will, update it in Firestore.
-    if (path === '/dashboard' && formData.willId && user) {
-        const result = await updateWill(formData.willId, { ...formData, userId: user.uid });
-        if (result.success) {
-            toast({ title: "Will Updated", description: "Your changes have been saved." });
-        } else {
-            toast({ variant: "destructive", title: "Update Failed", description: result.message });
         }
     }
 
