@@ -77,6 +77,23 @@ const descriptionPlaceholders: { [key: string]: string } = {
   "Other": "e.g., Loan to John Doe"
 };
 
+const formatIndianCurrency = (value: string | undefined): string => {
+  if (!value || isNaN(Number(value)) || Number(value) === 0) {
+    return "";
+  }
+  const num = Number(value);
+  if (num >= 10000000) {
+    return `( ${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(num / 10000000)} Cr )`;
+  }
+  if (num >= 100000) {
+    return `( ${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(num / 100000)} Lakh )`;
+  }
+  if (num >= 1000) {
+    return `( ${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(num / 1000)} Thousand )`;
+  }
+  return `( ${new Intl.NumberFormat('en-IN').format(num)} )`;
+};
+
 
 export function AddAssetModal({ isOpen, onClose, onSave, assetData }: AddAssetModalProps) {
   const form = useForm<Asset>({
@@ -85,6 +102,8 @@ export function AddAssetModal({ isOpen, onClose, onSave, assetData }: AddAssetMo
   });
 
   const assetType = useWatch({ control: form.control, name: 'type' });
+  const estimatedValue = useWatch({ control: form.control, name: 'details.value' });
+  const formattedValue = formatIndianCurrency(estimatedValue);
 
   useEffect(() => {
     if (assetData) {
@@ -97,12 +116,8 @@ export function AddAssetModal({ isOpen, onClose, onSave, assetData }: AddAssetMo
 
   useEffect(() => {
     if (isOpen && !assetData) {
-        const currentId = form.getValues('id');
-        const currentIndex = form.getValues('index');
         form.reset({
             ...defaultValues,
-            id: currentId,
-            index: currentIndex,
             type: assetType,
         });
     }
@@ -296,9 +311,14 @@ export function AddAssetModal({ isOpen, onClose, onSave, assetData }: AddAssetMo
                         name="details.value"
                         render={({ field }) => (
                             <FormItem>
-                            <FormLabel>Estimated Value (in ₹)</FormLabel>
-                            <FormControl><Input type="text" inputMode="numeric" placeholder="e.g., 500000" {...field} /></FormControl>
-                            <FormMessage />
+                                <FormLabel>Estimated Value (in ₹)</FormLabel>
+                                <FormControl><Input type="text" inputMode="numeric" placeholder="e.g., 500000" {...field} /></FormControl>
+                                {formattedValue && (
+                                    <FormDescription>
+                                        {formattedValue}
+                                    </FormDescription>
+                                )}
+                                <FormMessage />
                             </FormItem>
                         )}
                         />
