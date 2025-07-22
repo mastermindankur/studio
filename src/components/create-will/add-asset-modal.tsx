@@ -25,7 +25,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { ScrollArea } from "../ui/scroll-area";
 import { Landmark, Home, Car, AreaChart, ShieldCheck, Gem, PlusCircle } from "lucide-react";
 import React from "react";
@@ -116,13 +116,11 @@ export function AddAssetModal({ isOpen, onClose, onSave, assetData }: AddAssetMo
   const assetType = useWatch({ control: form.control, name: 'type' });
   const estimatedValue = useWatch({ control: form.control, name: 'details.value' });
   const formattedValue = formatIndianCurrency(estimatedValue);
+  const isMounted = useRef(false);
 
-  // Effect to populate the form when the modal opens
   useEffect(() => {
     if (isOpen) {
       if (assetData) {
-        // When editing, reset the form with the specific asset's data.
-        // A deep merge on `details` is needed.
         form.reset({
           ...defaultValues,
           ...assetData,
@@ -132,42 +130,45 @@ export function AddAssetModal({ isOpen, onClose, onSave, assetData }: AddAssetMo
           },
         });
       } else {
-        // When adding new, reset to the absolute default values
         form.reset(defaultValues);
       }
+      isMounted.current = true;
+    } else {
+      isMounted.current = false;
     }
   }, [assetData, isOpen, form]);
-
-  // Effect to clear irrelevant fields when asset type changes *within* the modal
+  
   useEffect(() => {
-    if (!isOpen) return; // Only run this when the modal is open
+    if (!isMounted.current || !isOpen) return;
 
-    const currentDetails = form.getValues('details');
-    // Create a new details object with only the common fields preserved.
-    const newDetails = {
-        ...defaultValues.details,
-        description: currentDetails?.description || "",
-        value: currentDetails?.value || "",
-    };
+    const subscription = form.watch((value, { name }) => {
+      if (name === 'type') {
+        const currentDetails = form.getValues('details');
+        const newDetails = {
+            ...defaultValues.details,
+            description: currentDetails?.description || "",
+            value: currentDetails?.value || "",
+        };
 
-    // This switch sets the correct default for the new type's primary field if needed
-    switch(assetType) {
-        case "Bank Account": newDetails.accountType = 'Savings'; break;
-        case "Real Estate": newDetails.propertyType = 'Flat/Apartment'; break;
-        case "Vehicle": newDetails.vehicleType = 'Car'; break;
-    }
-    
-    // We update just the 'details' part of the form
-    form.setValue('details', newDetails, { shouldValidate: false });
+        switch(value.type) {
+            case "Bank Account": newDetails.accountType = 'Savings'; break;
+            case "Real Estate": newDetails.propertyType = 'Flat/Apartment'; break;
+            case "Vehicle": newDetails.vehicleType = 'Car'; break;
+        }
+        
+        form.setValue('details', newDetails, { shouldValidate: true, shouldDirty: true });
+      }
+    });
 
-  }, [assetType]); // Dependency on assetType only
+    return () => subscription.unsubscribe();
+  }, [isOpen, form]);
 
 
   const onSubmit = (data: Asset) => {
     const finalData = {
         ...data,
-        id: assetData?.id || `asset-${Date.now()}`, // Keep existing ID or create a new one
-        index: assetData?.index, // Pass index back if we are editing
+        id: assetData?.id || `asset-${Date.now()}`,
+        index: assetData?.index,
     };
     onSave(finalData);
   };
@@ -384,3 +385,4 @@ export function AddAssetModal({ isOpen, onClose, onSave, assetData }: AddAssetMo
     </Dialog>
   );
 }
+
