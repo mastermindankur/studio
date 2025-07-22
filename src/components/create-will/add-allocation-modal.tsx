@@ -75,12 +75,16 @@ export function AddAllocationModal({
     allBeneficiaries.forEach(b => beneficiariesMap.set(b.id, { id: b.id, name: b.name }));
     if (familyDetails?.spouseName) {
       const spouseId = `spouse-${familyDetails.spouseName.replace(/\s+/g, '-').toLowerCase()}`;
-      beneficiariesMap.set(spouseId, { id: spouseId, name: `${familyDetails.spouseName} (Spouse)` });
+      if (!beneficiariesMap.has(spouseId)) {
+          beneficiariesMap.set(spouseId, { id: spouseId, name: `${familyDetails.spouseName} (Spouse)` });
+      }
     }
     familyDetails?.children?.forEach((c: any) => {
       if (c.name) {
         const childId = `child-${c.name.replace(/\s+/g, '-').toLowerCase()}`;
-        beneficiariesMap.set(childId, { id: childId, name: `${c.name} (Child)` });
+        if (!beneficiariesMap.has(childId)) {
+            beneficiariesMap.set(childId, { id: childId, name: `${c.name} (Child)` });
+        }
       }
     });
     return Array.from(beneficiariesMap.values());
@@ -94,6 +98,13 @@ export function AddAllocationModal({
     }
   });
 
+  useEffect(() => {
+    form.reset({
+      assetId: initialData?.assetId || "",
+      allocations: initialData?.allocations && initialData.allocations.length > 0 ? initialData.allocations : [{ beneficiaryId: "", percentage: 100 }],
+    })
+  }, [initialData, form]);
+
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "allocations",
@@ -101,7 +112,7 @@ export function AddAllocationModal({
   
   const watchAllocations = form.watch("allocations");
   const totalAllocated = useMemo(() => {
-    return watchAllocations.reduce((sum, alloc) => sum + (alloc.percentage || 0), 0);
+    return watchAllocations.reduce((sum, alloc) => sum + (Number(alloc.percentage) || 0), 0);
   }, [watchAllocations]);
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
@@ -144,7 +155,11 @@ export function AddAllocationModal({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {initialData?.assetId && <SelectItem value={initialData.assetId}>Edit Current Asset</SelectItem>}
+                          {initialData?.assetId && (
+                            <SelectItem value={initialData.assetId}>
+                              {unallocatedAssets.find(a => a.id === initialData.assetId)?.details.description || 'Editing Current Asset'}
+                            </SelectItem>
+                          )}
                           {unallocatedAssets.map((asset) => (
                             <SelectItem key={asset.id} value={asset.id}>
                               {asset.details.description || asset.type}
