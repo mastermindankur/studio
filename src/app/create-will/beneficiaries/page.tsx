@@ -135,7 +135,7 @@ export default function BeneficiariesPage() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-4">
-              These family members are from the 'Family Details' step. They are automatically available for asset allocation.
+              These family members are from the 'Family Details' step and are automatically available for asset allocation. It is not mandatory to allocate assets to every family member.
             </p>
             <div className="space-y-3">
               {familyDetails?.spouseName && (
