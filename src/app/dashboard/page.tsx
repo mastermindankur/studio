@@ -34,10 +34,9 @@ function isStepComplete(stepKey: string, draftData: WillFormData | null): boolea
     const data = draftData[stepKey as keyof WillFormData] as any;
     if (!data) return false;
     
-    // For list sections, check if array exists. For object sections, check a key property.
     switch (stepKey) {
         case 'personalInfo':
-            return !!data.fullName && !!data.dob && !!data.aadhar;
+            return !!data.fullName && !!data.dob && !!data.aadhar && !!data.gender && !!data.fatherHusbandName && !!data.religion && !!data.occupation && !!data.address && !!data.email && !!data.mobile;
         case 'familyDetails':
             return !!data.maritalStatus;
         case 'assets':
@@ -228,5 +227,3 @@ export default function DashboardPage() {
         </WillFormProvider>
     )
 }
-
-    
