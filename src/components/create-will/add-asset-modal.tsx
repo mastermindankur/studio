@@ -3,7 +3,7 @@
 
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { assetSchema, type Asset, assetTypes, bankAccountTypes, propertyTypes, vehicleTypes } from "@/lib/schemas/asset-schema";
+import { assetFormSchema as assetSchema, type Asset, assetTypes, bankAccountTypes, propertyTypes, vehicleTypes } from "@/lib/schemas/asset-schema";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -117,12 +117,20 @@ export function AddAssetModal({ isOpen, onClose, onSave, assetData }: AddAssetMo
   const estimatedValue = useWatch({ control: form.control, name: 'details.value' });
   const formattedValue = formatIndianCurrency(estimatedValue);
 
-  // Effect to populate the form when editing an asset
+  // Effect to populate the form when the modal opens
   useEffect(() => {
     if (isOpen) {
       if (assetData) {
-        // When editing, reset the form with the specific asset's data
-        form.reset({ ...defaultValues, ...assetData });
+        // When editing, reset the form with the specific asset's data.
+        // A deep merge on `details` is needed.
+        form.reset({
+          ...defaultValues,
+          ...assetData,
+          details: {
+            ...defaultValues.details,
+            ...assetData.details,
+          },
+        });
       } else {
         // When adding new, reset to the absolute default values
         form.reset(defaultValues);
@@ -130,22 +138,29 @@ export function AddAssetModal({ isOpen, onClose, onSave, assetData }: AddAssetMo
     }
   }, [assetData, isOpen, form]);
 
-  // Effect to clear irrelevant fields when asset type changes
+  // Effect to clear irrelevant fields when asset type changes *within* the modal
   useEffect(() => {
-    if (isOpen) {
-      const currentDetails = form.getValues('details');
-      // Reset details to the default, but keep common fields like description and value
-      form.reset({
-        ...defaultValues,
-        type: assetType, // Keep the selected type
-        details: {
-          ...defaultValues.details, // Start with clean details
-          description: currentDetails.description, // Preserve the description
-          value: currentDetails.value // Preserve the value
-        }
-      });
+    if (!isOpen) return; // Only run this when the modal is open
+
+    const currentDetails = form.getValues('details');
+    // Create a new details object with only the common fields preserved.
+    const newDetails = {
+        ...defaultValues.details,
+        description: currentDetails?.description || "",
+        value: currentDetails?.value || "",
+    };
+
+    // This switch sets the correct default for the new type's primary field if needed
+    switch(assetType) {
+        case "Bank Account": newDetails.accountType = 'Savings'; break;
+        case "Real Estate": newDetails.propertyType = 'Flat/Apartment'; break;
+        case "Vehicle": newDetails.vehicleType = 'Car'; break;
     }
-  }, [assetType, form, isOpen]);
+    
+    // We update just the 'details' part of the form
+    form.setValue('details', newDetails, { shouldValidate: false });
+
+  }, [assetType]); // Dependency on assetType only
 
 
   const onSubmit = (data: Asset) => {
