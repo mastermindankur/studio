@@ -90,7 +90,12 @@ export default function ExecutorPage() {
 
   useEffect(() => {
     if (!loading && formData.executor) {
-        form.reset(formData.executor);
+        const executorData = formData.executor;
+        // If a second executor exists in data, make sure checkbox is checked
+        if (executorData.secondExecutor && executorData.secondExecutor.fullName) {
+            executorData.addSecondExecutor = true;
+        }
+        form.reset(executorData);
     }
   }, [loading, formData.executor, form]);
 
@@ -293,8 +298,5 @@ export default function ExecutorPage() {
       </div>
     </div>
   );
-}
-
-    
 
     
