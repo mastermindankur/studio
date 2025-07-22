@@ -108,7 +108,7 @@ export default function PersonalInformationPage() {
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
                       className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-6"
                     >
                       <FormItem className="flex items-center space-x-3 space-y-0">
@@ -230,7 +230,7 @@ export default function PersonalInformationPage() {
                      <FormDescription>
                         Succession laws can differ based on religion in India.
                       </FormDescription>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                         <SelectTrigger>
                             <SelectValue placeholder="Select your religion" />
