@@ -49,8 +49,8 @@ export function AssetAllocationCard({ asset, allocations, onEdit, onRemove, allB
               <CardDescription>Value: ₹{new Intl.NumberFormat('en-IN').format(asset.details.value || 0)}</CardDescription>
             </div>
             <div className="flex gap-2">
-              <Button variant="ghost" size="icon" onClick={() => onEdit(asset.id)}><Edit className="h-4 w-4" /></Button>
-              <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => onRemove(asset.id)}><Trash2 className="h-4 w-4" /></Button>
+              <Button type="button" variant="ghost" size="icon" onClick={() => onEdit(asset.id)}><Edit className="h-4 w-4" /></Button>
+              <Button type="button" variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => onRemove(asset.id)}><Trash2 className="h-4 w-4" /></Button>
             </div>
           </div>
         </CardHeader>
