@@ -65,7 +65,7 @@ export default function ReviewPersonalInformationPage() {
             <div className="mt-8 flex justify-end gap-4">
               <Button size="lg" onClick={handleConfirm}>
                 <CheckCircle className="mr-2 h-5 w-5" />
-                Confirm &amp; Go to Dashboard
+                Confirm & Go to Dashboard
               </Button>
             </div>
         </CardContent>

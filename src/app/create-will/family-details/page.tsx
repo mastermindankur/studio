@@ -185,7 +185,7 @@ export default function FamilyDetailsPage() {
 
             <div className="flex flex-col sm:flex-row justify-end gap-4">
               <Button type="submit" size="lg" className="w-full sm:w-auto">
-                Save & Continue <ChevronRight className="ml-2 h-5 w-5" />
+                Save & Review <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
           </form>
