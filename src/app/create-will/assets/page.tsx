@@ -48,6 +48,17 @@ const assetTypes = [
   "Other",
 ];
 
+const descriptionPlaceholders: { [key: string]: string } = {
+  "Bank Account": "e.g., HDFC Bank Savings A/C No. XXXXXX, IFSC, Branch Name.",
+  "Real Estate (Flat, House, Land)": "e.g., 2BHK Flat at [Full Address], Survey No, and dimensions.",
+  "Vehicle (Car, Motorcycle)": "e.g., Honda City, Reg No. TS09XX1234, Chassis No.",
+  "Jewelry & Valuables": "e.g., 50g Gold Necklace, Diamond Ring, with identifying marks.",
+  "Stocks & Investments": "e.g., 100 shares of Reliance Industries, Demat A/C No. with Zerodha.",
+  "Insurance Policy": "e.g., LIC Jeevan Anand, Policy No. XXXXXXX, Sum Assured.",
+  "Other": "Provide any specific details to clearly identify the asset.",
+};
+
+
 export default function AssetsPage() {
   const { formData, saveAndGoTo, setDirty } = useWillForm();
 
@@ -63,6 +74,8 @@ export default function AssetsPage() {
   
   const { version, createdAt } = formData;
   const isEditing = !!version;
+
+  const watchedAssets = form.watch("assets");
 
   useEffect(() => {
     const subscription = form.watch(() => setDirty(true));
@@ -117,7 +130,11 @@ export default function AssetsPage() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="space-y-6">
-              {fields.map((field, index) => (
+              {fields.map((field, index) => {
+                const selectedType = watchedAssets?.[index]?.type;
+                const descriptionText = selectedType ? descriptionPlaceholders[selectedType] : "Provide specific details to identify the asset.";
+
+                return (
                 <div key={field.id} className="p-6 border rounded-lg relative">
                    <div className="grid md:grid-cols-2 gap-6">
                      <FormField
@@ -169,11 +186,11 @@ export default function AssetsPage() {
                       <FormItem className="mt-6">
                         <FormLabel>Asset Description</FormLabel>
                         <FormDescription>
-                          Provide specific details to identify the asset (e.g., account number, property address, vehicle registration).
+                          {descriptionText}
                         </FormDescription>
                         <FormControl>
                           <Textarea
-                            placeholder="e.g., HDFC Bank Savings A/C No. XXXXXX, or 2BHK Flat at Address..."
+                            placeholder={descriptionText}
                             {...field}
                           />
                         </FormControl>
@@ -194,7 +211,7 @@ export default function AssetsPage() {
                     </Button>
                   )}
                 </div>
-              ))}
+              )})}
             </div>
             <Button
               type="button"
