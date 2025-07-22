@@ -27,6 +27,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import { PlusCircle, Trash2 } from "lucide-react";
 import { Alert, AlertCircle } from "lucide-react";
 import { Alert as UIAlert, AlertTitle, AlertDescription as UIAlertDescription } from "@/components/ui/alert";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 
 interface AddAllocationModalProps {
@@ -244,4 +245,3 @@ export function AddAllocationModal({
     </Dialog>
   );
 }
-
