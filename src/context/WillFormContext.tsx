@@ -38,6 +38,7 @@ interface WillFormContextType {
   addBeneficiary: (beneficiary: Beneficiary) => Promise<string | undefined>;
   updateBeneficiary: (beneficiary: Beneficiary) => Promise<void>;
   removeBeneficiary: (beneficiaryId: string) => Promise<void>;
+  updateAllocations: (allocations: any[]) => Promise<void>;
 }
 
 export const initialData: WillFormData = {
@@ -344,9 +345,27 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const updateAllocations = async (allocations: any[]): Promise<void> => {
+    if (!user) {
+      toast({ variant: "destructive", title: "Not Authenticated", description: "You must be logged in to save allocations." });
+      return;
+    }
+    const allocationData = { allocations };
+    const result = await updateWillSection(user.uid, 'assetAllocation', allocationData);
+    if (result.success) {
+      toast({ title: "Allocations Saved", description: "Your allocations have been saved successfully." });
+      setFormData(prev => ({
+        ...prev,
+        assetAllocation: allocationData,
+      }));
+    } else {
+      toast({ variant: "destructive", title: "Save Failed", description: result.message || "Could not save your allocations." });
+    }
+  }
+
 
   return (
-    <WillFormContext.Provider value={{ formData, setFormData, saveAndGoTo, setDirty, clearForm, loadWill, loading, addAsset, updateAsset, removeAsset, addBeneficiary, updateBeneficiary, removeBeneficiary }}>
+    <WillFormContext.Provider value={{ formData, setFormData, saveAndGoTo, setDirty, clearForm, loadWill, loading, addAsset, updateAsset, removeAsset, addBeneficiary, updateBeneficiary, removeBeneficiary, updateAllocations }}>
       {children}
     </WillFormContext.Provider>
   );

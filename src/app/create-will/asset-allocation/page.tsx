@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
@@ -31,7 +31,7 @@ const assetAllocationFormSchema = z.object({
 type AssetAllocationFormValues = z.infer<typeof assetAllocationFormSchema>;
 
 export default function AssetAllocationPage() {
-  const { formData, saveAndGoTo, setDirty, loading } = useWillForm();
+  const { formData, saveAndGoTo, setDirty, loading, updateAllocations } = useWillForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAllocations, setEditingAllocations] = useState<{ assetId: string, allocations: any[] } | null>(null);
   const router = useRouter();
@@ -51,13 +51,6 @@ export default function AssetAllocationPage() {
       form.reset({ allocations: formData.assetAllocation.allocations });
     }
   }, [loading, formData.assetAllocation, form]);
-
-  useEffect(() => {
-    const subscription = form.watch(() => {
-      setDirty(true);
-    });
-    return () => subscription.unsubscribe();
-  }, [form, setDirty]);
 
   const { version, createdAt } = formData;
   const isEditing = !!version;
@@ -82,22 +75,29 @@ export default function AssetAllocationPage() {
   }, [allAssets, allocatedAssets]);
 
 
-  const handleSaveAllocations = (assetId: string, newAllocations: any[]) => {
+  const handleSaveAllocations = async (assetId: string, newAllocations: any[]) => {
     // Remove all old allocations for this asset
     const currentAllocations = form.getValues().allocations;
     const otherAllocations = currentAllocations.filter(a => a.assetId !== assetId);
     
     // Add the new allocations
     const updatedAllocations = [...otherAllocations, ...newAllocations];
-    form.setValue('allocations', updatedAllocations, { shouldDirty: true });
+    
+    // Save to database and update context state
+    await updateAllocations(updatedAllocations);
+    
+    // Update local form state to match context
+    form.setValue('allocations', updatedAllocations, { shouldDirty: false });
+    
     setIsModalOpen(false);
     setEditingAllocations(null);
   };
 
-  const handleRemoveAssetAllocation = (assetId: string) => {
+  const handleRemoveAssetAllocation = async (assetId: string) => {
     const currentAllocations = form.getValues().allocations;
     const remainingAllocations = currentAllocations.filter(a => a.assetId !== assetId);
-    form.setValue('allocations', remainingAllocations, { shouldDirty: true });
+    await updateAllocations(remainingAllocations);
+    form.setValue('allocations', remainingAllocations, { shouldDirty: false });
   }
 
   const handleEditAllocation = (assetId: string) => {
@@ -112,7 +112,8 @@ export default function AssetAllocationPage() {
   };
 
   function onSubmit(data: AssetAllocationFormValues) {
-    saveAndGoTo('assetAllocation', data, "/create-will/executor");
+    // This is now purely for navigation, as saves are instant
+    router.push("/create-will/executor");
   }
 
   if (loading) {
@@ -189,7 +190,7 @@ export default function AssetAllocationPage() {
 
             <div className="flex flex-col sm:flex-row justify-end gap-4 mt-8 pt-6 border-t">
               <Button type="submit" size="lg" className="w-full sm:w-auto">
-                Save & Continue <ChevronRight className="ml-2 h-5 w-5" />
+                Continue to Executor <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
           </form>
