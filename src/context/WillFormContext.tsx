@@ -205,24 +205,8 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const clearForm = async () => {
-    if (user) {
-        const sections = ['personalInfo', 'familyDetails', 'executor', 'assetAllocation'];
-        const listSections = ['assets', 'beneficiaries'];
-
-        try {
-            for(const section of sections) {
-                await updateWillSectionAction(user.uid, section, initialData[section as keyof typeof initialData]);
-            }
-            const allItems = await Promise.all(listSections.map(s => getWillListSection(user.uid, s)));
-            for(let i = 0; i < listSections.length; i++) {
-                for(const item of allItems[i]) {
-                    await removeWillListItem(listSections[i], item.id);
-                }
-            }
-        } catch(e) {
-            console.error("Error clearing form data from DB", e);
-        }
-    }
+    // This function now only clears the state in the browser,
+    // it does NOT delete any data from Firestore.
     setFormData(initialData);
   };
 
@@ -380,4 +364,5 @@ export const useWillForm = () => {
   return context;
 };
 
+    
     
