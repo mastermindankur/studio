@@ -24,7 +24,6 @@ const contactFormSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Please enter a valid email address." }),
   phone: z.string().min(10, { message: "Please enter a valid 10-digit phone number." }),
-  subject: z.string().min(5, { message: "Subject must be at least 5 characters." }),
   message: z.string().min(10, { message: "Message must be at least 10 characters." }),
 });
 
@@ -38,7 +37,6 @@ export function ContactForm() {
       name: "",
       email: "",
       phone: "",
-      subject: "",
       message: "",
     },
   });
@@ -127,22 +125,6 @@ export function ContactForm() {
                          <div className="relative">
                           <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                           <Input type="tel" placeholder="+91 XXXXX XXXXX" {...field} className="pl-10" />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="subject"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-foreground/80">Subject</FormLabel>
-                      <FormControl>
-                         <div className="relative">
-                          <MessageSquare className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                          <Input placeholder="Question about Will creation" {...field} className="pl-10" />
                         </div>
                       </FormControl>
                       <FormMessage />
