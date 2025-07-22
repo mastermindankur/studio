@@ -13,11 +13,12 @@ import { collection, query, where, getDocs, orderBy, Timestamp } from "firebase/
 import { db } from "@/lib/firebase/config";
 import { format } from "date-fns";
 import { PlusCircle, FileText, Download, Edit, Loader2, PlayCircle, CheckCircle, ArrowRight, User, Users, Landmark, Gift, PieChart, UserCheck } from "lucide-react";
-import { useWillForm, WillFormProvider, WillFormData, initialData } from "@/context/WillFormContext";
+import { useWillForm, WillFormProvider, type WillFormData } from "@/context/WillFormContext";
 import { useRouter } from "next/navigation";
 import { generatePdf } from "@/lib/pdfGenerator";
 import { WillDocument } from "@/components/create-will/will-document";
 import { getWillDraft } from "../actions/will-draft";
+import { initialData } from "../actions/will-draft";
 
 const checklistSteps = [
     { title: "Personal Information", path: "/create-will/personal-information", icon: User, key: 'personalInfo' },
@@ -70,7 +71,7 @@ function DashboardPageContent() {
           setDraft(draftData);
         } catch (error) {
           console.error("Error fetching will draft:", error);
-          setDraft(initialData);
+          setDraft(null); // Set to null on error
         } finally {
           setLoadingDraft(false);
         }
@@ -84,6 +85,8 @@ function DashboardPageContent() {
   const handleStepClick = (path: string) => {
     if (draft) {
       loadWill(draft);
+    } else {
+      loadWill(initialData); // Load initial data if no draft exists
     }
     router.push(path);
   };

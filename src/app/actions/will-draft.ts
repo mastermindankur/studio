@@ -2,7 +2,45 @@
 "use server";
 
 import { adminDb } from "@/lib/firebase/admin-config";
-import { WillFormData, initialData } from "@/context/WillFormContext";
+import type { WillFormData } from "@/context/WillFormContext";
+
+export const initialData: WillFormData = {
+  personalInfo: {
+    fullName: "",
+    fatherHusbandName: "",
+    aadhar: "",
+    occupation: "",
+    address: "",
+    email: "",
+    mobile: "",
+  },
+  familyDetails: {
+    children: [],
+  },
+  assets: {
+    assets: [],
+  },
+  beneficiaries: {
+    beneficiaries: [],
+  },
+  assetAllocation: {
+    allocations: [],
+  },
+  executor: {
+    primaryExecutor: {
+      fullName: "",
+      fatherName: "",
+      aadhar: "",
+      address: "",
+      email: "",
+      mobile: "",
+    },
+    addSecondExecutor: false,
+    city: "",
+    state: "",
+  },
+};
+
 
 const draftCollection = adminDb.collection("willDrafts");
 
@@ -47,8 +85,8 @@ export async function getWillDraft(userId: string): Promise<WillFormData> {
             // Deep merge with initialData to ensure all keys are present
             return mergeDeep(initialData, draftData);
         } else {
-            // No draft exists, return the initial empty structure
-            return initialData;
+            // No draft exists, return the initial empty structure with the userId
+            return { ...initialData, willId: undefined, version: undefined, createdAt: undefined };
         }
     } catch (error) {
         console.error("Error getting will draft from Firestore: ", error);
