@@ -52,11 +52,8 @@ export default function AssetAllocationPage() {
   }, [loading, formData.assetAllocation, form]);
 
   useEffect(() => {
-    const subscription = form.watch((value) => {
+    const subscription = form.watch(() => {
       setDirty(true);
-      // This is a workaround to trigger re-render on nested changes
-      // for asset allocation cards to update their progress bars.
-      setAllocatedAssets(groupAllocationsByAsset(value.allocations || []));
     });
     return () => subscription.unsubscribe();
   }, [form, setDirty]);
@@ -65,9 +62,10 @@ export default function AssetAllocationPage() {
   const isEditing = !!version;
 
   const allAssets = formData.assets?.assets || [];
+  const watchedAllocations = form.watch("allocations");
 
-  const groupAllocationsByAsset = (allocations: any[] = []) => {
-    return allocations.reduce((acc, alloc) => {
+  const allocatedAssets = useMemo(() => {
+    return (watchedAllocations || []).reduce((acc, alloc) => {
       if (!alloc.assetId) return acc;
       if (!acc[alloc.assetId]) {
         acc[alloc.assetId] = [];
@@ -75,17 +73,11 @@ export default function AssetAllocationPage() {
       acc[alloc.assetId].push(alloc);
       return acc;
     }, {} as { [key: string]: any[] });
-  };
+  }, [watchedAllocations]);
   
-  const [allocatedAssets, setAllocatedAssets] = useState(() => groupAllocationsByAsset(form.getValues().allocations));
-  
-  useEffect(() => {
-    setAllocatedAssets(groupAllocationsByAsset(form.getValues().allocations));
-  }, [fields, form]);
-
-
   const unallocatedAssets = useMemo(() => {
-    return allAssets.filter(asset => !allocatedAssets[asset.id!]);
+    const allocatedAssetIds = Object.keys(allocatedAssets);
+    return allAssets.filter(asset => !allocatedAssetIds.includes(asset.id!));
   }, [allAssets, allocatedAssets]);
 
 
