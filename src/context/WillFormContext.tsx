@@ -6,6 +6,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from './AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { getWillSection, updateWillSection, getWillListSection, updateWillListItem, addWillListItem, removeWillListItem } from '@/app/actions/will-draft';
+import { type Asset } from '@/lib/schemas/asset-schema';
 
 
 // Define the shape of the entire form data
@@ -15,7 +16,7 @@ export interface WillFormData {
   createdAt?: Date;
   personalInfo: any;
   familyDetails: any;
-  assets: any;
+  assets: { assets: Asset[] };
   beneficiaries: any;
   assetAllocation: any;
   executor: any;
@@ -30,6 +31,9 @@ interface WillFormContextType {
   clearForm: () => void;
   loadWill: (willData: any) => void;
   loading: boolean;
+  addAsset: (asset: Asset) => Promise<string | undefined>;
+  updateAsset: (asset: Asset) => Promise<void>;
+  removeAsset: (assetId: string) => Promise<void>;
 }
 
 export const initialData: WillFormData = {
@@ -126,6 +130,7 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
             ]);
 
             const loadedData = {
+                ...initialData,
                 personalInfo: personalInfo || initialData.personalInfo,
                 familyDetails: familyDetails || initialData.familyDetails,
                 assets: { assets: assets.length > 0 ? assets : initialData.assets.assets },
@@ -155,10 +160,9 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
     setFormData(prev => ({...prev, [section]: currentData}));
     setDirty(false);
 
-    if (user) {
+    if (user && section !== 'assets') { // Asset saving is handled separately now
         try {
             const listSections: { [key: string]: string } = {
-                'assets': 'assets',
                 'beneficiaries': 'beneficiaries',
                 'assetAllocation': 'allocations'
             };
@@ -170,7 +174,6 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
                 const items = currentData[listSectionKey];
                 const existingItems = await getWillListSection(user.uid, collectionName);
                 
-                // Simplified approach: clear and re-add.
                 await Promise.all(existingItems.map(item => removeWillListItem(collectionName, item.id)));
                 await Promise.all(items.map((item: any) => {
                     const { id, ...data } = item;
@@ -203,7 +206,6 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
   }, [isDirty]);
 
   const loadWill = (willData: any) => {
-    // Deep merge existing will data with the initial structure to ensure all keys are present
     const dataToLoad = mergeDeep(initialData, willData);
     setFormData(dataToLoad);
   };
@@ -226,8 +228,51 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
     setFormData(initialData);
   };
 
+  const addAsset = async (asset: Asset) => {
+    if (!user) {
+      toast({ variant: "destructive", title: "Not Authenticated", description: "You must be logged in to add an asset." });
+      return;
+    }
+    const { id, index, ...assetData } = asset;
+    const result = await addWillListItem(user.uid, 'assets', assetData);
+    if (result.success && result.id) {
+      toast({ title: "Asset Added", description: "Your asset has been saved successfully." });
+      return result.id;
+    } else {
+      toast({ variant: "destructive", title: "Save Failed", description: result.message || "Could not save the asset." });
+    }
+  };
+
+  const updateAsset = async (asset: Asset) => {
+    if (!user || !asset.id) {
+      toast({ variant: "destructive", title: "Error", description: "Cannot update asset without an ID." });
+      return;
+    }
+    const { id, index, ...assetData } = asset;
+    const result = await updateWillListItem('assets', id, assetData);
+    if (result.success) {
+      toast({ title: "Asset Updated", description: "Your asset has been updated successfully." });
+    } else {
+      toast({ variant: "destructive", title: "Update Failed", description: result.message || "Could not update the asset." });
+    }
+  };
+
+  const removeAsset = async (assetId: string) => {
+    if (!user) {
+      toast({ variant: "destructive", title: "Not Authenticated", description: "You must be logged in to remove an asset." });
+      return;
+    }
+    const result = await removeWillListItem('assets', assetId);
+    if (result.success) {
+      toast({ title: "Asset Removed", description: "The asset has been removed." });
+    } else {
+      toast({ variant: "destructive", title: "Removal Failed", description: result.message || "Could not remove the asset." });
+    }
+  };
+
+
   return (
-    <WillFormContext.Provider value={{ formData, setFormData, saveAndGoTo, setDirty, clearForm, loadWill, loading }}>
+    <WillFormContext.Provider value={{ formData, setFormData, saveAndGoTo, setDirty, clearForm, loadWill, loading, addAsset, updateAsset, removeAsset }}>
       {children}
     </WillFormContext.Provider>
   );

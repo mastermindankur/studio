@@ -18,6 +18,7 @@ import { AddAssetModal } from "@/components/create-will/add-asset-modal";
 import { assetFormSchema as assetSchema, type Asset } from "@/lib/schemas/asset-schema";
 import { Skeleton } from "@/components/ui/skeleton";
 import React from "react";
+import { useRouter } from "next/navigation";
 
 const assetsFormSchema = z.object({
   assets: z.array(assetSchema),
@@ -36,9 +37,10 @@ const assetIcons: { [key: string]: React.ElementType } = {
 };
 
 export default function AssetsPage() {
-  const { formData, saveAndGoTo, setDirty, loading } = useWillForm();
+  const { formData, saveAndGoTo, setDirty, loading, addAsset, updateAsset, removeAsset } = useWillForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAsset, setEditingAsset] = useState<Asset | null>(null);
+  const router = useRouter();
 
   const form = useForm<AssetsFormValues>({
     defaultValues: { assets: [] },
@@ -65,11 +67,8 @@ export default function AssetsPage() {
   }, [form, setDirty]);
 
   function onSubmit(data: AssetsFormValues) {
-    const assetsWithIds = data.assets.map((asset, index) => ({
-        ...asset,
-        id: asset.id || `asset-${Date.now()}-${index}`,
-    }));
-    saveAndGoTo('assets', { assets: assetsWithIds }, "/dashboard");
+    // This navigation is now just a simple "go to next page"
+    router.push("/create-will/beneficiaries");
   }
 
   const handleAddNewAsset = () => {
@@ -82,21 +81,29 @@ export default function AssetsPage() {
     setIsModalOpen(true);
   };
 
-  const handleSaveAsset = (asset: Asset) => {
+  const handleSaveAsset = async (asset: Asset) => {
     if (asset.index !== undefined) {
+      // This is an update
+      await updateAsset(asset);
       const { index, ...assetData } = asset;
       update(index, assetData);
     } else {
-      append(asset);
+      // This is a new asset
+      const newId = await addAsset(asset);
+      if (newId) {
+        append({ ...asset, id: newId });
+      }
     }
-    setDirty(true);
     setIsModalOpen(false);
     setEditingAsset(null);
   };
 
-  const handleRemoveAsset = (index: number) => {
-    remove(index);
-    setDirty(true);
+  const handleRemoveAsset = async (index: number) => {
+    const assetId = form.getValues().assets[index].id;
+    if (assetId) {
+      await removeAsset(assetId);
+      remove(index);
+    }
   }
 
   if (loading) {
