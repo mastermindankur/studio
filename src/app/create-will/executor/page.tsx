@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ChevronRight, UserCheck, Edit, Save, Info, MapPin } from "lucide-react";
+import { ChevronRight, UserCheck, Edit, Info, MapPin } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useWillForm } from "@/context/WillFormContext";
 import { useEffect } from "react";
@@ -85,11 +85,6 @@ export default function ExecutorPage() {
   function onSubmit(data: ExecutorFormValues) {
     saveAndGoTo(data, "/create-will/review"); 
   }
-
-  function handleSaveAndExit(data: ExecutorFormValues) {
-    saveAndGoTo(data, "/dashboard");
-  }
-
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -211,9 +206,6 @@ export default function ExecutorPage() {
 
 
             <div className="flex flex-col sm:flex-row justify-end gap-4">
-               <Button type="button" size="lg" variant="secondary" onClick={form.handleSubmit(handleSaveAndExit)} className="w-full sm:w-auto">
-                  <Save className="mr-2 h-5 w-5" /> Save & Exit
-              </Button>
               <Button type="submit" size="lg" className="w-full sm:w-auto">
                 Save & Continue <ChevronRight className="ml-2 h-5 w-5" />
               </Button>

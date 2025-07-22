@@ -15,7 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { ChevronRight, PlusCircle, Trash2, Gift, Users, Save, Info } from "lucide-react";
+import { ChevronRight, PlusCircle, Trash2, Gift, Users, Info } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useWillForm } from "@/context/WillFormContext";
 import { useEffect } from "react";
@@ -65,17 +65,6 @@ export default function BeneficiariesPage() {
     };
     saveAndGoTo(beneficiariesWithIds, "/create-will/asset-allocation");
   }
-
-  function handleSaveAndExit(data: BeneficiariesFormValues) {
-    const beneficiariesWithIds = {
-      beneficiaries: data.beneficiaries.map((ben, index) => ({
-        ...ben,
-        id: ben.id || `ben-${Date.now()}-${index}`,
-      }))
-    };
-    saveAndGoTo(beneficiariesWithIds, "/dashboard");
-  }
-
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -197,9 +186,6 @@ export default function BeneficiariesPage() {
             </div>
 
             <div className="flex flex-col sm:flex-row justify-end gap-4">
-              <Button type="button" size="lg" variant="secondary" onClick={form.handleSubmit(handleSaveAndExit)} className="w-full sm:w-auto">
-                  <Save className="mr-2 h-5 w-5" /> Save & Exit
-              </Button>
               <Button type="submit" size="lg" className="w-full sm:w-auto">
                 Save & Continue <ChevronRight className="ml-2 h-5 w-5" />
               </Button>

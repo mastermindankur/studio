@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ChevronRight, PlusCircle, Trash2, Landmark, Save } from "lucide-react";
+import { ChevronRight, PlusCircle, Trash2, Landmark } from "lucide-react";
 import { useWillForm } from "@/context/WillFormContext";
 import { useEffect } from "react";
 import { Alert, AlertTitle, AlertDescription as AlertDesc } from "@/components/ui/alert";
@@ -90,16 +90,6 @@ export default function AssetsPage() {
       })),
     };
     saveAndGoTo(assetsWithIds, "/create-will/beneficiaries");
-  }
-
-  function handleSaveAndExit(data: AssetsFormValues) {
-     const assetsWithIds = {
-      assets: data.assets.map((asset, index) => ({
-        ...asset,
-        id: asset.id || `asset-${Date.now()}-${index}`,
-      })),
-    };
-    saveAndGoTo(assetsWithIds, "/dashboard");
   }
 
   return (
@@ -218,9 +208,6 @@ export default function AssetsPage() {
             </Button>
             
             <div className="flex flex-col sm:flex-row justify-end gap-4">
-               <Button type="button" size="lg" variant="secondary" onClick={form.handleSubmit(handleSaveAndExit)} className="w-full sm:w-auto">
-                  <Save className="mr-2 h-5 w-5" /> Save & Exit
-              </Button>
               <Button type="submit" size="lg" className="w-full sm:w-auto">
                 Save & Continue <ChevronRight className="ml-2 h-5 w-5" />
               </Button>

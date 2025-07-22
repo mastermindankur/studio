@@ -27,7 +27,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { CalendarIcon, ChevronRight, Gavel, Info, Save } from "lucide-react";
+import { CalendarIcon, ChevronRight, Gavel, Info } from "lucide-react";
 import { format, subYears } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useWillForm } from "@/context/WillFormContext";
@@ -67,10 +67,6 @@ export default function PersonalInformationPage() {
 
   function onSubmit(data: PersonalInfoFormValues) {
     saveAndGoTo(data, "/create-will/family-details");
-  }
-
-  function handleSaveAndExit(data: PersonalInfoFormValues) {
-    saveAndGoTo(data, "/dashboard");
   }
 
   const today = new Date();
@@ -335,9 +331,6 @@ export default function PersonalInformationPage() {
             </div>
 
             <div className="flex flex-col sm:flex-row justify-end mt-8 gap-4">
-              <Button type="button" size="lg" variant="secondary" onClick={form.handleSubmit(handleSaveAndExit)} className="w-full sm:w-auto">
-                  <Save className="mr-2 h-5 w-5" /> Save & Exit
-              </Button>
               <Button type="submit" size="lg" className="w-full sm:w-auto">
                 Save & Continue <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
