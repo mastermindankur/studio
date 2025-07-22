@@ -17,13 +17,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ChevronRight, PlusCircle, Trash2, Landmark } from "lucide-react";
+import { ChevronRight, PlusCircle, Trash2, Landmark, Edit, Save, XCircle } from "lucide-react";
 import { useWillForm } from "@/context/WillFormContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Alert, AlertTitle, AlertDescription as AlertDesc } from "@/components/ui/alert";
 import { Info } from "lucide-react";
 import { format } from "date-fns";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 
 
 const assetSchema = z.object({
@@ -62,20 +62,21 @@ const descriptionPlaceholders: { [key: string]: string } = {
 
 export default function AssetsPage() {
   const { formData, saveAndGoTo, setDirty, loading } = useWillForm();
+  const [editingAssetId, setEditingAssetId] = useState<string | null>(null);
 
   const form = useForm<AssetsFormValues>({
     resolver: zodResolver(assetsFormSchema),
-    defaultValues: formData.assets || { assets: [] },
+    defaultValues: { assets: [] },
   });
 
   useEffect(() => {
-    if (!loading && formData.assets) {
-        form.reset(formData.assets);
+    if (!loading && formData.assets?.assets) {
+        form.reset({ assets: formData.assets.assets });
     }
   }, [loading, formData.assets, form]);
 
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, update } = useFieldArray({
     control: form.control,
     name: "assets",
   });
@@ -98,6 +99,33 @@ export default function AssetsPage() {
     saveAndGoTo('assets', { assets: assetsWithIds }, "/create-will/beneficiaries");
   }
 
+  const handleAddNewAsset = () => {
+    const newAssetId = `asset-${Date.now()}-${fields.length}`;
+    append({ id: newAssetId, type: "", description: "", value: "" });
+    setEditingAssetId(newAssetId);
+  }
+  
+  const handleSaveAsset = (index: number) => {
+    form.trigger(`assets.${index}`);
+    const fieldHasErrors = Object.keys(form.formState.errors.assets?.[index] || {}).length > 0;
+    if (!fieldHasErrors) {
+      setEditingAssetId(null);
+    }
+  }
+
+  const handleCancelEdit = (index: number, assetId: string) => {
+      // If it was a new asset that the user is cancelling, remove it.
+      const originalAsset = formData.assets?.assets.find((a: any) => a.id === assetId);
+      if(!originalAsset) {
+          remove(index);
+      } else {
+        // Otherwise, reset it to its original state.
+        const field = fields[index];
+        update(index, { ...field, ...originalAsset });
+      }
+      setEditingAssetId(null);
+  }
+
   return (
     <div className="max-w-6xl mx-auto">
       <div className="bg-card p-6 sm:p-8 rounded-lg shadow-lg">
@@ -114,7 +142,7 @@ export default function AssetsPage() {
             <Info className="h-4 w-4" />
             <AlertTitle>Why list your assets?</AlertTitle>
             <AlertDesc>
-              Clearly listing all your assets ensures there is no ambiguity. This makes it easier for your executor to distribute your property as you intended.
+              Clearly listing all your assets ensures there is no ambiguity. This makes it easier for your executor to distribute your property as you intended. Add each asset one by one.
             </AlertDesc>
           </Alert>
         <Form {...form}>
@@ -123,83 +151,105 @@ export default function AssetsPage() {
               {fields.map((field, index) => {
                 const selectedType = watchedAssets?.[index]?.type;
                 const descriptionText = selectedType ? descriptionPlaceholders[selectedType] : "Provide specific details to identify the asset.";
+                const isCardInEditMode = editingAssetId === field.id;
 
                 return (
-                <Card key={field.id} className="overflow-hidden flex flex-col">
+                <Card key={field.id} className={`overflow-hidden flex flex-col ${isCardInEditMode ? 'border-primary ring-2 ring-primary' : ''}`}>
                    <CardHeader className="flex flex-row items-center justify-between bg-muted/50 p-4">
                      <CardTitle className="text-lg font-semibold text-primary truncate">
-                       {selectedType || `Asset #${index + 1}`}
+                       {isCardInEditMode ? (selectedType || 'New Asset') : (selectedType || `Asset #${index + 1}`)}
                      </CardTitle>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="text-destructive hover:bg-destructive/10 hover:text-destructive flex-shrink-0"
-                        onClick={() => remove(index)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                        <span className="sr-only">Remove asset</span>
-                      </Button>
+                     {!isCardInEditMode && (
+                        <div className="flex gap-2">
+                            <Button type="button" variant="ghost" size="icon" className="text-primary hover:bg-primary/10" onClick={() => setEditingAssetId(field.id!)}><Edit className="h-4 w-4" /><span className="sr-only">Edit</span></Button>
+                            <Button type="button" variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" onClick={() => remove(index)}><Trash2 className="h-4 w-4" /><span className="sr-only">Remove</span></Button>
+                        </div>
+                     )}
                    </CardHeader>
                    <CardContent className="p-6 space-y-6 flex-grow">
-                    <div className="grid grid-cols-1 gap-6">
-                      <FormField
-                          control={form.control}
-                          name={`assets.${index}.type`}
-                          render={({ field }) => (
-                              <FormItem>
-                              <FormLabel>Asset Type</FormLabel>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                  <FormControl>
-                                  <SelectTrigger>
-                                      <SelectValue placeholder="Select an asset type" />
-                                  </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                      {assetTypes.map(type => (
-                                          <SelectItem key={type} value={type}>{type}</SelectItem>
-                                      ))}
-                                  </SelectContent>
-                              </Select>
-                              <FormMessage />
-                              </FormItem>
-                          )}
-                          />
-                      <FormField
-                          control={form.control}
-                          name={`assets.${index}.value`}
-                          render={({ field }) => (
-                              <FormItem>
-                              <FormLabel>Estimated Value (in ₹)</FormLabel>
-                              <FormControl>
-                                  <Input type="text" inputMode="numeric" placeholder="e.g., 500000" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                              </FormItem>
-                          )}
-                          />
+                   {isCardInEditMode ? (
+                    <>
+                        <div className="grid grid-cols-1 gap-6">
+                            <FormField
+                                control={form.control}
+                                name={`assets.${index}.type`}
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormLabel>Asset Type</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select an asset type" />
+                                        </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {assetTypes.map(type => (
+                                                <SelectItem key={type} value={type}>{type}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                    </FormItem>
+                                )}
+                                />
+                            <FormField
+                                control={form.control}
+                                name={`assets.${index}.value`}
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormLabel>Estimated Value (in ₹)</FormLabel>
+                                    <FormControl>
+                                        <Input type="text" inputMode="numeric" placeholder="e.g., 500000" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                    </FormItem>
+                                )}
+                                />
+                        </div>
+                        <FormField
+                            control={form.control}
+                            name={`assets.${index}.description`}
+                            render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Asset Description</FormLabel>
+                                <FormDescription className="text-xs">
+                                {descriptionText}
+                                </FormDescription>
+                                <FormControl>
+                                <Textarea
+                                    placeholder="Provide identifying details..."
+                                    {...field}
+                                    className="min-h-[100px]"
+                                />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
+                    </>
+                   ) : (
+                    <div className="space-y-4">
+                        <div>
+                            <p className="text-sm text-muted-foreground">Type</p>
+                            <p className="font-semibold">{field.type}</p>
+                        </div>
+                         <div>
+                            <p className="text-sm text-muted-foreground">Description</p>
+                            <p className="font-semibold truncate">{field.description}</p>
+                        </div>
+                         <div>
+                            <p className="text-sm text-muted-foreground">Estimated Value</p>
+                            <p className="font-semibold">₹{field.value || "N/A"}</p>
+                        </div>
                     </div>
-                    <FormField
-                      control={form.control}
-                      name={`assets.${index}.description`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Asset Description</FormLabel>
-                          <FormDescription className="text-xs">
-                            {descriptionText}
-                          </FormDescription>
-                          <FormControl>
-                            <Textarea
-                              placeholder="Provide identifying details..."
-                              {...field}
-                              className="min-h-[100px]"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                   )}
                    </CardContent>
+                   {isCardInEditMode && (
+                        <CardFooter className="p-4 bg-muted/50 flex justify-end gap-2">
+                            <Button type="button" variant="ghost" onClick={() => handleCancelEdit(index, field.id!)}><XCircle className="mr-2 h-4 w-4"/> Cancel</Button>
+                            <Button type="button" onClick={() => handleSaveAsset(index)}><Save className="mr-2 h-4 w-4"/> Save</Button>
+                        </CardFooter>
+                   )}
                 </Card>
               )})}
                <Card className="border-dashed border-2 hover:border-primary hover:text-primary transition-colors duration-200 flex items-center justify-center min-h-[300px]">
@@ -207,7 +257,8 @@ export default function AssetsPage() {
                   type="button"
                   variant="ghost"
                   className="w-full h-full text-lg"
-                  onClick={() => append({ type: "", description: "", value: "" })}
+                  onClick={handleAddNewAsset}
+                  disabled={!!editingAssetId}
                 >
                   <PlusCircle className="mr-2 h-6 w-6" />
                   Add Another Asset
@@ -216,8 +267,9 @@ export default function AssetsPage() {
             </div>
             
             <div className="flex flex-col sm:flex-row justify-end gap-4 mt-8">
-              <Button type="submit" size="lg" className="w-full sm:w-auto">
-                Save & Continue <ChevronRight className="ml-2 h-5 w-5" />
+              <Button type="submit" size="lg" className="w-full sm:w-auto" disabled={!!editingAssetId}>
+                {!!editingAssetId ? 'Save open asset before continuing' : 'Save & Continue'}
+                {!editingAssetId && <ChevronRight className="ml-2 h-5 w-5" />}
               </Button>
             </div>
           </form>
@@ -226,3 +278,5 @@ export default function AssetsPage() {
     </div>
   );
 }
+
+    
