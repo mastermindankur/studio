@@ -27,6 +27,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useEffect } from "react";
 import { ScrollArea } from "../ui/scroll-area";
+import { Landmark, Home, Car, AreaChart, ShieldCheck, Gem, PlusCircle } from "lucide-react";
+import React from "react";
 
 interface AddAssetModalProps {
   isOpen: boolean;
@@ -34,6 +36,16 @@ interface AddAssetModalProps {
   onSave: (asset: Asset) => void;
   assetData: (Asset & { index?: number }) | null;
 }
+
+const assetIcons: { [key: string]: React.ElementType } = {
+  "Bank Account": Landmark,
+  "Real Estate": Home,
+  "Vehicle": Car,
+  "Stocks/Investments": AreaChart,
+  "Insurance Policy": ShieldCheck,
+  "Jewelry/Valuables": Gem,
+  "Other": PlusCircle,
+};
 
 const defaultValues: Asset = {
   id: '',
@@ -115,13 +127,13 @@ export function AddAssetModal({ isOpen, onClose, onSave, assetData }: AddAssetMo
 
 
   useEffect(() => {
-    if (isOpen && !assetData) {
-        form.reset({
-            ...defaultValues,
-            type: assetType,
-        });
+    if (isOpen) {
+      form.reset({
+          ...defaultValues,
+          type: assetType,
+      });
     }
-  }, [assetType, form, isOpen, assetData]);
+  }, [assetType, form, isOpen]);
 
 
   const onSubmit = (data: Asset) => {
@@ -281,11 +293,17 @@ export function AddAssetModal({ isOpen, onClose, onSave, assetData }: AddAssetMo
                             </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                            {assetTypes.map((type) => (
+                            {assetTypes.map((type) => {
+                                const Icon = assetIcons[type];
+                                return (
                                 <SelectItem key={type} value={type}>
-                                {type}
+                                    <div className="flex items-center gap-2">
+                                        {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
+                                        <span>{type}</span>
+                                    </div>
                                 </SelectItem>
-                            ))}
+                                )
+                            })}
                             </SelectContent>
                         </Select>
                         <FormMessage />
