@@ -119,8 +119,10 @@ export function AddAssetModal({ isOpen, onClose, onSave, assetData }: AddAssetMo
   const isMounted = useRef(false);
 
   useEffect(() => {
+    isMounted.current = false;
     if (isOpen) {
       if (assetData) {
+        // Deep merge for editing existing asset
         form.reset({
           ...defaultValues,
           ...assetData,
@@ -130,50 +132,95 @@ export function AddAssetModal({ isOpen, onClose, onSave, assetData }: AddAssetMo
           },
         });
       } else {
+        // Reset to default for new asset
         form.reset(defaultValues);
       }
-      // Set isMounted to true only after the initial reset when the modal opens.
-      isMounted.current = true;
-    } else {
-      isMounted.current = false;
+      // Use timeout to ensure the form has fully reset before allowing type-change effects
+      setTimeout(() => { isMounted.current = true; }, 100);
     }
   }, [assetData, isOpen, form]);
-  
+
   useEffect(() => {
-    // This effect should ONLY run for user-initiated type changes, not on initial load.
+    // This effect only runs for user-initiated type changes, not on initial load
     if (!isMounted.current) return;
 
-    const subscription = form.watch((value, { name, type }) => {
-       // Only react to changes in the 'type' field
-      if (name === 'type' && type === 'change') {
-        const currentDetails = form.getValues('details');
-        
-        // Start with a clean slate for details, only preserving common fields
-        const newDetails: any = {
-            ...defaultValues.details, // Ensures all fields are present to avoid form errors
-            description: currentDetails?.description || "",
-            value: currentDetails?.value || "",
-        };
+    const currentDetails = form.getValues('details');
+    // Create a new, clean details object, preserving only common fields
+    let newDetails: any = {
+      description: currentDetails?.description || "",
+      value: currentDetails?.value || "",
+    };
 
-        // Set new defaults based on the selected type
-        switch(value.type) {
-            case "Bank Account": newDetails.accountType = 'Savings'; break;
-            case "Real Estate": newDetails.propertyType = 'Flat/Apartment'; break;
-            case "Vehicle": newDetails.vehicleType = 'Car'; break;
-        }
-        
-        // Reset the entire details object to the new clean state
-        form.setValue('details', newDetails, { shouldValidate: true, shouldDirty: true });
-      }
-    });
+    // Set new defaults based on the selected type
+    switch (assetType) {
+      case "Bank Account":
+        newDetails = { ...newDetails, accountType: 'Savings' };
+        break;
+      case "Real Estate":
+        newDetails = { ...newDetails, propertyType: 'Flat/Apartment' };
+        break;
+      case "Vehicle":
+        newDetails = { ...newDetails, vehicleType: 'Car' };
+        break;
+    }
 
-    return () => subscription.unsubscribe();
-  }, [form]);
+    // Reset the entire details object to the new clean state
+    // This discards any fields from previously selected asset types
+    form.setValue('details', { ...defaultValues.details, ...newDetails }, { shouldValidate: true, shouldDirty: true });
+
+  }, [assetType]);
 
 
   const onSubmit = (data: Asset) => {
+    // Sanitize the details object before saving
+    let detailsToSave: any = {
+      description: data.details.description,
+      value: data.details.value
+    };
+
+    switch(data.type) {
+        case 'Bank Account':
+            detailsToSave.bankName = data.details.bankName;
+            detailsToSave.accountType = data.details.accountType;
+            detailsToSave.accountNumber = data.details.accountNumber;
+            detailsToSave.branchAddress = data.details.branchAddress;
+            break;
+        case 'Real Estate':
+            detailsToSave.propertyType = data.details.propertyType;
+            detailsToSave.propertyAddress = data.details.propertyAddress;
+            detailsToSave.surveyNumber = data.details.surveyNumber;
+            detailsToSave.area = data.details.area;
+            break;
+        case 'Vehicle':
+            detailsToSave.vehicleType = data.details.vehicleType;
+            detailsToSave.makeModel = data.details.makeModel;
+            detailsToSave.registrationNumber = data.details.registrationNumber;
+            detailsToSave.chassisNumber = data.details.chassisNumber;
+            break;
+        case 'Stocks/Investments':
+            detailsToSave.brokerName = data.details.brokerName;
+            detailsToSave.dematAccountNumber = data.details.dematAccountNumber;
+            detailsToSave.sharesDescription = data.details.sharesDescription;
+            break;
+        case 'Insurance Policy':
+            detailsToSave.insurer = data.details.insurer;
+            detailsToSave.policyNumber = data.details.policyNumber;
+            detailsToSave.sumAssured = data.details.sumAssured;
+            detailsToSave.nomineeName = data.details.nomineeName;
+            break;
+        case 'Jewelry/Valuables':
+            detailsToSave.itemName = data.details.itemName;
+            detailsToSave.identifyingMarks = data.details.identifyingMarks;
+            break;
+        case 'Other':
+            detailsToSave.otherType = data.details.otherType;
+            detailsToSave.otherDetails = data.details.otherDetails;
+            break;
+    }
+
     const finalData = {
         ...data,
+        details: detailsToSave,
         id: assetData?.id || `asset-${Date.now()}`,
         index: assetData?.index,
     };
@@ -191,7 +238,7 @@ export function AddAssetModal({ isOpen, onClose, onSave, assetData }: AddAssetMo
                         <FormItem><FormLabel>Bank Name</FormLabel><FormControl><Input placeholder="e.g., State Bank of India" {...field} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="details.accountType" render={({ field }) => (
-                        <FormItem><FormLabel>Account Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormItem><FormLabel>Account Type</FormLabel><Select onValueChange={field.onChange} value={field.value}>
                             <FormControl><SelectTrigger><SelectValue placeholder="Select account type" /></SelectTrigger></FormControl>
                             <SelectContent>{bankAccountTypes.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
                         </Select><FormMessage /></FormItem>
@@ -208,7 +255,7 @@ export function AddAssetModal({ isOpen, onClose, onSave, assetData }: AddAssetMo
              return (
                 <>
                     <FormField control={form.control} name="details.propertyType" render={({ field }) => (
-                        <FormItem><FormLabel>Property Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormItem><FormLabel>Property Type</FormLabel><Select onValueChange={field.onChange} value={field.value}>
                             <FormControl><SelectTrigger><SelectValue placeholder="Select property type" /></SelectTrigger></FormControl>
                             <SelectContent>{propertyTypes.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
                         </Select><FormMessage /></FormItem>
@@ -228,7 +275,7 @@ export function AddAssetModal({ isOpen, onClose, onSave, assetData }: AddAssetMo
             return (
                 <>
                     <FormField control={form.control} name="details.vehicleType" render={({ field }) => (
-                        <FormItem><FormLabel>Vehicle Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormItem><FormLabel>Vehicle Type</FormLabel><Select onValueChange={field.onChange} value={field.value}>
                             <FormControl><SelectTrigger><SelectValue placeholder="Select vehicle type" /></SelectTrigger></FormControl>
                             <SelectContent>{vehicleTypes.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
                         </Select><FormMessage /></FormItem>
@@ -321,7 +368,7 @@ export function AddAssetModal({ isOpen, onClose, onSave, assetData }: AddAssetMo
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>Asset Type</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select an asset type" />
