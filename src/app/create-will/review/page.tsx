@@ -61,10 +61,10 @@ export default function ReviewPage() {
                 description: "Your will has been saved. Your PDF download will begin shortly.",
             });
             
+            const userName = formData.personalInfo?.fullName?.replace(/\s+/g, '') || 'User';
             const now = new Date();
-            const dateStr = format(now, 'yyyy-MM-dd');
-            const timeStr = format(now, 'HH-mm');
-            const pdfFilename = `iWills-in_Will_v${result.version}_${dateStr}_${timeStr}.pdf`;
+            const timestampStr = format(now, 'yyyyMMdd_HHmmss');
+            const pdfFilename = `${userName}_Will_${timestampStr}.pdf`;
 
             // Dynamically import and generate PDF only on the client-side
             const { generatePdf }: { generatePdf: GeneratePdfType } = await import('@/lib/pdfGenerator');
@@ -287,7 +287,7 @@ export default function ReviewPage() {
                       <p><strong>Address:</strong> {executor?.primaryExecutor.address}</p>
                       <p><strong>Contact:</strong> {executor?.primaryExecutor.email}, {executor?.primaryExecutor.mobile}</p>
                   </div>
-                  {executor?.addSecondExecutor && executor?.secondExecutor && (
+                  {executor?.addSecondExecutor && executor?.secondExecutor && executor?.secondExecutor.fullName && (
                       <div>
                           <Separator className="my-4"/>
                           <h4 className="font-semibold mb-2">Second Executor</h4>

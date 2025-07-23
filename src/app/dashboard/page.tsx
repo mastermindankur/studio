@@ -139,8 +139,9 @@ function DashboardPageContent() {
     setTimeout(async () => {
       try {
         const date = (willData.createdAt as Timestamp).toDate();
-        const dateStr = format(date, 'yyyy-MM-dd');
-        const pdfFilename = `${willData.willName.replace(/\s/g, '_')}_v${willData.version}_${dateStr}.pdf`;
+        const userName = willData.willData.personalInfo?.fullName?.replace(/\s+/g, '') || 'User';
+        const timestampStr = format(date, 'yyyyMMdd_HHmmss');
+        const pdfFilename = `${userName}_Will_${timestampStr}.pdf`;
         const renderId = `will-document-render-${willData.id}`;
         
         await clientGeneratePdf(renderId, pdfFilename);
@@ -292,7 +293,7 @@ function DashboardPageContent() {
                                     <FileText className="w-8 h-8 text-primary"/>
                                     <div>
                                         <p className="font-semibold">
-                                            {will.willName || `Will Version ${will.version}`}
+                                            {will.willName || `Will Finalized on ${formattedDateTime}`}
                                         </p>
                                         <p className="text-sm text-muted-foreground">
                                             Finalized on {formattedDateTime}
