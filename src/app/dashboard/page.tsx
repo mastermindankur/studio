@@ -15,9 +15,10 @@ import { format } from "date-fns";
 import { PlusCircle, FileText, Download, Edit, Loader2, PlayCircle, CheckCircle, ArrowRight, User, Users, Landmark, Gift, PieChart, UserCheck } from "lucide-react";
 import { useWillForm, WillFormProvider, type WillFormData, initialData } from "@/context/WillFormContext";
 import { useRouter } from "next/navigation";
-import { generatePdf } from "@/lib/pdfGenerator";
 import { WillDocument } from "@/components/create-will/will-document";
 import { getWillSection, getWillListSection } from "../actions/will-draft";
+import { generatePdf as clientGeneratePdf } from "@/lib/pdfGenerator";
+
 
 const checklistSteps = [
     { title: "Personal Information", path: "/create-will/personal-information", reviewPath: "/create-will/personal-information/review", icon: User, key: 'personalInfo' },
@@ -70,7 +71,7 @@ function DashboardPageContent() {
   const [loadingDraft, setLoadingDraft] = useState(true);
   const [finishedWills, setFinishedWills] = useState<any[]>([]);
   const [loadingFinishedWills, setLoadingFinishedWills] = useState(true);
-  const [willToRender, setWillToRender] = useState<any | null>(null);
+  const [willToRender, setWillToRender] = useState<{data: any, id: string} | null>(null);
   const { loadWill } = useWillForm();
   const router = useRouter();
 
@@ -130,14 +131,24 @@ function DashboardPageContent() {
   }, [user, authLoading]);
 
   const handleDownloadPdf = async (willData: any) => {
-    setWillToRender(willData.willData);
+    // Pass the full will data object and the unique will ID to the state
+    setWillToRender({ data: willData.willData, id: willData.id });
+    
     // Use a timeout to allow the state to update and the hidden component to render
     setTimeout(async () => {
-      const date = (willData.createdAt as Timestamp).toDate();
-      const dateStr = format(date, 'yyyy-MM-dd');
-      const pdfFilename = `iWills-in_Will_v${willData.version}_${dateStr}.pdf`;
-      await generatePdf(`will-document-render-${willData.id}`, pdfFilename);
-      setWillToRender(null); // Clean up after rendering
+      try {
+        const date = (willData.createdAt as Timestamp).toDate();
+        const dateStr = format(date, 'yyyy-MM-dd');
+        const pdfFilename = `iWills-in_Will_v${willData.version}_${dateStr}.pdf`;
+        const renderId = `will-document-render-${willData.id}`;
+        
+        await clientGeneratePdf(renderId, pdfFilename);
+
+      } catch (error) {
+        console.error("PDF download error:", error);
+      } finally {
+        setWillToRender(null); // Clean up after rendering
+      }
     }, 100);
   };
   
@@ -305,7 +316,7 @@ function DashboardPageContent() {
 
       {/* Hidden container for rendering PDFs */}
       <div className="hidden">
-        {willToRender && <WillDocument formData={willToRender} id={`will-document-render-${willToRender.id}`} />}
+        {willToRender && <WillDocument formData={willToRender.data} id={`will-document-render-${willToRender.id}`} />}
       </div>
       
       <Footer />
@@ -320,3 +331,5 @@ export default function DashboardPage() {
         </WillFormProvider>
     )
 }
+
+    
