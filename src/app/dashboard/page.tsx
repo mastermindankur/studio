@@ -140,7 +140,7 @@ function DashboardPageContent() {
       try {
         const date = (willData.createdAt as Timestamp).toDate();
         const dateStr = format(date, 'yyyy-MM-dd');
-        const pdfFilename = `iWills-in_Will_v${willData.version}_${dateStr}.pdf`;
+        const pdfFilename = `${willData.willName.replace(/\s/g, '_')}_v${willData.version}_${dateStr}.pdf`;
         const renderId = `will-document-render-${willData.id}`;
         
         await clientGeneratePdf(renderId, pdfFilename);
@@ -284,7 +284,7 @@ function DashboardPageContent() {
                 <div className="space-y-4">
                     {finishedWills.map((will) => {
                         const creationDate = (will.createdAt as Timestamp).toDate();
-                        const formattedDateTime = format(creationDate, "PPP 'at' p"); // e.g., "Jul 23, 2025 at 4:32 PM"
+                        const formattedDateTime = format(creationDate, "PPP 'at' p");
                         
                         return (
                             <Card key={will.id} className="flex flex-col sm:flex-row items-center justify-between p-4">
@@ -292,10 +292,10 @@ function DashboardPageContent() {
                                     <FileText className="w-8 h-8 text-primary"/>
                                     <div>
                                         <p className="font-semibold">
-                                            Will Finalized on {formattedDateTime}
+                                            {will.willName || `Will Version ${will.version}`}
                                         </p>
                                         <p className="text-sm text-muted-foreground">
-                                            Version {will.version}
+                                            Finalized on {formattedDateTime}
                                         </p>
                                     </div>
                                </div>
@@ -337,7 +337,3 @@ export default function DashboardPage() {
         </WillFormProvider>
     )
 }
-
-    
-
-    

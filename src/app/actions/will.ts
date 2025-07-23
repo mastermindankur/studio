@@ -5,6 +5,7 @@ import { z } from "zod";
 import { adminDb, adminAuth } from "@/lib/firebase/admin-config";
 import { FieldValue } from "firebase-admin/firestore";
 import { getApps } from "firebase-admin/app";
+import { format } from "date-fns";
 
 // Simplified schema for validation. In a real app, this should be more specific.
 const willDataSchema = z.any();
@@ -33,10 +34,14 @@ export async function saveWill(formData: z.infer<typeof willDataSchema>): Promis
     const userWillsSnapshot = await userWillsQuery.get();
     const newVersion = userWillsSnapshot.size + 1;
 
+    const testatorName = willData.personalInfo?.fullName || "Unknown";
+    const willName = `Will of ${testatorName}`;
+
     const newWillDoc = {
       userId,
       version: newVersion,
       createdAt: FieldValue.serverTimestamp(),
+      willName: willName,
       willData: willData,
     };
     
