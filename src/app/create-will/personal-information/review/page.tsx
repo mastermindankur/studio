@@ -22,12 +22,27 @@ export default function ReviewPersonalInformationPage() {
     router.push("/dashboard");
   };
   
-  const DetailItem = ({ label, value }: { label: string, value: string | undefined }) => (
+  const DetailItem = ({ label, value }: { label: string, value: string | undefined | null }) => (
     <div>
         <p className="text-sm text-muted-foreground">{label}</p>
-        <p className="font-medium text-foreground">{value || 'Not Provided'}</p>
+        <p className="font-medium text-foreground capitalize">{value || 'Not Provided'}</p>
     </div>
   );
+
+  const safeFormatDate = (dob: any) => {
+    if (!dob) return null;
+    try {
+      if (typeof dob === 'object' && dob !== null && 'toDate' in dob) {
+        return format(dob.toDate(), "PPP");
+      }
+      const date = new Date(dob);
+      if (isNaN(date.getTime())) return null;
+      return format(date, "PPP");
+    } catch {
+      return null;
+    }
+  };
+
 
   if (loading) {
     return <div>Loading...</div>;
@@ -49,7 +64,7 @@ export default function ReviewPersonalInformationPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     <DetailItem label="Full Name" value={personalInfo?.fullName} />
                     <DetailItem label="Gender" value={personalInfo?.gender} />
-                    <DetailItem label="Date of Birth" value={personalInfo?.dob ? format(new Date(personalInfo.dob), "PPP") : ''} />
+                    <DetailItem label="Date of Birth" value={safeFormatDate(personalInfo?.dob)} />
                     <DetailItem label="Father/Husband Name" value={personalInfo?.fatherHusbandName} />
                     <DetailItem label="Religion" value={personalInfo?.religion} />
                     <DetailItem label="Occupation" value={personalInfo?.occupation} />

@@ -48,7 +48,7 @@ const personalInfoSchema = z.object({
 type PersonalInfoFormValues = z.infer<typeof personalInfoSchema>;
 
 export default function PersonalInformationPage() {
-  const { formData, saveAndGoTo, setDirty, loading } = useWillForm();
+  const { formData, updateWillSection, loading } = useWillForm();
 
   const form = useForm<PersonalInfoFormValues>({
     resolver: zodResolver(personalInfoSchema),
@@ -57,10 +57,20 @@ export default function PersonalInformationPage() {
 
   useEffect(() => {
     if (!loading && formData.personalInfo) {
-        // Ensure DOB is a Date object
+        // Ensure DOB is a Date object, handling strings or Firestore timestamps
+        let dobDate;
+        const dobValue = formData.personalInfo.dob;
+        if (dobValue) {
+          if (typeof dobValue === 'object' && 'toDate' in dobValue) {
+            dobDate = dobValue.toDate(); // Firestore timestamp
+          } else {
+            dobDate = new Date(dobValue); // String or existing Date
+          }
+        }
+
         const personalInfoWithDate = {
             ...formData.personalInfo,
-            dob: formData.personalInfo.dob ? new Date(formData.personalInfo.dob) : undefined,
+            dob: dobDate && !isNaN(dobDate.getTime()) ? dobDate : undefined,
         };
         form.reset(personalInfoWithDate);
     }
@@ -70,13 +80,8 @@ export default function PersonalInformationPage() {
   const { version, createdAt } = formData;
   const isEditing = !!version;
 
-  useEffect(() => {
-    const subscription = form.watch(() => setDirty(true));
-    return () => subscription.unsubscribe();
-  }, [form, setDirty]);
-
-  function onSubmit(data: PersonalInfoFormValues) {
-    saveAndGoTo('personalInfo', data, "/dashboard");
+  async function onSubmit(data: PersonalInfoFormValues) {
+    await updateWillSection('personalInfo', data);
   }
 
   const today = new Date();
@@ -173,7 +178,7 @@ export default function PersonalInformationPage() {
                             )}
                             >
                             {field.value ? (
-                                format(new Date(field.value), "PPP")
+                                format(field.value, "PPP")
                             ) : (
                                 <span>Pick a date</span>
                             )}
@@ -342,7 +347,7 @@ export default function PersonalInformationPage() {
 
             <div className="flex flex-col sm:flex-row justify-end mt-8 gap-4">
               <Button type="submit" size="lg" className="w-full sm:w-auto" disabled={form.formState.isSubmitting}>
-                Save &amp; Go to Dashboard <ChevronRight className="ml-2 h-5 w-5" />
+                Save Changes <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
           </form>

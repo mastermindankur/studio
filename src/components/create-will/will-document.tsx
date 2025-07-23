@@ -1,3 +1,4 @@
+
 import { WillFormData } from "@/context/WillFormContext";
 import { format } from 'date-fns';
 
@@ -18,7 +19,7 @@ export function WillDocument({ formData, id = "will-document-render" }: WillDocu
 
   const getAssetName = (assetId: string) => {
     const asset = assets?.assets?.find((a: any) => a.id === assetId);
-    return asset ? asset.details.description : 'Unknown Asset';
+    return asset ? (asset.details.description || 'Unknown Asset') : 'Unknown Asset';
   };
   
   const getBeneficiaryName = (beneficiaryId: string) => {
@@ -42,6 +43,26 @@ export function WillDocument({ formData, id = "will-document-render" }: WillDocu
 
   const today = new Date();
 
+  // Safely handle date of birth from different sources (Date object, string, or Firestore timestamp)
+  const getAge = () => {
+    if (!personalInfo?.dob) return 'N/A';
+    try {
+      // Check if dob is a Firestore Timestamp-like object
+      if (typeof personalInfo.dob === 'object' && personalInfo.dob !== null && 'toDate' in personalInfo.dob && typeof personalInfo.dob.toDate === 'function') {
+        const dobDate = personalInfo.dob.toDate();
+        return today.getFullYear() - dobDate.getFullYear();
+      }
+      // Handle Date objects or valid date strings
+      const dobDate = new Date(personalInfo.dob);
+      if (isNaN(dobDate.getTime())) return 'N/A'; // Invalid date
+      return today.getFullYear() - dobDate.getFullYear();
+    } catch (e) {
+      return 'N/A';
+    }
+  };
+  const age = getAge();
+
+
   const placeOfSigning = executor?.city && executor?.state ? `${executor.city}, ${executor.state}` : '[City, State]';
 
   return (
@@ -53,7 +74,7 @@ export function WillDocument({ formData, id = "will-document-render" }: WillDocu
       </div>
 
       <p className="mb-6 text-lg leading-relaxed">
-        I, <strong>{personalInfo?.fullName}</strong>, son/daughter/wife of <strong>{personalInfo?.fatherHusbandName}</strong>, aged about <strong>{personalInfo?.dob ? today.getFullYear() - new Date(personalInfo.dob).getFullYear() : 'N/A'}</strong> years, residing at <strong>{personalInfo?.address}</strong>, being of sound mind and memory, do hereby make, publish and declare this to be my Last Will and Testament, revoking all former wills and codicils heretofore made by me.
+        I, <strong>{personalInfo?.fullName}</strong>, son/daughter/wife of <strong>{personalInfo?.fatherHusbandName}</strong>, aged about <strong>{age}</strong> years, residing at <strong>{personalInfo?.address}</strong>, being of sound mind and memory, do hereby make, publish and declare this to be my Last Will and Testament, revoking all former wills and codicils heretofore made by me.
       </p>
 
       <h3 className="text-xl font-bold border-b-2 border-black pb-2 mb-4 mt-8">I. Declaration</h3>
@@ -67,7 +88,7 @@ export function WillDocument({ formData, id = "will-document-render" }: WillDocu
           <p className="mb-4 text-lg leading-relaxed">
             I hereby appoint <strong>{executor.primaryExecutor.fullName}</strong>, residing at <strong>{executor.primaryExecutor.address}</strong>, as the sole Executor of this Will.
           </p>
-          {executor.addSecondExecutor && executor.secondExecutor && (
+          {executor.addSecondExecutor && executor.secondExecutor && executor.secondExecutor.fullName && (
             <p className="mb-6 text-lg leading-relaxed">
               In the event that my primary Executor is unable or unwilling to serve, I appoint <strong>{executor.secondExecutor.fullName}</strong>, residing at <strong>{executor.secondExecutor.address}</strong>, as the alternate Executor.
             </p>
