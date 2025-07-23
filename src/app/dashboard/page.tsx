@@ -68,9 +68,12 @@ function DashboardPageContent() {
   const { user, loading: authLoading } = useAuth();
   const [draft, setDraft] = useState<WillFormData | null>(null);
   const [loadingDraft, setLoadingDraft] = useState(true);
+  const [finishedWills, setFinishedWills] = useState<any[]>([]);
+  const [loadingFinishedWills, setLoadingFinishedWills] = useState(true);
+  const [willToRender, setWillToRender] = useState<any | null>(null);
   const { loadWill } = useWillForm();
   const router = useRouter();
-  
+
   useEffect(() => {
     if (user) {
       const fetchDraft = async () => {
@@ -103,11 +106,40 @@ function DashboardPageContent() {
           setLoadingDraft(false);
         }
       };
+
+      const fetchFinishedWills = async () => {
+        setLoadingFinishedWills(true);
+        try {
+          const q = query(collection(db, "wills"), where("userId", "==", user.uid), orderBy("createdAt", "desc"));
+          const querySnapshot = await getDocs(q);
+          const wills = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          setFinishedWills(wills);
+        } catch (error) {
+          console.error("Error fetching finished wills:", error);
+        } finally {
+          setLoadingFinishedWills(false);
+        }
+      };
+
       fetchDraft();
+      fetchFinishedWills();
     } else if (!authLoading) {
       setLoadingDraft(false);
+      setLoadingFinishedWills(false);
     }
   }, [user, authLoading]);
+
+  const handleDownloadPdf = async (willData: any) => {
+    setWillToRender(willData.willData);
+    // Use a timeout to allow the state to update and the hidden component to render
+    setTimeout(async () => {
+      const date = (willData.createdAt as Timestamp).toDate();
+      const dateStr = format(date, 'yyyy-MM-dd');
+      const pdfFilename = `iWills-in_Will_v${willData.version}_${dateStr}.pdf`;
+      await generatePdf(`will-document-render-${willData.id}`, pdfFilename);
+      setWillToRender(null); // Clean up after rendering
+    }, 100);
+  };
   
   const handleStepClick = (step: typeof checklistSteps[0]) => {
     if (draft) {
@@ -132,7 +164,7 @@ function DashboardPageContent() {
     router.push("/create-will/review");
   }
 
-  if (authLoading || (user && loadingDraft)) {
+  if (authLoading || (user && (loadingDraft || loadingFinishedWills))) {
     return (
       <div className="flex flex-col min-h-screen">
         <Header />
@@ -140,6 +172,10 @@ function DashboardPageContent() {
           <Skeleton className="h-10 w-1/2 mb-8" />
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => <Skeleton key={i} className="h-40 w-full" />)}
+          </div>
+          <div className="mt-12 border-t pt-8">
+            <Skeleton className="h-8 w-1/3 mb-4" />
+            <Skeleton className="h-24 w-full" />
           </div>
         </main>
         <Footer />
@@ -231,20 +267,47 @@ function DashboardPageContent() {
         
          <div className="mt-12 border-t pt-8">
             <h2 className="font-headline text-2xl font-bold text-primary mb-4">Finished Wills</h2>
-            <p className="text-foreground/80 mb-6">Once you finalize a will, it will appear here for download.</p>
-            {/* Logic to display completed wills can be added here */}
-             <Card className="text-center py-12 px-6 bg-card/50">
-                <CardHeader>
-                    <CardTitle>No Finalized Wills Yet</CardTitle>
-                    <CardDescription>
-                       Complete all the steps above and click "Review & Finalize" to create your first official will.
-                    </CardDescription>
-                </CardHeader>
-            </Card>
+            
+            {finishedWills.length > 0 ? (
+                <div className="space-y-4">
+                    {finishedWills.map((will) => (
+                        <Card key={will.id} className="flex flex-col sm:flex-row items-center justify-between p-4">
+                           <div className="flex items-center gap-4 mb-4 sm:mb-0">
+                                <FileText className="w-8 h-8 text-primary"/>
+                                <div>
+                                    <p className="font-semibold">
+                                        Will Version {will.version}
+                                    </p>
+                                    <p className="text-sm text-muted-foreground">
+                                        Finalized on {format((will.createdAt as Timestamp).toDate(), "PPP")}
+                                    </p>
+                                </div>
+                           </div>
+                            <Button onClick={() => handleDownloadPdf(will)}>
+                                <Download className="mr-2 h-4 w-4"/>
+                                Download PDF
+                            </Button>
+                        </Card>
+                    ))}
+                </div>
+            ) : (
+                <Card className="text-center py-12 px-6 bg-card/50">
+                    <CardHeader>
+                        <CardTitle>No Finalized Wills Yet</CardTitle>
+                        <CardDescription>
+                        Complete all the steps above and click "Review & Finalize" to create your first official will.
+                        </CardDescription>
+                    </CardHeader>
+                </Card>
+            )}
         </div>
-
-
       </main>
+
+      {/* Hidden container for rendering PDFs */}
+      <div className="hidden">
+        {willToRender && <WillDocument formData={willToRender} id={`will-document-render-${willToRender.id}`} />}
+      </div>
+      
       <Footer />
     </div>
   );
@@ -257,5 +320,3 @@ export default function DashboardPage() {
         </WillFormProvider>
     )
 }
-
-    

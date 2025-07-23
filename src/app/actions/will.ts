@@ -1,3 +1,4 @@
+
 "use server";
 
 import { z } from "zod";
@@ -79,4 +80,26 @@ export async function updateWill(willId: string, formData: z.infer<typeof willDa
     console.error(`Error updating will ${willId}:`, error);
     return { success: false, message: "Could not update will. Please try again later." };
   }
+}
+
+export async function getWill(willId: string, userId: string): Promise<any> {
+    try {
+        const willRef = adminDb.collection('wills').doc(willId);
+        const doc = await willRef.get();
+
+        if (!doc.exists) {
+            throw new Error('Will not found');
+        }
+
+        const data = doc.data();
+
+        if (data?.userId !== userId) {
+            throw new Error('Permission denied');
+        }
+
+        return { id: doc.id, ...data };
+    } catch (error) {
+        console.error(`Error getting will ${willId}:`, error);
+        throw error;
+    }
 }
