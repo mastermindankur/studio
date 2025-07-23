@@ -27,7 +27,6 @@ export interface WillFormData {
 interface WillFormContextType {
   formData: WillFormData;
   setFormData: React.Dispatch<React.SetStateAction<WillFormData>>;
-  setDirty: (isDirty: boolean) => void;
   clearForm: () => void;
   loadWill: (willData: any) => void;
   loading: boolean;
@@ -114,7 +113,6 @@ const isObject = (item: any) => {
 
 export const WillFormProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
-  const [isDirty, setDirty] = useState(false);
   const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
@@ -177,7 +175,7 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
       setFormData(prev => ({ ...prev, [section]: data }));
       toast({
         title: "Progress Saved",
-        description: `Your ${section} information has been successfully saved.`,
+        description: `Your ${section.toString()} information has been successfully saved.`,
       });
     } catch (e) {
       console.error(`Could not save ${section} to firestore`, e);
@@ -185,19 +183,6 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-
-  useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (isDirty) {
-        e.preventDefault();
-        e.returnValue = '';
-      }
-    };
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, [isDirty]);
 
   const loadWill = (willData: any) => {
     const dataToLoad = mergeDeep(initialData, willData);
@@ -350,7 +335,7 @@ export const WillFormProvider = ({ children }: { children: ReactNode }) => {
 
 
   return (
-    <WillFormContext.Provider value={{ formData, setFormData, setDirty, clearForm, loadWill, loading, addAsset, updateAsset, removeAsset, addBeneficiary, updateBeneficiary, removeBeneficiary, updateAllocations, updateWillSection }}>
+    <WillFormContext.Provider value={{ formData, setFormData, clearForm, loadWill, loading, addAsset, updateAsset, removeAsset, addBeneficiary, updateBeneficiary, removeBeneficiary, updateAllocations, updateWillSection }}>
       {children}
     </WillFormContext.Provider>
   );
@@ -363,6 +348,3 @@ export const useWillForm = () => {
   }
   return context;
 };
-
-    
-    

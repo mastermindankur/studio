@@ -48,8 +48,8 @@ export default function BeneficiariesPage() {
   const { version, createdAt, familyDetails } = formData;
   const isEditing = !!version;
 
-  function onSubmit(data: BeneficiariesFormValues) {
-    // This is now purely for navigation
+  async function onSubmit(data: BeneficiariesFormValues) {
+    // No need to save here, as individual actions save instantly. Just navigate.
     router.push("/create-will/asset-allocation");
   }
 

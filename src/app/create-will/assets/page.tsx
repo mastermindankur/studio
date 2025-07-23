@@ -37,7 +37,7 @@ const assetIcons: { [key: string]: React.ElementType } = {
 };
 
 export default function AssetsPage() {
-  const { formData, setDirty, loading, addAsset, updateAsset, removeAsset } = useWillForm();
+  const { formData, loading, addAsset, updateAsset, removeAsset } = useWillForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAsset, setEditingAsset] = useState<Asset | null>(null);
   const router = useRouter();

@@ -20,6 +20,7 @@ import { ChevronRight, PlusCircle, Trash2, Users } from "lucide-react";
 import { useWillForm } from "@/context/WillFormContext";
 import { useEffect } from "react";
 import { format } from "date-fns";
+import { useRouter } from "next/navigation";
 
 const familyDetailsSchema = z.object({
   maritalStatus: z.enum(["married", "unmarried", "divorced", "widowed"], {
@@ -42,7 +43,8 @@ const familyDetailsSchema = z.object({
 type FamilyDetailsFormValues = z.infer<typeof familyDetailsSchema>;
 
 export default function FamilyDetailsPage() {
-  const { formData, saveAndGoTo, setDirty, loading } = useWillForm();
+  const { formData, updateWillSection, loading } = useWillForm();
+  const router = useRouter();
 
   const form = useForm<FamilyDetailsFormValues>({
     resolver: zodResolver(familyDetailsSchema),
@@ -66,18 +68,14 @@ export default function FamilyDetailsPage() {
   const isEditing = !!version;
 
   useEffect(() => {
-    const subscription = form.watch(() => setDirty(true));
-    return () => subscription.unsubscribe();
-  }, [form, setDirty]);
-
-  useEffect(() => {
     if (watchMaritalStatus !== 'married') {
         form.setValue('spouseName', '');
     }
   }, [watchMaritalStatus, form]);
 
-  function onSubmit(data: FamilyDetailsFormValues) {
-    saveAndGoTo('familyDetails', data, "/create-will/family-details/review");
+  async function onSubmit(data: FamilyDetailsFormValues) {
+    await updateWillSection('familyDetails', data);
+    router.push("/create-will/assets");
   }
 
   return (
