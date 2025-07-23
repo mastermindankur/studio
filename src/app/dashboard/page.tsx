@@ -282,25 +282,30 @@ function DashboardPageContent() {
             
             {finishedWills.length > 0 ? (
                 <div className="space-y-4">
-                    {finishedWills.map((will) => (
-                        <Card key={will.id} className="flex flex-col sm:flex-row items-center justify-between p-4">
-                           <div className="flex items-center gap-4 mb-4 sm:mb-0">
-                                <FileText className="w-8 h-8 text-primary"/>
-                                <div>
-                                    <p className="font-semibold">
-                                        Will Version {will.version}
-                                    </p>
-                                    <p className="text-sm text-muted-foreground">
-                                        Finalized on {format((will.createdAt as Timestamp).toDate(), "PPP")}
-                                    </p>
-                                </div>
-                           </div>
-                            <Button onClick={() => handleDownloadPdf(will)}>
-                                <Download className="mr-2 h-4 w-4"/>
-                                Download PDF
-                            </Button>
-                        </Card>
-                    ))}
+                    {finishedWills.map((will) => {
+                        const creationDate = (will.createdAt as Timestamp).toDate();
+                        const formattedDateTime = format(creationDate, "PPP 'at' p"); // e.g., "Jul 23, 2025 at 4:32 PM"
+                        
+                        return (
+                            <Card key={will.id} className="flex flex-col sm:flex-row items-center justify-between p-4">
+                               <div className="flex items-center gap-4 mb-4 sm:mb-0">
+                                    <FileText className="w-8 h-8 text-primary"/>
+                                    <div>
+                                        <p className="font-semibold">
+                                            Will Finalized on {formattedDateTime}
+                                        </p>
+                                        <p className="text-sm text-muted-foreground">
+                                            Version {will.version}
+                                        </p>
+                                    </div>
+                               </div>
+                                <Button onClick={() => handleDownloadPdf(will)}>
+                                    <Download className="mr-2 h-4 w-4"/>
+                                    Download PDF
+                                </Button>
+                            </Card>
+                        )
+                    })}
                 </div>
             ) : (
                 <Card className="text-center py-12 px-6 bg-card/50">
