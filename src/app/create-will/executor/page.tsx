@@ -298,5 +298,4 @@ export default function ExecutorPage() {
       </div>
     </div>
   );
-
-    
+}
