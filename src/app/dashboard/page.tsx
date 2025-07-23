@@ -131,7 +131,8 @@ function DashboardPageContent() {
   }, [user, authLoading]);
 
   const handleDownloadPdf = async (willData: any) => {
-    // Pass the full will data object and the unique will ID to the state
+    // The willData object from Firestore contains the complete `willData` snapshot.
+    // We pass this entire snapshot to the rendering component.
     setWillToRender({ data: willData.willData, id: willData.id });
     
     // Use a timeout to allow the state to update and the hidden component to render
@@ -331,5 +332,7 @@ export default function DashboardPage() {
         </WillFormProvider>
     )
 }
+
+    
 
     
