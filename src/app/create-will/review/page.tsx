@@ -10,12 +10,13 @@ import { CheckCircle, Edit, FileCheck, User, Users, Landmark, Gift, PieChart, Us
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { WillDocument } from "@/components/create-will/will-document";
-import { generatePdf } from "@/lib/pdfGenerator";
 import { useState } from "react";
 import { saveWill } from "@/app/actions/will";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { generatePdf as GeneratePdfType } from "@/lib/pdfGenerator";
+
 
 export default function ReviewPage() {
   const router = useRouter();
@@ -65,7 +66,8 @@ export default function ReviewPage() {
             const timeStr = format(now, 'HH-mm');
             const pdfFilename = `iWills-in_Will_v${result.version}_${dateStr}_${timeStr}.pdf`;
 
-            // Generate PDF after successful save
+            // Dynamically import and generate PDF only on the client-side
+            const { generatePdf }: { generatePdf: GeneratePdfType } = await import('@/lib/pdfGenerator');
             await generatePdf(`will-document-render`, pdfFilename);
 
             clearForm();
@@ -87,7 +89,7 @@ export default function ReviewPage() {
 
   const getAssetName = (id: string) => {
     const asset = assets?.assets.find((a: any) => a.id === id);
-    if (asset) return asset.details.description;
+    if (asset && asset.details) return asset.details.description;
     
     return 'N/A';
   };
@@ -329,5 +331,5 @@ export default function ReviewPage() {
         </div>
       </div>
     </>
-  );
-}
+
+    
