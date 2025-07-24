@@ -10,7 +10,7 @@ const teamMembers = [
     name: "Aarav Sharma",
     role: "Founder & CEO",
     bio: "With a passion for leveraging technology to solve real-world problems, Aarav founded iWills.in to make legacy planning accessible and stress-free for all Indians.",
-    avatarSrc: "https://placehold.co/128x128.png",
+    avatarSrc: "https://placehold.co/200x200.png",
     avatarFallback: "AS",
     imageHint: "man portrait professional",
   },
@@ -18,7 +18,7 @@ const teamMembers = [
     name: "Sneha Gupta",
     role: "Head of Legal & Compliance",
     bio: "Sneha is a seasoned lawyer specializing in Indian succession law. She ensures that every will generated on our platform is legally robust and compliant.",
-    avatarSrc: "https://placehold.co/128x128.png",
+    avatarSrc: "https://placehold.co/200x200.png",
     avatarFallback: "SG",
     imageHint: "woman portrait professional",
   },
@@ -26,7 +26,7 @@ const teamMembers = [
     name: "Vikram Singh",
     role: "Lead Software Engineer",
     bio: "Vikram leads our talented tech team, focusing on building a secure, reliable, and user-friendly platform. He is the architect behind our seamless will-creation process.",
-    avatarSrc: "https://placehold.co/128x128.png",
+    avatarSrc: "https://placehold.co/200x200.png",
     avatarFallback: "VS",
     imageHint: "man portrait technology",
   },
@@ -47,10 +47,10 @@ export default function AboutUsPage() {
         <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
             <div className="rounded-lg overflow-hidden shadow-xl aspect-[4/3]">
                 <Image
-                src="https://placehold.co/600x450.png"
+                src="https://placehold.co/800x600.png"
                 alt="Our mission at iWills.in"
-                width={600}
-                height={450}
+                width={800}
+                height={600}
                 className="object-cover w-full h-full"
                 data-ai-hint="team collaboration office"
                 />
