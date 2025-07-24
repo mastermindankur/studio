@@ -87,7 +87,7 @@ export function Pricing() {
             <div 
                 ref={scrollRef}
                 onScroll={handleScroll}
-                className="flex overflow-x-auto snap-x snap-mandatory space-x-4 pb-4 -mx-4 px-4 scrollbar-hide"
+                className="flex overflow-x-auto snap-x snap-mandatory space-x-4 pb-4 -mx-4 px-4 pt-4 scrollbar-hide"
             >
                 {plans.map((plan, index) => (
                     <div key={index} className="w-[85vw] sm:w-80 flex-shrink-0 snap-center">
@@ -148,7 +148,7 @@ export function Pricing() {
         </div>
 
         {/* Desktop: Static grid */}
-        <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
+        <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch pt-4">
           {plans.map((plan, index) => (
             <Card
               key={index}
