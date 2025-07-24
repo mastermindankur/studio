@@ -10,7 +10,7 @@ import { useAIChatStore } from "@/hooks/use-ai-chat-store";
 export function HeroSection() {
   const { user } = useAuth();
   const { openChat } = useAIChatStore();
-  const createWillHref = user ? "/create-will/personal-information" : "/signup";
+  const createWillHref = user ? "/dashboard" : "/signup";
 
   return (
     <section id="hero" className="py-12 md:py-32 bg-gradient-to-br from-background to-primary/10">
