@@ -45,11 +45,11 @@ export default function AboutUsPage() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
-            <div className="rounded-lg overflow-hidden shadow-xl aspect-[4/3]">
+            <div className="rounded-lg overflow-hidden shadow-xl aspect-square">
                 <Image
                 src="/images/about-us-mission.jpg"
                 alt="Our mission at iWills.in"
-                width={800}
+                width={600}
                 height={600}
                 className="object-cover w-full h-full"
                 data-ai-hint="team collaboration office"
