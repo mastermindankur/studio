@@ -53,6 +53,7 @@ export default function AboutUsPage() {
                 height={600}
                 className="object-cover w-full h-full"
                 data-ai-hint="team collaboration office"
+                priority
                 />
             </div>
             <div>
